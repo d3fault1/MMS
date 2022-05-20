@@ -3,15 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Net.Http;
 
-namespace MMS
+namespace MMS.Backend
 {
-    class HTTPHandler
+    class FileManagement
     {
-        public void Test()
-        {
 
-        }
     }
 }

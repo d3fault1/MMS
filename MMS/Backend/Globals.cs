@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MMS.DataModels;
 
-namespace MMS
+namespace MMS.Backend
 {
-    class SNMPHandler
+    class Globals
     {
-
+        public static ConfigurationModel Config { get; set; } = null;
     }
 }

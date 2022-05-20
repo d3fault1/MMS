@@ -65,9 +65,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Configuration.cs" />
-    <Compile Include="FileManagement.cs" />
-    <Compile Include="SNMPHandler.cs" />
+    <Compile Include="Backend\Configuration.cs" />
+    <Compile Include="Backend\Errors.cs" />
+    <Compile Include="Backend\FileManagement.cs" />
+    <Compile Include="Backend\Globals.cs" />
+    <Compile Include="Backend\Helper.cs" />
+    <Compile Include="Backend\IO\DatabaseIO.cs" />
+    <Compile Include="Backend\Logging.cs" />
+    <Compile Include="Backend\SNMPHandler.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -76,7 +81,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="HTTPHandler.cs" />
+    <Compile Include="Backend\HTTPHandler.cs" />
+    <Compile Include="DataModels\ConfigurationModel.cs" />
+    <Compile Include="DataModels\HTTPDataModel.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -109,5 +116,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
