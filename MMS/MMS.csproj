@@ -61,30 +61,55 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
+    <ApplicationDefinition Include="UI\App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Backend\Configuration.cs" />
+    <Compile Include="Backend\DatabaseIO\Common\IDatabaseIO.cs" />
+    <Compile Include="Backend\DatabaseIO\DatabaseEngines\MsSQLDatabaseIO.cs" />
     <Compile Include="Backend\Errors.cs" />
     <Compile Include="Backend\FileManagement.cs" />
     <Compile Include="Backend\Globals.cs" />
     <Compile Include="Backend\Helper.cs" />
-    <Compile Include="Backend\IO\DatabaseIO.cs" />
     <Compile Include="Backend\Logging.cs" />
     <Compile Include="Backend\SNMPHandler.cs" />
-    <Page Include="MainWindow.xaml">
+    <Page Include="UI\Stylings\ControlStylings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\AppUserControls\DeviceList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\AppUserControls\SidePanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="App.xaml.cs">
+    <Compile Include="DataModels\ExhibitModel.cs" />
+    <Compile Include="DataModels\FloorModel.cs" />
+    <Compile Include="DataModels\NodeCurrentStatus.cs" />
+    <Compile Include="DataModels\NodeLogModel.cs" />
+    <Compile Include="DataModels\NodeModel.cs" />
+    <Compile Include="DataModels\ZoneModel.cs" />
+    <Compile Include="UI\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Backend\HTTPHandler.cs" />
     <Compile Include="DataModels\ConfigurationModel.cs" />
     <Compile Include="DataModels\HTTPDataModel.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="UI\Views\AppUserControls\DeviceList.xaml.cs">
+      <DependentUpon>DeviceList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\AppUserControls\SidePanel.xaml.cs">
+      <DependentUpon>SidePanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>

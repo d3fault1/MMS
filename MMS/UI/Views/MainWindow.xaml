@@ -1,0 +1,31 @@
+﻿<Window x:Class="MMS.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MMS"
+        xmlns:uc="clr-namespace:MMS.UI.Views.AppUserControls"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="900" Width="1300" Topmost="True">
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                <GradientStop Color="#FF6E87C6" Offset="0.01" />
+                <GradientStop Color="#FF2F4B93" Offset="0.95" />
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="25*" MinWidth="220" MaxWidth="280"/>
+            <ColumnDefinition Width="75*"/>
+        </Grid.ColumnDefinitions>
+
+        <uc:SidePanel x:Name="sidepanel" Grid.Row="0" Grid.Column="0" Margin="20"/>
+        <uc:DeviceList x:Name="devicelist" Grid.Row="0" Grid.Column="1" Margin="5,25,25,25"/>
+
+    </Grid>
+</Window>

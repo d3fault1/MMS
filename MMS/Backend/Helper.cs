@@ -27,5 +27,12 @@ namespace MMS.Backend
             }
             return Encoding.ASCII.GetString(charbyte);
         }
+
+        public static string GetConnectionString(bool masterdb)
+        {
+            string instance = Globals.Config.DBInstance == String.Empty ? "." : $".\\{Globals.Config.DBInstance}";
+            if (masterdb) return $"Data Source={instance};Database=master;Trusted_Connection=True;";
+            return $"Data Source={instance};Database={Globals.Config.DBName};Trusted_Connection=True;";
+        }
     }
 }

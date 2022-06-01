@@ -6,6 +6,7 @@ namespace MMS.Backend
     static class Logging
     {
         static string logfile = "applog.log";
+        static bool debugMode = false;
         static FileStream logstream;
         static StreamWriter logwriter;
         public static void Initialize()
@@ -21,14 +22,29 @@ namespace MMS.Backend
             logstream?.Dispose();
         }
 
+        public static void EnableDebugLogging()
+        {
+            debugMode = true;
+        }
+
+        public static void DisableDebugLogging()
+        {
+            debugMode = false;
+        }
+
         public static void Info(string message)
         {
-            logwriter?.WriteLine($"[Info]\t{DateTime.Now.TimeOfDay.ToString(@"hh\:mm\:ss\.fff")}\t{message}");
+            logwriter?.WriteLine($"[Info]\t{DateTime.Now.TimeOfDay:hh\\:mm\\:ss\\.fff}\t{message}");
+        }
+
+        public static void Debug(string message)
+        {
+            if (debugMode) logwriter?.WriteLine($"[Debug]\t{DateTime.Now.TimeOfDay:hh\\:mm\\:ss\\.fff}\t{message}");
         }
 
         public static void Error(string message)
         {
-            logwriter?.WriteLine($"[Error]\t{DateTime.Now.TimeOfDay.ToString(@"hh\:mm\:ss\.fff")}\t{message}");
+            logwriter?.WriteLine($"[Error]\t{DateTime.Now.TimeOfDay:hh\\:mm\\:ss\\.fff}\t{message}");
         }
     }
 }
