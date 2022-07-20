@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MMS.UI.Views.AppUserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="900">
+             d:DesignHeight="650" d:DesignWidth="900">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="20*" MaxWidth="220" MinWidth="140"/>
@@ -37,7 +37,7 @@
         <ComboBox Grid.Column="4" Grid.Row="2" Text="Select a Exhibit"/>
         <ComboBox Grid.Column="6" Grid.Row="2" Text="Select Status"/>
 
-        <HeaderedItemsControl Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="8">
+        <HeaderedItemsControl x:Name="alldevlist" Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="8">
             <HeaderedItemsControl.HeaderTemplate>
                 <DataTemplate>
                     <Grid>
@@ -60,10 +60,10 @@
                             <RowDefinition Height="80"/>
                         </Grid.RowDefinitions>
                         <CheckBox Grid.Column="0"/>
-                        <TextBlock Grid.Column="2" Text="Device Name" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 0 5" Foreground="White" FontSize="16"/>
+                        <TextBlock Grid.Column="2" Text="Device Name" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 0 5" Foreground="White" FontSize="16"/>
                         <TextBlock Grid.Column="4" Text="Version" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 0 5" Foreground="White" FontSize="16"/>
                         <TextBlock Grid.Column="6" Text="IP" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 0 5" Foreground="White" FontSize="16"/>
-                        <TextBlock Grid.Column="8" Text="Exhibits" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="0 0 0 5" Foreground="White" FontSize="16"/>
+                        <TextBlock Grid.Column="8" Text="Exhibits" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 0 5" Foreground="White" FontSize="16"/>
                         <TextBlock Grid.Column="10" Text="Status" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 0 5" Foreground="White" FontSize="16"/>
                         <TextBlock Grid.Column="12" Text="Command" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0 0 0 5" Foreground="White" FontSize="16"/>
                     </Grid>
@@ -90,7 +90,14 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"/>
                         </Grid.RowDefinitions>
-                        
+                        <CheckBox Grid.Column="0" Grid.Row="0"/>
+                        <TextBlock Grid.Column="2" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="14" Text="{Binding Name}"/>
+                        <TextBlock Grid.Column="4" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="14" Text="{Binding Version}"/>
+                        <TextBlock Grid.Column="6" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="14" Text="{Binding IP}"/>
+                        <TextBlock Grid.Column="8" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="14" Text="{Binding Exhibit}"/>
+                        <TextBlock Grid.Column="10" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" FontSize="12" Text="{Binding Status}"/>
+                        <Button Grid.Column="12" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Register" Click="Button_Click"/>
+
                     </Grid>
                 </DataTemplate>
             </HeaderedItemsControl.ItemTemplate>

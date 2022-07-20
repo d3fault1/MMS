@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MMS.Backend
 {
-    struct Errors
+    struct Messages
     {
         public static string DirectoryNotFound = "The specified directory does not exist";
         public static string InvalidConfig = "Configuration file is invalid";

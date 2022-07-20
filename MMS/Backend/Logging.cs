@@ -11,8 +11,12 @@ namespace MMS.Backend
         static StreamWriter logwriter;
         public static void Initialize()
         {
-            logstream = new FileStream(logfile, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            logstream = new FileStream(logfile, FileMode.Append, FileAccess.Write);
             logwriter = new StreamWriter(logstream);
+            logwriter.AutoFlush = true;
+            logwriter.WriteLine();
+            logwriter.WriteLine("------------------ Logger Startup ------------------");
+            logwriter.WriteLine();
         }
 
         public static void Release()
@@ -44,7 +48,7 @@ namespace MMS.Backend
 
         public static void Error(string message)
         {
-            logwriter?.WriteLine($"[Error]\t{DateTime.Now.TimeOfDay:hh\\:mm\\:ss\\.fff}\t{message}");
+            logwriter?.WriteLine($"[Error]\t\t{DateTime.Now.TimeOfDay:hh\\:mm\\:ss\\.fff}\t{message}");
         }
     }
 }

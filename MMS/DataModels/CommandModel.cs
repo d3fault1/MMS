@@ -4,17 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MMS.Backend;
 
 namespace MMS.DataModels
 {
-    class FloorModel : INotifyPropertyChanged
+    class CommandModel : INotifyPropertyChanged
     {
         #region Private Variables
         private long _id = -1;
-        private string _name = "";
-        private string _description = "";
-        private bool _isactive = false;
-        private string _image = "";
+        private string _command = "";
+        private bool _isenabled = false;
         private DateTime _createdat = DateTime.MinValue;
         private DateTime _updatedat = DateTime.MinValue;
         #endregion
@@ -31,52 +30,28 @@ namespace MMS.DataModels
                 OnPropertyChanged(nameof(ID));
             }
         }
-        public string Name
+        public string Command
         {
             get
             {
-                return _name;
+                return _command;
             }
             set
             {
-                _name = value;
-                OnPropertyChanged(nameof(Name));
+                _command = value;
+                OnPropertyChanged(nameof(Command));
             }
         }
-        public string Description
+        public bool IsEnabled
         {
             get
             {
-                return _description;
+                return _isenabled;
             }
             set
             {
-                _description = value;
-                OnPropertyChanged(nameof(Description));
-            }
-        }
-        public bool IsActive
-        {
-            get
-            {
-                return _isactive;
-            }
-            set
-            {
-                _isactive = value;
-                OnPropertyChanged(nameof(IsActive));
-            }
-        }
-        public string Image
-        {
-            get
-            {
-                return _image;
-            }
-            set
-            {
-                _image = value;
-                OnPropertyChanged(nameof(Image));
+                _isenabled = value;
+                OnPropertyChanged(nameof(IsEnabled));
             }
         }
         public DateTime CreatedAt

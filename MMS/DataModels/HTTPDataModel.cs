@@ -20,7 +20,9 @@ namespace MMS.DataModels
         [JsonProperty("ip")]
         public string IP { get; set; }
         [JsonProperty("port")]
-        public string Port { get; set; }
+        public int Port { get; set; }
+        [JsonProperty("encrypted_port")]
+        public int SecurePort { get; set; }
         [JsonProperty("unique_reg_code")]
         public string UniqueRegCode { get; set; }
         [JsonProperty("os_type")]
@@ -31,6 +33,8 @@ namespace MMS.DataModels
         public string OSArch { get; set; }
         [JsonProperty("version")]
         public string Version { get; set; }
+        [JsonProperty("pem_file")]
+        public string PEMFile { get; set; }
     }
 
     class HTTPResponseModel
@@ -43,5 +47,38 @@ namespace MMS.DataModels
         public string Status { get; set; }
         [JsonProperty("heartbeat_rate")]
         public int HeartbeatRate { get; set; }
+    }
+
+    class HTTPHeartbeatModel
+    {
+        [JsonProperty("temparature")]
+        public double Temperature { get; set; }
+        [JsonProperty("cpu_usage")]
+        public int ProcessorUsage { get; set; }
+        [JsonProperty("disc_space_usage")]
+        public int DiskSpaceUsage { get; set; }
+        [JsonProperty("ram_usage")]
+        public int RamUsage { get; set; }
+        [JsonProperty("current_timestamp")]
+        public double TimeStamp { get; set; }
+        [JsonProperty("current_video_name")]
+        public string VideoName { get; set; }
+        [JsonProperty("current_video_number")]
+        public int VideoNumber { get; set; }
+        [JsonProperty("current_video_status")]
+        public string VideoStatus { get; set; }
+        [JsonProperty("current_volume")]
+        public int Volume { get; set; }
+        [JsonProperty("vduration")]
+        public double? VideoDuration { get; set; }
+        [JsonProperty("totalVideos")]
+        public int TotalVideos { get; set; }
+        //[JsonProperty("video_list")]
+        [JsonIgnore]
+        public string VideoList { get; set; } = ""; //Temporary workaround
+        [JsonProperty("uptime")]
+        public double Uptime { get; set; }
+        [JsonProperty("version")]
+        public string Version { get; set; }
     }
 }

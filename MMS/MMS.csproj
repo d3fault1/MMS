@@ -68,8 +68,8 @@
     <Compile Include="Backend\Configuration.cs" />
     <Compile Include="Backend\DatabaseIO\Common\IDatabaseIO.cs" />
     <Compile Include="Backend\DatabaseIO\DatabaseEngines\MsSQLDatabaseIO.cs" />
-    <Compile Include="Backend\Errors.cs" />
-    <Compile Include="Backend\FileManagement.cs" />
+    <Compile Include="Backend\DataHub.cs" />
+    <Compile Include="Backend\Messages.cs" />
     <Compile Include="Backend\Globals.cs" />
     <Compile Include="Backend\Helper.cs" />
     <Compile Include="Backend\Logging.cs" />
@@ -90,11 +90,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="DataModels\CommandLogModel.cs" />
+    <Compile Include="DataModels\CommandModel.cs" />
     <Compile Include="DataModels\ExhibitModel.cs" />
     <Compile Include="DataModels\FloorModel.cs" />
-    <Compile Include="DataModels\NodeCurrentStatus.cs" />
+    <Compile Include="DataModels\NodeCurrentStatusModel.cs" />
     <Compile Include="DataModels\NodeLogModel.cs" />
     <Compile Include="DataModels\NodeModel.cs" />
+    <Compile Include="DataModels\ViewDevicesModel.cs" />
     <Compile Include="DataModels\ZoneModel.cs" />
     <Compile Include="UI\App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
