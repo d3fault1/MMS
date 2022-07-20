@@ -73,9 +73,8 @@ namespace MMS.DataModels
         public double? VideoDuration { get; set; }
         [JsonProperty("totalVideos")]
         public int TotalVideos { get; set; }
-        //[JsonProperty("video_list")]
-        [JsonIgnore]
-        public string VideoList { get; set; } = ""; //Temporary workaround
+        [JsonProperty("video_list")]
+        public string VideoList { get; set; }
         [JsonProperty("uptime")]
         public double Uptime { get; set; }
         [JsonProperty("version")]

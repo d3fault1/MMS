@@ -319,7 +319,7 @@ namespace MMS.Backend
                 Uptime = TimeSpan.FromSeconds(hbmodel.Uptime),
                 Version = hbmodel.Version,
                 TotalVideos = hbmodel.TotalVideos,
-                VideoList = hbmodel.VideoList,
+                VideoList = JsonConvert.DeserializeObject<string[]>(hbmodel.VideoList),
                 VideoName = hbmodel.VideoName,
                 VideoNumber = hbmodel.VideoNumber,
                 VideoStatus = hbmodel.VideoStatus,
