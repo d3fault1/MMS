@@ -1,0 +1,150 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ext ="clr-namespace:MMS.UI.Assists">
+
+    <Style x:Key="MMSSearchBox" TargetType="{x:Type TextBox}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Padding" Value="8 2 2 2"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushTransparentAux}"/>
+        <Setter Property="Background" Value="{StaticResource BrushSecondaryAux2}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushSecondaryMain}"/>
+        <Setter Property="SelectionBrush" Value="{StaticResource BrushSecondaryMain}"/>
+        <Setter Property="CaretBrush" Value="{StaticResource BrushSecondaryMain}"/>
+        <Setter Property="FontSize" Value="{StaticResource Small}"/>
+        <Setter Property="MinWidth" Value="100"/>
+        <Setter Property="MinHeight" Value="20"/>
+        <Setter Property="AllowDrop" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Border Name="Border" CornerRadius="{StaticResource CorderRadiusLarge}" Padding="{TemplateBinding Padding}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"
+                            Background="{TemplateBinding Background}" TextBlock.Foreground="{TemplateBinding Foreground}"
+                            TextBlock.FontSize="{TemplateBinding FontSize}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="MouseOver"/>
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ColorAnimation Duration="{StaticResource DurationFadeIn}" 
+                                                        To="{StaticResource ColorDisabledMain}" Storyboard.TargetName="Border" 
+                                                        Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)"/>
+                                        <ColorAnimation Duration="{StaticResource DurationFadeIn}" 
+                                                        To="{StaticResource ColorFontTer}" Storyboard.TargetName="Border" 
+                                                        Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="ReadOnly"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="20"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Viewbox Grid.Column="0" Stretch="None" Width="16" Height="16">
+                                <Path x:Name="Icon" Stroke="{TemplateBinding Foreground}" Fill="{StaticResource BrushTransparentAux}" 
+                                      StrokeThickness="2" HorizontalAlignment="Center" VerticalAlignment="Center" 
+                                      Data="M12 12.5L9.40284 9.89821M10.8421 6.42105C10.8421 7.7262 
+                                      10.3236 8.97789 9.40076 9.90076C8.47789 10.8236 7.2262 11.3421 
+                                      5.92105 11.3421C4.61591 11.3421 3.36422 10.8236 2.44134 
+                                      9.90076C1.51847 8.97789 1 7.7262 1 6.42105C1 5.11591 1.51847 
+                                      3.86422 2.44134 2.94134C3.36422 2.01847 4.61591 1.5 5.92105 
+                                      1.5C7.2262 1.5 8.47789 2.01847 9.40076 2.94134C10.3236 3.86422 
+                                      10.8421 5.11591 10.8421 6.42105V6.42105Z"/>
+                            </Viewbox>
+                            <ScrollViewer x:Name="PART_ContentHost" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled" Grid.Column="1" HorizontalContentAlignment="Left" 
+                                          VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                          Margin="0 0 1 0" Foreground="{TemplateBinding Foreground}" 
+                                          FontSize="{TemplateBinding FontSize}"/>
+                            <ContentPresenter x:Name="HintSite" Grid.Column="1" TextBlock.Foreground="{TemplateBinding Foreground}" 
+                                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                                              Margin="10 0 0 0" IsHitTestVisible="False" TextBlock.FontSize="{TemplateBinding FontSize}" 
+                                              Content="{TemplateBinding ext:GeneralAssists.HintText}" Visibility="Collapsed"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsFocused" Value="False"/>
+                                <Condition Property="Text" Value=""/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="HintSite" Property="Visibility" Value="Visible"/>
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MMSTextBox" TargetType="{x:Type TextBox}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="KeyboardNavigation.TabNavigation" Value="None"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Padding" Value="8 2 2 2"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushTransparentAux}"/>
+        <Setter Property="Background" Value="{StaticResource BrushSecondaryAux2}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushSecondaryMain}"/>
+        <Setter Property="SelectionBrush" Value="{StaticResource BrushSecondaryMain}"/>
+        <Setter Property="CaretBrush" Value="{StaticResource BrushSecondaryMain}"/>
+        <Setter Property="FontSize" Value="{StaticResource Small}"/>
+        <Setter Property="MinWidth" Value="100"/>
+        <Setter Property="MinHeight" Value="20"/>
+        <Setter Property="AllowDrop" Value="True"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Border Name="Border" CornerRadius="{StaticResource CornerRadiusRegular}" Padding="{TemplateBinding Padding}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}"
+                            Background="{TemplateBinding Background}" TextBlock.Foreground="{TemplateBinding Foreground}"
+                            TextBlock.FontSize="{TemplateBinding FontSize}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="MouseOver"/>
+                                <VisualState x:Name="Disabled">
+                                    <Storyboard>
+                                        <ColorAnimation Duration="{StaticResource DurationFadeIn}" 
+                                                        To="{StaticResource ColorDisabledMain}" Storyboard.TargetName="Border" 
+                                                        Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)"/>
+                                        <ColorAnimation Duration="{StaticResource DurationFadeIn}" 
+                                                        To="{StaticResource ColorFontTer}" Storyboard.TargetName="Border" 
+                                                        Storyboard.TargetProperty="(TextBlock.Foreground).(SolidColorBrush.Color)"/>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="ReadOnly"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <Grid>
+                            <ScrollViewer x:Name="PART_ContentHost" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled" HorizontalContentAlignment="Left" 
+                                          VerticalContentAlignment="Center" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                                          Margin="0 0 1 0" Foreground="{TemplateBinding Foreground}" 
+                                          FontSize="{TemplateBinding FontSize}"/>
+                            <ContentPresenter x:Name="HintSite" TextBlock.Foreground="{TemplateBinding Foreground}" 
+                                              HorizontalAlignment="Left" VerticalAlignment="Center"
+                                              Margin="10 0 0 0" IsHitTestVisible="False" TextBlock.FontSize="{TemplateBinding FontSize}" 
+                                              Content="{TemplateBinding ext:GeneralAssists.HintText}" Visibility="Collapsed"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsFocused" Value="False"/>
+                                <Condition Property="Text" Value=""/>
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="HintSite" Property="Visibility" Value="Visible"/>
+                        </MultiTrigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

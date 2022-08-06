@@ -17,18 +17,18 @@ namespace MMS.Backend
         Thread ServerThread;
         Dictionary<string, Func<string, string>> ConfiguredRoutes;
 
-        IPEndPoint clientEndpoint; //Temporary workaround
-
         public List<NodeModel> RegisterQueue;
         
         static HTTPHandler _Instance = new HTTPHandler();
         public static HTTPHandler Instance { get => _Instance; }
 
         public delegate void RegisterRequestReceivedEventHandler(NodeModel node);
-        public delegate void HeartbeatReceivedEventHandler(NodeCurrentStatusModel status, IPEndPoint remoteEndpoint); //Temporary workaround for id
+        public delegate void HeartbeatReceivedEventHandler(NodeCurrentStatusModel status, string mac);
+        public delegate void CommandStatusReceivedEventHandler(CommandLogModel cmdstatus, string mac);
 
         public event RegisterRequestReceivedEventHandler RegisterRequestReceived;
         public event HeartbeatReceivedEventHandler HeartbeatReceived;
+        public event CommandStatusReceivedEventHandler CommandStatusReceived;
 
 
         public HTTPHandler()
@@ -37,6 +37,7 @@ namespace MMS.Backend
             ConfiguredRoutes = new Dictionary<string, Func<string, string>>();
             ConfiguredRoutes.Add("/node_register/", HandleRegistrationRequest);
             ConfiguredRoutes.Add("/heartbeat/", HandleHeartbeatRequest);
+            ConfiguredRoutes.Add("/command_log_api/", HandleCommandStatusRequest);
         }
 
         public void Start()
@@ -152,7 +153,6 @@ namespace MMS.Backend
                                     {
                                         if (reqArr.Length == 2)
                                         {
-                                            clientEndpoint = (IPEndPoint)client.RemoteEndPoint; //Temporary workaround
                                             Logging.Debug($"HTTP server handler: post request received at {path}");
                                             respString = ConfiguredRoutes[path].Invoke(reqArr[1]);
                                         }
@@ -169,7 +169,7 @@ namespace MMS.Backend
                                     }
                                     else
                                     {
-                                        Logging.Debug("HTTP server handler: invalid request header");
+                                        Logging.Debug("HTTP server handler: unsupported request method");
                                         respString = HandleBadRequest();
                                     }
                                 }
@@ -193,7 +193,7 @@ namespace MMS.Backend
                     }
                     else
                     {
-                        Logging.Debug("HTTP server handler: invalid request header");
+                        Logging.Debug("HTTP server handler: invalid request");
                         respString = HandleBadRequest();
                     }
                     Logging.Debug("HTTP server handler: sending response");
@@ -215,15 +215,16 @@ namespace MMS.Backend
             try
             {
                 string response = "";
-
-                var reqmodel = JsonConvert.DeserializeObject<HTTPRequestModel>(reqBody, new JsonSerializerSettings()
+                
+                var reqmodel = JsonConvert.DeserializeObject<HTTPRegistrationReqModel>(reqBody, new JsonSerializerSettings()
                 {
                     Error = (o, e) =>
                     {
                         Logging.Error("Error parsing http registration request. " + e.ErrorContext.Error);
+                        e.ErrorContext.Handled = true;
                     }
                 });
-                if (reqmodel == null) return "HTTP/1.1 500 Internal Server Error\r\nServer: MMSHTTPServer";
+                if (reqmodel == null) return "HTTP/1.1 500 Internal Server Error\r\nServer: MMSHTTPServer\r\n\r\n";
 
                 Logging.Info($"Registration request recieved. Mac: {reqmodel.MacAddress}, IP: {reqmodel.IP}");
 
@@ -238,35 +239,41 @@ namespace MMS.Backend
                     OSName = reqmodel.OSName,
                     OSArchitecture = reqmodel.OSArch,
                     Port = reqmodel.Port,
+                    SecurePort = reqmodel.SecurePort,
                     RegKey = reqmodel.UniqueRegCode,
+                    PEMFile = reqmodel.PEMFile
                 };
                 node.CurrentStatus.Version = reqmodel.Version;
 
-                var regq = RegisterQueue.FirstOrDefault(a => a.MacAddress == reqmodel.MacAddress);
+                var regq = RegisterQueue.FirstOrDefault(a => a.MacAddress == node.MacAddress);
                 if (regq != null)
                 {
                     Logging.Info("Processing registartion request");
-                    HTTPResponseModel respmodel = new HTTPResponseModel();
-                    respmodel.MacAddress = reqmodel.MacAddress;
-                    respmodel.HeartbeatRate = regq.HeartbeatRate;
-                    respmodel.Status = "REG_APPROVED";
-                    respmodel.AuthToken = Helper.GenerateAuthToken(16);
-                    Dictionary<string, HTTPResponseModel> reply = new Dictionary<string, HTTPResponseModel>();
-                    reply.Add("success", respmodel);
+                    HTTPRegistrationRespModel regrespmodel = new HTTPRegistrationRespModel();
+                    regrespmodel.MacAddress = node.MacAddress;
+                    regrespmodel.HeartbeatRate = regq.HeartbeatRate;
+                    regrespmodel.Status = "REG_APPROVED";
+                    //regrespmodel.AuthToken = Helper.GenerateAuthToken(16);
 
-                    string header = "HTTP/1.1 200 OK\r\nServer: MMSHTTPServer\r\nAccept: application/json\r\nContent-Type: application/json; charset: UTF-8\r\n\r\n";
-                    string body = JsonConvert.SerializeObject(reply, new JsonSerializerSettings()
+                    HTTPGeneralRespModel respmodel = new HTTPGeneralRespModel();
+                    respmodel.ResponseModel = regrespmodel;
+                    respmodel.Message = "Device Registered Successfully.";
+                    respmodel.IsError = false;
+
+                    string header = "HTTP/1.1 200 OK\r\nServer: MMSHTTPServer\r\nAccept: application/json\r\nContent-Type: application/json; charset: UTF-8";
+                    string body = JsonConvert.SerializeObject(respmodel, new JsonSerializerSettings()
                     {
                         Error = (o, e) =>
                         {
                             Logging.Error("Error parsing http registration response. " + e.ErrorContext.Error);
+                            e.ErrorContext.Handled = true;
                         }
                     });
                     if (body == "") header = "HTTP/1.1 500 Internal Server Error\r\nServer: MMSHTTPServer";
                     else
                     {
-                        node.HeartbeatRate = respmodel.HeartbeatRate;
-                        node.RegKey = respmodel.AuthToken;
+                        node.HeartbeatRate = regrespmodel.HeartbeatRate;
+                        //node.RegKey = regrespmodel.AuthToken;
                         node.FloorID = regq.FloorID;
                         node.ZoneID = regq.ZoneID;
                         node.ExhibitID = regq.ExhibitID;
@@ -276,13 +283,27 @@ namespace MMS.Backend
 
                     Logging.Info("Registration request processed");
 
-                    response = header + body;
+                    response = header + "\r\n\r\n" + body;
                 }
                 else
                 {
+                    HTTPRegistrationAckModel ackmodel = new HTTPRegistrationAckModel();
+                    ackmodel.Status = "REG_INIT";
+                    HTTPGeneralRespModel respmodel = new HTTPGeneralRespModel();
+                    respmodel.ResponseModel = ackmodel;
+                    respmodel.Message = "Device Registration Request Received Successfully";
+                    respmodel.IsError = false;
                     string header = "HTTP/1.1 200 OK\r\nServer: MMSHTTPServer";
-                    string body = "";
-                    response = header + body;
+                    string body = JsonConvert.SerializeObject(respmodel, new JsonSerializerSettings()
+                    {
+                        Error = (o, e) =>
+                        {
+                            Logging.Error("Error parsing http registration acknowledgement. " + e.ErrorContext.Error);
+                            e.ErrorContext.Handled = true;
+                        }
+                    });
+                    if (body == "") header = "HTTP/1.1 500 Internal Server Error\r\nServer: MMSHTTPServer";
+                    response = header + "\r\n\r\n" + body;
                 }
 
                 OnRegisterRequestReceived(node);
@@ -291,25 +312,35 @@ namespace MMS.Backend
             }
             catch(Exception e)
             {
+                Logging.Error("Fatal error occured during registration request processing. " + e.Message);
                 string header = "HTTP/1.1 500 Internal Server Error\r\nServer: MMSHTTPServer";
                 string body = "";
-                string response = header + body;
+                string response = header + "\r\n\r\n" + body;
                 return response;
             }
         }
 
         private string HandleHeartbeatRequest(string reqBody)
         {
-            var hbmodel = JsonConvert.DeserializeObject<HTTPHeartbeatModel>(reqBody, new JsonSerializerSettings()
+            var hbmodel = JsonConvert.DeserializeObject<HTTPHeartbeatReqModel>(reqBody, new JsonSerializerSettings()
             {
                 Error = (o, e) =>
                 {
                     Logging.Error("Error parsing http heartbeat request. " + e.ErrorContext.Error);
+                    e.ErrorContext.Handled = true;
                 }
             });
-            if (hbmodel == null) return "HTTP/1.1 500 Internal Server Error\r\nServer: MMSHTTPServer";
+            if (hbmodel == null) return "HTTP/1.1 500 Internal Server Error\r\nServer: MMSHTTPServer\r\n\r\n";
 
-            Logging.Info($"Heartbeat received. IP: {clientEndpoint.Address}");
+            Logging.Info($"Heartbeat received. Mac: {hbmodel.MacAddress}");
+            var vidlist = JsonConvert.DeserializeObject<string[]>(hbmodel.VideoList, new JsonSerializerSettings()
+            {
+                Error = (o, e) =>
+                {
+                    Logging.Error("Error parsing video list from heartbeat. " + e.ErrorContext.Error);
+                    e.ErrorContext.Handled = true;
+                }
+            });
             NodeCurrentStatusModel status = new NodeCurrentStatusModel
             {
                 Temperature = hbmodel.Temperature,
@@ -319,20 +350,79 @@ namespace MMS.Backend
                 Uptime = TimeSpan.FromSeconds(hbmodel.Uptime),
                 Version = hbmodel.Version,
                 TotalVideos = hbmodel.TotalVideos,
-                VideoList = JsonConvert.DeserializeObject<string[]>(hbmodel.VideoList),
+                VideoList = vidlist ?? new string[0],
                 VideoName = hbmodel.VideoName,
                 VideoNumber = hbmodel.VideoNumber,
                 VideoStatus = hbmodel.VideoStatus,
                 VideoDuration = hbmodel.VideoDuration ?? 0,
                 TimeStamp = TimeSpan.FromSeconds(hbmodel.TimeStamp),
-                Volume = hbmodel.Volume
+                Volume = hbmodel.Volume,
             };
-            
-            string header = "HTTP/1.1 200 OK\r\nServer: MMSHTTPServer\r\n";
-            string body = "";
-            string response = header + body;
 
-            OnHeartbeatReceived(status);
+            HTTPHeartbeatAckModel ackmodel = new HTTPHeartbeatAckModel();
+            HTTPGeneralRespModel respmodel = new HTTPGeneralRespModel();
+            respmodel.ResponseModel = ackmodel;
+            respmodel.Message = "Heartbeat Request Received Successfully.";
+            respmodel.IsError = false;
+            string header = "HTTP/1.1 200 OK\r\nServer: MMSHTTPServer";
+            string body = JsonConvert.SerializeObject(respmodel, new JsonSerializerSettings()
+            {
+                Error = (o, e) =>
+                {
+                    Logging.Error("Error parsing http heartbeat acknowledgement. " + e.ErrorContext.Error);
+                    e.ErrorContext.Handled = true;
+                }
+            });
+            if (body == "") header = "HTTP/1.1 500 Internal Server Error\r\nServer: MMSHTTPServer";
+            string response = header + "\r\n\r\n" + body;
+
+            OnHeartbeatReceived(status, hbmodel.MacAddress);
+
+            return response;
+        }
+
+        private string HandleCommandStatusRequest(string reqBody)
+        {
+            var csmodel = JsonConvert.DeserializeObject<HTTPCommandStatusReqModel>(reqBody, new JsonSerializerSettings()
+            {
+                Error = (o, e) =>
+                {
+                    Logging.Error("Error parsing http command status request. " + e.ErrorContext.Error);
+                    e.ErrorContext.Handled = true;
+                }
+            });
+            if (csmodel == null) return "HTTP/1.1 500 Internal Server Error\r\nServer: MMSHTTPServer\r\n\r\n";
+
+            Logging.Info($"Command status received. ID: {csmodel.ID}");
+            CommandLogModel logmodel = new CommandLogModel
+            {
+                CommandID = csmodel.ID,
+                Status = csmodel.Status,
+                Message = csmodel.Message,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+
+            HTTPCommandStatusAckModel ackmodel = new HTTPCommandStatusAckModel();
+            HTTPGeneralRespModel respmodel = new HTTPGeneralRespModel
+            {
+                ResponseModel = ackmodel,
+                Message = "Command status received successfully.",
+                IsError = false               
+            };
+            string header = "HTTP/1.1 200 OK\r\nServer: MMSHTTPServer";
+            string body = JsonConvert.SerializeObject(respmodel, new JsonSerializerSettings()
+            {
+                Error = (o, e) =>
+                {
+                    Logging.Error("Error parsing http command status acknowledgement. " + e.ErrorContext.Error);
+                    e.ErrorContext.Handled = true;
+                }
+            });
+            if (body == "") header = "HTTP/1.1 500 Internal Server Error\r\nServer: MMSHTTPServer";
+            string response = header + "\r\n\r\n" + body;
+
+            OnCommandStatusReceived(logmodel, csmodel.MacAddress);
 
             return response;
         }
@@ -359,9 +449,14 @@ namespace MMS.Backend
             RegisterRequestReceived?.Invoke(node);
         }
 
-        private void OnHeartbeatReceived(NodeCurrentStatusModel status)
+        private void OnHeartbeatReceived(NodeCurrentStatusModel status, string mac)
         {
-            HeartbeatReceived?.Invoke(status, clientEndpoint);
+            HeartbeatReceived?.Invoke(status, mac);
+        }
+
+        private void OnCommandStatusReceived(CommandLogModel cmdstatus, string mac)
+        {
+            CommandStatusReceived?.Invoke(cmdstatus, mac);
         }
     }
 }

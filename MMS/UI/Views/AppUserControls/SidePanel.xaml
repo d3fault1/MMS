@@ -5,101 +5,99 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MMS.UI.Views.AppUserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="800" d:DesignWidth="200">
-    <Border CornerRadius="10" Padding="15">
-        <Border.Background>
-            <SolidColorBrush Color="#FF788FC6" Opacity="0.6"/>
-        </Border.Background>
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+             d:DesignHeight="800" d:DesignWidth="250">
+
+    <UserControl.Resources>
+        <Thickness x:Key="TitleOffset">0 0 0 20</Thickness>
+        <Thickness x:Key="GroupSpacing">0 20 0 0</Thickness>
+        <Thickness x:Key="GroupLabelVerticalOffset">0 5 0 0</Thickness>
+        <Thickness x:Key="CategoryVerticalOffset">0 5 0 0</Thickness>
+        <Thickness x:Key="IconPadding">0 1 0 0</Thickness>
+        <Thickness x:Key="IconToTextOffset">10 -2 0 0</Thickness>
+    </UserControl.Resources>
+    
+    <Border CornerRadius="{StaticResource CorderRadiusLarge}" Background="{StaticResource BrushSecondaryAux3}" Padding="15">
+        <ScrollViewer Style="{StaticResource MMSScrollViewer}" VerticalScrollBarVisibility="Auto">
             <StackPanel Orientation="Vertical">
-                <StackPanel Orientation="Horizontal">
-                    <Ellipse Width="20" Height="20" Fill="Red"/>
-                    <TextBlock Text="MMS 2.0" Foreground="White" FontSize="18" Margin="15 0 0 0"/>
-                </StackPanel>
+                <TextBlock Text="MMS 2.0" HorizontalAlignment="Center" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}" Margin="{StaticResource TitleOffset}"/>
 
-                <TextBlock Text="Dashboard" FontSize="12" Foreground="#ADC6DC" Margin="0 30 0 0"/>
-                <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Device Dashboard" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Custom Dashboard" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
+                <TextBlock Text="Dashboard" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource SemiSmall}" Margin="{StaticResource GroupSpacing}"/>
 
-                <TextBlock Text="Device" FontSize="12" Foreground="#ADC6DC" Margin="0 20 0 0"/>
-                <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Device List" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Device Groups" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
+                <Button Style="{StaticResource MMSCategory}" Margin="{StaticResource GroupLabelVerticalOffset}" Click="DeviceDashboardClick">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/UI/Assets/dashboard.png" VerticalAlignment="Center" Height="{StaticResource IconRegular}" Width="{StaticResource IconRegular}" Margin="{StaticResource IconPadding}"/>
+                        <TextBlock Text="Device Dashboard" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}" Margin="{StaticResource IconToTextOffset}"/>
+                    </StackPanel>
+                </Button>
 
-                <TextBlock Text="Show" FontSize="12" Foreground="#ADC6DC" Margin="0 20 0 0"/>
-                <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Shows" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
+                <TextBlock Text="Devices" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource SemiSmall}" Margin="{StaticResource GroupSpacing}"/>
 
-                <TextBlock Text="Logs" FontSize="12" Foreground="#ADC6DC" Margin="0 20 0 0"/>
-                <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Command Logs" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Device Logs" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
+                <Button Style="{StaticResource MMSCategory}" Margin="{StaticResource GroupLabelVerticalOffset}" Click="TotalDevicesClick">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/UI/Assets/totaldevice.png" VerticalAlignment="Center" Height="{StaticResource IconRegular}" Width="{StaticResource IconRegular}" Margin="{StaticResource IconPadding}"/>
+                        <TextBlock Text="Total Devices" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}" Margin="{StaticResource IconToTextOffset}"/>
+                    </StackPanel>
+                </Button>
 
-                <TextBlock Text="Update" FontSize="12" Foreground="#ADC6DC" Margin="0 20 0 0"/>
-                <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Content" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Software" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
+                <TextBlock Text="CMS" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource SemiSmall}" Margin="{StaticResource GroupSpacing}"/>
 
-                <TextBlock Text="Control Panel" FontSize="12" Foreground="#ADC6DC" Margin="0 20 0 0"/>
-                <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Device" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Museum" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
+                <Button Style="{StaticResource MMSCategory}" Margin="{StaticResource GroupLabelVerticalOffset}" Click="ContentUploadClick">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/UI/Assets/contentupload.png" VerticalAlignment="Center" Height="{StaticResource IconRegular}" Width="{StaticResource IconRegular}" Margin="{StaticResource IconPadding}"/>
+                        <TextBlock Text="Content Upload" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}" Margin="{StaticResource IconToTextOffset}"/>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource MMSCategory}" Margin="{StaticResource CategoryVerticalOffset}" Click="SoftwareUpdateClick">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/UI/Assets/softwareupdate.png" VerticalAlignment="Center" Height="{StaticResource IconRegular}" Width="{StaticResource IconRegular}" Margin="{StaticResource IconPadding}"/>
+                        <TextBlock Text="Software Update" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}" Margin="{StaticResource IconToTextOffset}"/>
+                    </StackPanel>
+                </Button>
 
-                <TextBlock Text="Master" FontSize="12" Foreground="#ADC6DC" Margin="0 20 0 0"/>
-                <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Floor" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Zone" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Device Types" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Categories" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
+                <TextBlock Text="Logs" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource SemiSmall}" Margin="{StaticResource GroupSpacing}"/>
 
-                <TextBlock Text="Settings" FontSize="12" Foreground="#ADC6DC" Margin="0 20 0 0"/>
-                <StackPanel Orientation="Horizontal" Margin="0 10 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Privacy" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0 5 0 0">
-                    <Rectangle Fill="White" Height="20" Width="20"/>
-                    <TextBlock Text="Security" Foreground="White" FontSize="14" Margin="10 0 0 0"/>
-                </StackPanel>
+                <Button Style="{StaticResource MMSCategory}" Margin="{StaticResource GroupLabelVerticalOffset}" Click="CommandLogsClick">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/UI/Assets/commandlogs.png" VerticalAlignment="Center" Height="{StaticResource IconRegular}" Width="{StaticResource IconRegular}" Margin="{StaticResource IconPadding}"/>
+                        <TextBlock Text="Command Logs" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}" Margin="{StaticResource IconToTextOffset}"/>
+                    </StackPanel>
+                </Button>
+
+                <TextBlock Text="Panel" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource SemiSmall}" Margin="{StaticResource GroupSpacing}"/>
+
+                <Button Style="{StaticResource MMSCategory}" Margin="{StaticResource GroupLabelVerticalOffset}" Click="ControlPanelClick">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/UI/Assets/controlpanel.png" VerticalAlignment="Center" Height="{StaticResource IconRegular}" Width="{StaticResource IconRegular}" Margin="{StaticResource IconPadding}"/>
+                        <TextBlock Text="Control Panel" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}" Margin="{StaticResource IconToTextOffset}"/>
+                    </StackPanel>
+                </Button>
+
+                <TextBlock Text="Toggle Switch" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource SemiSmall}" Margin="{StaticResource GroupSpacing}"/>
+
+                <Button Style="{StaticResource MMSCategory}" Margin="{StaticResource GroupLabelVerticalOffset}" Click="PowerOnOffClick">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/UI/Assets/power.png" VerticalAlignment="Center" Height="{StaticResource IconRegular}" Width="{StaticResource IconRegular}" Margin="{StaticResource IconPadding}"/>
+                        <TextBlock Text="Power On/Off" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}" Margin="{StaticResource IconToTextOffset}"/>
+                    </StackPanel>
+                </Button>
+                
+                <TextBlock Text="Show" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource SemiSmall}" Margin="{StaticResource GroupSpacing}"/>
+
+                <Button Style="{StaticResource MMSCategory}" Margin="{StaticResource GroupLabelVerticalOffset}" Click="ShowDevicesClick">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/UI/Assets/showdevices.png" VerticalAlignment="Center" Height="{StaticResource IconRegular}" Width="{StaticResource IconRegular}" Margin="{StaticResource IconPadding}"/>
+                        <TextBlock Text="Show Devices" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}" Margin="{StaticResource IconToTextOffset}"/>
+                    </StackPanel>
+                </Button>
+
+                <TextBlock Text="Settings" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource SemiSmall}" Margin="{StaticResource GroupSpacing}"/>
+
+                <Button Style="{StaticResource MMSCategory}" Margin="{StaticResource GroupLabelVerticalOffset}" Click="SettingsClick">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="/UI/Assets/settings.png" VerticalAlignment="Center" Height="{StaticResource IconRegular}" Width="{StaticResource IconRegular}" Margin="{StaticResource IconPadding}"/>
+                        <TextBlock Text="Settings" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}" Margin="{StaticResource IconToTextOffset}"/>
+                    </StackPanel>
+                </Button>
             </StackPanel>
         </ScrollViewer>
     </Border>

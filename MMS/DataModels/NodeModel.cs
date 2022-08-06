@@ -18,6 +18,7 @@ namespace MMS.DataModels
         private string _ip = "";
         private string _macaddress = "";
         private int _port = -1;
+        private int _secureport = -1;
         private bool _isactive = false;
         private bool _isconfig = false;
         private string _ostype = "";
@@ -126,6 +127,18 @@ namespace MMS.DataModels
             {
                 _port = value;
                 OnPropertyChanged(nameof(Port));
+            }
+        }
+        public int SecurePort
+        {
+            get
+            {
+                return _secureport;
+            }
+            set
+            {
+                _secureport = value;
+                OnPropertyChanged(nameof(SecurePort));
             }
         }
         public bool IsActive

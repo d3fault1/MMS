@@ -69,16 +69,55 @@
     <Compile Include="Backend\DatabaseIO\Common\IDatabaseIO.cs" />
     <Compile Include="Backend\DatabaseIO\DatabaseEngines\MsSQLDatabaseIO.cs" />
     <Compile Include="Backend\DataHub.cs" />
-    <Compile Include="Backend\Messages.cs" />
     <Compile Include="Backend\Globals.cs" />
     <Compile Include="Backend\Helper.cs" />
     <Compile Include="Backend\Logging.cs" />
     <Compile Include="Backend\SNMPHandler.cs" />
-    <Page Include="UI\Stylings\ControlStylings.xaml">
+    <Page Include="UI\Styles\ButtonStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Styles\CheckBoxStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Styles\ComboBoxStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Styles\ListViewStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Styles\PanelCategoryStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Styles\ScrollViewerStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Styles\TextBoxStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Themes\ThemeDefault.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Backup\ThemeOld.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Views\AppUserControls\DeviceList.xaml">
+    <Page Include="UI\Views\AppPages\Dashboard.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\AppPages\DeviceList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\AppPages\TitlePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -86,10 +125,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Views\AppWindows\AddDevice.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Backend\TCPHandler.cs" />
     <Compile Include="DataModels\CommandLogModel.cs" />
     <Compile Include="DataModels\CommandModel.cs" />
     <Compile Include="DataModels\ExhibitModel.cs" />
@@ -106,11 +150,23 @@
     <Compile Include="Backend\HTTPHandler.cs" />
     <Compile Include="DataModels\ConfigurationModel.cs" />
     <Compile Include="DataModels\HTTPDataModel.cs" />
-    <Compile Include="UI\Views\AppUserControls\DeviceList.xaml.cs">
+    <Compile Include="UI\Assists\GeneralAssists.cs" />
+    <Compile Include="UI\Assists\ListViewAssists.cs" />
+    <Compile Include="UI\BindingConverters\DataToViewConverters.cs" />
+    <Compile Include="UI\Views\AppPages\Dashboard.xaml.cs">
+      <DependentUpon>Dashboard.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\AppPages\DeviceList.xaml.cs">
       <DependentUpon>DeviceList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\AppPages\TitlePage.xaml.cs">
+      <DependentUpon>TitlePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Views\AppUserControls\SidePanel.xaml.cs">
       <DependentUpon>SidePanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\AppWindows\AddDevice.xaml.cs">
+      <DependentUpon>AddDevice.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -144,6 +200,34 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="UI\Assets\commandlogs.png" />
+    <Resource Include="UI\Assets\contentupload.png" />
+    <Resource Include="UI\Assets\controlpanel.png" />
+    <Resource Include="UI\Assets\cpuglow.png" />
+    <Resource Include="UI\Assets\cpunormal.png" />
+    <Resource Include="UI\Assets\dashboard.png" />
+    <Resource Include="UI\Assets\diskglow.png" />
+    <Resource Include="UI\Assets\disknormal.png" />
+    <Resource Include="UI\Assets\MMS Logo.png" />
+    <Resource Include="UI\Assets\newglow.png" />
+    <Resource Include="UI\Assets\newnormal.png" />
+    <Resource Include="UI\Assets\offlineglow.png" />
+    <Resource Include="UI\Assets\offlinenormal.png" />
+    <Resource Include="UI\Assets\onlineglow.png" />
+    <Resource Include="UI\Assets\onlinenormal.png" />
+    <Resource Include="UI\Assets\power.png" />
+    <Resource Include="UI\Assets\ramglow.png" />
+    <Resource Include="UI\Assets\ramnormal.png" />
+    <Resource Include="UI\Assets\settings.png" />
+    <Resource Include="UI\Assets\showdevices.png" />
+    <Resource Include="UI\Assets\softwareupdate.png" />
+    <Resource Include="UI\Assets\totaldevice.png" />
+    <Resource Include="UI\Assets\totalglow.png" />
+    <Resource Include="UI\Assets\totalnormal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UI\Assets\addnewdevice.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

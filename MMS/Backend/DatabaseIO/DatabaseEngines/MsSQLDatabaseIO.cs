@@ -1,4 +1,5 @@
 ﻿using MMS.DataModels;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -142,6 +143,7 @@ namespace MMS.Backend.DatabaseIO
                                      "\"os_type\" VARCHAR(150), " +
                                      "\"mac_addr\" VARCHAR(100) UNIQUE NOT NULL, " +
                                      "\"port\" INT NOT NULL, " +
+                                     "\"secure_port\" INT NOT NULL, " +
                                      "\"unique_reg_code\" VARCHAR(300) UNIQUE NOT NULL, " +
                                      "\"os_name\" VARCHAR(255), " +
                                      "\"os_arch\" VARCHAR(255), " +
@@ -433,6 +435,8 @@ namespace MMS.Backend.DatabaseIO
                                 row.MacAddress = reader.IsDBNull(ord) ? "" : reader.GetString(ord);
                                 ord = reader.GetOrdinal("port");
                                 row.Port = reader.IsDBNull(ord) ? -1 : reader.GetInt32(ord);
+                                ord = reader.GetOrdinal("secure_port");
+                                row.SecurePort = reader.IsDBNull(ord) ? -1 : reader.GetInt32(ord);
                                 ord = reader.GetOrdinal("unique_reg_code");
                                 row.RegKey = reader.IsDBNull(ord) ? "" : reader.GetString(ord);
                                 ord = reader.GetOrdinal("os_name");
@@ -535,7 +539,16 @@ namespace MMS.Backend.DatabaseIO
                                 ord = reader.GetOrdinal("total_videos");
                                 row.TotalVideos = reader.IsDBNull(ord) ? 0 : reader.GetInt32(ord);
                                 ord = reader.GetOrdinal("video_list");
-                                row.VideoList = reader.IsDBNull(ord) ? "" : reader.GetString(ord);
+                                var vidliststring = reader.IsDBNull(ord) ? "" : reader.GetString(ord);
+                                var vidlist = JsonConvert.DeserializeObject<string[]>(vidliststring, new JsonSerializerSettings()
+                                {
+                                    Error = (o, e) =>
+                                    {
+                                        Logging.Error("Error parsing video list from heartbeat. " + e.ErrorContext.Error);
+                                        e.ErrorContext.Handled = true;
+                                    }
+                                });
+                                row.VideoList = vidlist ?? new string[0];
                                 ord = reader.GetOrdinal("uptime");
                                 row.Uptime = reader.IsDBNull(ord) ? TimeSpan.Zero : TimeSpan.FromSeconds(reader.GetDouble(ord));
                                 ord = reader.GetOrdinal("created_at");
@@ -753,7 +766,7 @@ namespace MMS.Backend.DatabaseIO
                             command.Parameters.Add(new SqlParameter("@current_volume", data[i].CurrentStatus.Volume));
                             command.Parameters.Add(new SqlParameter("@video_duration", data[i].CurrentStatus.VideoDuration));
                             command.Parameters.Add(new SqlParameter("@total_videos", data[i].CurrentStatus.TotalVideos));
-                            command.Parameters.Add(new SqlParameter("@video_list", data[i].CurrentStatus.VideoList));
+                            command.Parameters.Add(new SqlParameter("@video_list", JsonConvert.SerializeObject(data[i].CurrentStatus.VideoList)));
                             data[i].UpdatedAt = DateTime.Now;
                             command.Parameters.Add(new SqlParameter("@updated_at", new DateTimeOffset(data[i].CurrentStatus.UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                             if (!updateExisting)
@@ -791,7 +804,7 @@ namespace MMS.Backend.DatabaseIO
                             $"\"name\" = @name, \"node_name\" = @node_name, \"description\" = @description, " +
                             $"\"ip\" = @ip, \"is_active\" = @is_active, \"is_config\" = @is_config, " +
                             $"\"os_type\" = @os_type, \"mac_addr\" = @mac_addr, \"port\" = @port, " +
-                            $"\"unique_reg_code\" = @unique_reg_code, \"os_name\" = @os_name, " +
+                            $"\"secure_port\" = @secure_port, \"unique_reg_code\" = @unique_reg_code, \"os_name\" = @os_name, " +
                             $"\"os_arch\" = @os_arch, \"total_disk_space\" = @total_disk_space, " +
                             $"\"total_cpu\" = @total_cpu, \"total_ram\" = @total_ram, \"exhibit_id\" = @exhibit_id, " +
                             $"\"zone_id\" = @zone_id, \"floor_id\" = @floor_id, \"content_metadata\" = @content_metadata, " +
@@ -800,7 +813,7 @@ namespace MMS.Backend.DatabaseIO
                             $"\"category\" = @category, \"is_control_panel\" = @is_control_panel, \"updated_at\" = @updated_at WHERE \"id\" = @id";
                     else sql = $"INSERT INTO \"museum_node\" (" +
                         $"\"name\", \"node_name\", \"description\", \"ip\", \"is_active\", " +
-                        $"\"is_config\", \"os_type\", \"mac_addr\", \"port\", \"unique_reg_code\", " +
+                        $"\"is_config\", \"os_type\", \"mac_addr\", \"port\", \"secure_port\", \"unique_reg_code\", " +
                         $"\"os_name\", \"os_arch\", \"total_disk_space\", \"total_cpu\", \"total_ram\", " +
                         $"\"exhibit_id\", \"zone_id\", \"floor_id\", \"content_metadata\", \"pem_file\", " +
                         $"\"heartbeat_rate\", \"image\", \"is_online\", \"sequence_id\", \"is_audio_guide\", " +
@@ -825,6 +838,7 @@ namespace MMS.Backend.DatabaseIO
                             command.Parameters.Add(new SqlParameter("@os_type", data[i].OSType));
                             command.Parameters.Add(new SqlParameter("@mac_addr", data[i].MacAddress));
                             command.Parameters.Add(new SqlParameter("@port", data[i].Port));
+                            command.Parameters.Add(new SqlParameter("@secure_port", data[i].SecurePort));
                             command.Parameters.Add(new SqlParameter("@unique_reg_code", data[i].RegKey));
                             command.Parameters.Add(new SqlParameter("@os_name", data[i].OSName));
                             command.Parameters.Add(new SqlParameter("@os_arch", data[i].OSArchitecture));

@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace MMS.DataModels
 {
-    class HTTPRequestModel
+    class HTTPRegistrationReqModel
     {
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -37,7 +37,13 @@ namespace MMS.DataModels
         public string PEMFile { get; set; }
     }
 
-    class HTTPResponseModel
+    class HTTPRegistrationAckModel : HTTPResponseModel
+    {
+        [JsonProperty("status")]
+        public string Status { get; set; }
+    }
+
+    class HTTPRegistrationRespModel : HTTPResponseModel
     {
         [JsonProperty("mac_addr")]
         public string MacAddress { get; set; }
@@ -49,8 +55,10 @@ namespace MMS.DataModels
         public int HeartbeatRate { get; set; }
     }
 
-    class HTTPHeartbeatModel
+    class HTTPHeartbeatReqModel
     {
+        [JsonProperty("mac_addr")]
+        public string MacAddress { get; set; }
         [JsonProperty("temparature")]
         public double Temperature { get; set; }
         [JsonProperty("cpu_usage")]
@@ -79,5 +87,42 @@ namespace MMS.DataModels
         public double Uptime { get; set; }
         [JsonProperty("version")]
         public string Version { get; set; }
+    }
+
+    class HTTPHeartbeatAckModel : HTTPResponseModel
+    {
+
+    }
+
+    class HTTPGeneralRespModel
+    {
+        [JsonProperty("success")]
+        public HTTPResponseModel ResponseModel { get; set; }
+        [JsonProperty("message")]
+        public string Message { get; set; }
+        [JsonProperty("error")]
+        public bool IsError { get; set; }
+    }
+
+    class HTTPCommandStatusReqModel
+    {
+        [JsonProperty("command_log_id")]
+        public int ID { get; set; }
+        [JsonProperty("mac_addr")]
+        public string MacAddress { get; set; }
+        [JsonProperty("command_status")]
+        public string Status { get; set; }
+        [JsonProperty("command_message")]
+        public string Message { get; set; }
+    }
+
+    class HTTPCommandStatusAckModel : HTTPResponseModel
+    {
+
+    }
+
+    interface HTTPResponseModel
+    {
+
     }
 }

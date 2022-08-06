@@ -23,7 +23,7 @@ namespace MMS.Backend
                     var keyvaluepair = line.Split('=');
                     if (keyvaluepair.Length != 2)
                     {
-                        Logging.Error(Messages.InvalidConfig);
+                        Logging.Error("Configuration file is invalid");
                         return null;
                     }
                     var key = keyvaluepair[0].Trim();
@@ -31,7 +31,7 @@ namespace MMS.Backend
                     var prop = props.FirstOrDefault(a => a.Name == key);
                     if (prop == null)
                     {
-                        Logging.Error(Messages.InvalidConfig);
+                        Logging.Error("Configuration file is invalid");
                         return null;
                     }
                     try
@@ -41,7 +41,7 @@ namespace MMS.Backend
                     }
                     catch (Exception e)
                     {
-                        Logging.Error(Messages.InvalidConfig + ". " + e.Message);
+                        Logging.Error("Configuration file is invalid. " + e.Message);
                     }
                 }
             }
