@@ -2,34 +2,38 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using System.Data.SQLite;
+using System.IO;
 
 namespace MMS.Backend.DatabaseIO
 {
-    class MsSQLDatabaseIO : IDatabaseIO
+    class SQLiteDatabaseIO : IDatabaseIO
     {
-        string connectionString = GetConnectionString(false);
-        string masterConnectionString = GetConnectionString(true);
+        string connectionString = GetConnectionString();
 
-        public static string GetConnectionString(bool masterdb)
+        public static string GetConnectionString()
         {
-            string instance = Globals.Config.DBInstance == String.Empty ? "." : $".\\{Globals.Config.DBInstance}";
-            if (masterdb) return $"Data Source={instance};Database=master;Trusted_Connection=True;";
-            return $"Data Source={instance};Database={Globals.Config.DBName};Trusted_Connection=True;";
+            return $"Data Source={Globals.Config.DBName}.db; Version=3;";
         }
 
         public DatabaseCheckResult CheckDatabaseValidity()
         {
             Logging.Debug($"Attempting database validity check.");
+            if (!File.Exists($"{Globals.Config.DBName}.db"))
+            {
+                Logging.Debug("Database not found");
+                return DatabaseCheckResult.NotFound;
+            }
+            Logging.Debug("Database found. Checking Validity");
             try
             {
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
-                    string sql = "SELECT TOP 1 * FROM \"museum_node\", \"museum_nodelog\", \"museum_exhibit\", \"museum_zone\", \"museum_floor\", \"museum_nodestatus\", \"museum_command\", \"museum_commandlog\"";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                    string sql = "SELECT * FROM \"museum_node\", \"museum_nodelog\", \"museum_exhibit\", \"museum_zone\", \"museum_floor\", \"museum_nodestatus\", \"museum_command\", \"museum_commandlog\" LIMIT 1";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
-                        SqlDataReader reader = command.ExecuteReader();
+                        SQLiteDataReader reader = command.ExecuteReader();
                         reader.Close();
                     }
                 }
@@ -38,23 +42,14 @@ namespace MMS.Backend.DatabaseIO
             }
             catch (Exception e)
             {
-                if (e is SqlException se)
+                if (e is SQLiteException se)
                 {
-
-                    if (se.Number == 4060)
-                    {
-                        Logging.Debug("Database not found");
-                        return DatabaseCheckResult.NotFound;
-                    }
-                    Logging.Debug("Database found. Checking Validity");
-                    if (se.Number == 208)
+                    if (se.ErrorCode == (int)SQLiteErrorCode.Error)
                     {
                         Logging.Debug("Database not configured properly");
                         return DatabaseCheckResult.TableCorrupt;
                     }
-                    Logging.Debug($"Database check error. Exception No. {se.Number} Exception: {e.Message}");
                 }
-
                 Logging.Debug($"Database check error. Exception: {e.Message}");
                 return DatabaseCheckResult.Exception;
             }
@@ -64,23 +59,15 @@ namespace MMS.Backend.DatabaseIO
         {
             try
             {
-                string dbname = Globals.Config.DBName;
-                Logging.Debug($"Attempting SQL Create Database {dbname}");
-                string sql = $"CREATE DATABASE \"{dbname}\"";
-                using (var conn = new SqlConnection(masterConnectionString))
-                {
-                    conn.Open();
-                    using (SqlCommand command = new SqlCommand(sql, conn))
-                    {
-                        command.ExecuteNonQuery();
-                    }
-                }
+                string dbname = Globals.Config.DBName + ".db";
+                Logging.Debug($"Attempting to Create SQLite Database {dbname}");
+                SQLiteConnection.CreateFile(dbname);
                 Logging.Debug("SQL Create Database successful");
                 return true;
             }
             catch (Exception e)
             {
-                Logging.Debug($"SQL Create Database failed. {e.Message}");
+                Logging.Debug($"SQLite Create Database failed. {e.Message}");
                 return false;
             }
         }
@@ -92,150 +79,159 @@ namespace MMS.Backend.DatabaseIO
             try
             {
                 Logging.Debug($"Attempting Database Tables Creation");
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
                         table = "museum_floor";
                         sql = $"CREATE TABLE \"{table}\" (" +
-                                     "\"id\" BIGINT NOT NULL IDENTITY PRIMARY KEY, " +
-                                     "\"name\" VARCHAR(100) NOT NULL, " +
-                                     "\"description\" VARCHAR(600) NOT NULL, " +
-                                     "\"is_active\" BIT NOT NULL, " +
-                                     "\"image\" VARCHAR(100), " +
-                                     "\"created_at\" BIGINT NOT NULL, " +
-                                     "\"updated_at\" BIGINT NOT NULL)";
+                                     "\"id\" INTEGER NOT NULL PRIMARY KEY, " +
+                                     "\"name\" TEXT NOT NULL, " +
+                                     "\"description\" TEXT NOT NULL, " +
+                                     "\"is_active\" INTEGER NOT NULL, " +
+                                     "\"image\" TEXT, " +
+                                     "\"created_at\" INTEGER NOT NULL, " +
+                                     "\"updated_at\" INTEGER NOT NULL)";
                         Logging.Debug($"Attempting SQL Create Table {table}");
                         command.CommandText = sql;
                         command.ExecuteNonQuery();
 
                         table = "museum_zone";
                         sql = $"CREATE TABLE \"{table}\" (" +
-                                     "\"id\" BIGINT NOT NULL IDENTITY PRIMARY KEY, " +
-                                     "\"floor_id\" BIGINT NOT NULL FOREIGN KEY REFERENCES museum_floor(id), " +
-                                     "\"name\" VARCHAR(100) NOT NULL, " +
-                                     "\"description\" VARCHAR(600) NOT NULL, " +
-                                     "\"is_active\" BIT NOT NULL, " +
-                                     "\"image\" VARCHAR(100), " +
-                                     "\"created_at\" BIGINT NOT NULL, " +
-                                     "\"updated_at\" BIGINT NOT NULL)";
+                                     "\"id\" INTEGER NOT NULL PRIMARY KEY, " +
+                                     "\"floor_id\" INTEGER NOT NULL, " +
+                                     "\"name\" TEXT NOT NULL, " +
+                                     "\"description\" TEXT NOT NULL, " +
+                                     "\"is_active\" INTEGER NOT NULL, " +
+                                     "\"image\" TEXT, " +
+                                     "\"created_at\" INTEGER NOT NULL, " +
+                                     "\"updated_at\" INTEGER NOT NULL, " +
+                                     "FOREIGN KEY(floor_id) REFERENCES museum_floor(id))";
                         Logging.Debug($"Attempting SQL Create Table {table}");
                         command.CommandText = sql;
                         command.ExecuteNonQuery();
 
                         table = "museum_exhibit";
                         sql = $"CREATE TABLE \"{table}\" (" +
-                                     "\"id\" BIGINT NOT NULL IDENTITY PRIMARY KEY, " +
-                                     "\"zone_id\" BIGINT NOT NULL FOREIGN KEY REFERENCES museum_zone(id), " +
-                                     "\"name\" VARCHAR(100) NOT NULL, " +
-                                     "\"description\" VARCHAR(600) NOT NULL, " +
-                                     "\"is_active\" BIT NOT NULL, " +
-                                     "\"is_exhibit_show\" BIT NOT NULL, " +
-                                     "\"image\" VARCHAR(100), " +
-                                     "\"created_at\" BIGINT NOT NULL, " +
-                                     "\"updated_at\" BIGINT NOT NULL)";
+                                     "\"id\" INTEGER NOT NULL PRIMARY KEY, " +
+                                     "\"zone_id\" INTEGER NOT NULL, " +
+                                     "\"name\" TEXT NOT NULL, " +
+                                     "\"description\" TEXT NOT NULL, " +
+                                     "\"is_active\" INTEGER NOT NULL, " +
+                                     "\"is_exhibit_show\" INTEGER NOT NULL, " +
+                                     "\"image\" TEXT, " +
+                                     "\"created_at\" INTEGER NOT NULL, " +
+                                     "\"updated_at\" INTEGER NOT NULL, " +
+                                     "FOREIGN KEY(zone_id) REFERENCES museum_zone(id))";
                         Logging.Debug($"Attempting SQL Create Table {table}");
                         command.CommandText = sql;
                         command.ExecuteNonQuery();
 
                         table = "museum_node";
                         sql = $"CREATE TABLE \"{table}\" (" +
-                                     "\"id\" BIGINT NOT NULL IDENTITY PRIMARY KEY, " +
-                                     "\"name\" VARCHAR(100), " +
-                                     "\"node_name\" VARCHAR(100), " +
-                                     "\"description\" VARCHAR(300), " +
-                                     "\"ip\" VARCHAR(100) NOT NULL, " +
-                                     "\"is_active\" BIT NOT NULL, " +
-                                     "\"is_config\" BIT NOT NULL, " +
-                                     "\"os_type\" VARCHAR(150), " +
-                                     "\"mac_addr\" VARCHAR(100) UNIQUE NOT NULL, " +
+                                     "\"id\" INTEGER NOT NULL PRIMARY KEY, " +
+                                     "\"name\" TEXT, " +
+                                     "\"node_name\" TEXT, " +
+                                     "\"description\" TEXT, " +
+                                     "\"ip\" TEXT NOT NULL, " +
+                                     "\"is_active\" INTEGER NOT NULL, " +
+                                     "\"is_config\" INTEGER NOT NULL, " +
+                                     "\"os_type\" TEXT, " +
+                                     "\"mac_addr\" TEXT UNIQUE NOT NULL, " +
                                      "\"port\" INT NOT NULL, " +
                                      "\"secure_port\" INT NOT NULL, " +
-                                     "\"unique_reg_code\" VARCHAR(300) UNIQUE NOT NULL, " +
-                                     "\"os_name\" VARCHAR(255), " +
-                                     "\"os_arch\" VARCHAR(255), " +
-                                     "\"total_disk_space\" FLOAT, " +
-                                     "\"total_cpu\" FLOAT, " +
-                                     "\"total_ram\" FLOAT, " +
-                                     "\"exhibit_id\" BIGINT FOREIGN KEY REFERENCES museum_exhibit(id), " +
-                                     "\"zone_id\" BIGINT FOREIGN KEY REFERENCES museum_zone(id), " +
-                                     "\"floor_id\" BIGINT FOREIGN KEY REFERENCES museum_floor(id), " +
-                                     "\"content_metadata\" VARCHAR(MAX), " +
-                                     "\"pem_file\" VARCHAR(MAX), " +
+                                     "\"unique_reg_code\" TEXT UNIQUE NOT NULL, " +
+                                     "\"os_name\" TEXT, " +
+                                     "\"os_arch\" TEXT, " +
+                                     "\"total_disk_space\" REAL, " +
+                                     "\"total_cpu\" REAL, " +
+                                     "\"total_ram\" REAL, " +
+                                     "\"exhibit_id\" INTEGER, " +
+                                     "\"zone_id\" INTEGER, " +
+                                     "\"floor_id\" INTEGER, " +
+                                     "\"content_metadata\" TEXT, " +
+                                     "\"pem_file\" TEXT, " +
                                      "\"heartbeat_rate\" INT NOT NULL, " +
-                                     "\"image\" VARCHAR(100), " +
-                                     "\"is_online\" BIT NOT NULL, " +
+                                     "\"image\" TEXT, " +
+                                     "\"is_online\" INTEGER NOT NULL, " +
                                      "\"sequence_id\" INT NOT NULL, " +
-                                     "\"is_audio_guide\" BIT NOT NULL, " +
-                                     "\"category\" VARCHAR(100), " +
-                                     "\"is_control_panel\" BIT NOT NULL, " +
-                                     "\"created_at\" BIGINT NOT NULL, " +
-                                     "\"updated_at\" BIGINT NOT NULL)";
+                                     "\"is_audio_guide\" INTEGER NOT NULL, " +
+                                     "\"category\" TEXT, " +
+                                     "\"is_control_panel\" INTEGER NOT NULL, " +
+                                     "\"created_at\" INTEGER NOT NULL, " +
+                                     "\"updated_at\" INTEGER NOT NULL, " +
+                                     "FOREIGN KEY(exhibit_id) REFERENCES museum_exhibit(id), " +
+                                     "FOREIGN KEY(zone_id) REFERENCES museum_zone(id), " +
+                                     "FOREIGN KEY(floor_id) REFERENCES museum_floor(id))";
                         Logging.Debug($"Attempting SQL Create Table {table}");
                         command.CommandText = sql;
                         command.ExecuteNonQuery();
 
                         table = "museum_nodestatus";
                         sql = $"CREATE TABLE \"{table}\" (" +
-                                     "\"id\" BIGINT NOT NULL IDENTITY PRIMARY KEY, " +
-                                     "\"node_id\" BIGINT UNIQUE NOT NULL FOREIGN KEY REFERENCES museum_node(id), " +
-                                     "\"version\" VARCHAR(25), " +
-                                     "\"temperature\" FLOAT, " +
+                                     "\"id\" INTEGER NOT NULL PRIMARY KEY, " +
+                                     "\"node_id\" INTEGER UNIQUE NOT NULL, " +
+                                     "\"version\" TEXT, " +
+                                     "\"temperature\" REAL, " +
                                      "\"cpu_usage\" INT, " +
                                      "\"disk_space_usage\" INT, " +
                                      "\"ram_usage\" INT, " +
-                                     "\"current_timestamp\" FLOAT, " +
-                                     "\"current_video_name\" VARCHAR(500), " +
+                                     "\"current_timestamp\" REAL, " +
+                                     "\"current_video_name\" TEXT, " +
                                      "\"current_video_number\" INT, " +
-                                     "\"current_video_status\" VARCHAR(100), " +
+                                     "\"current_video_status\" TEXT, " +
                                      "\"current_volume\" INT, " +
-                                     "\"video_duration\" FLOAT, " +
+                                     "\"video_duration\" REAL, " +
                                      "\"total_videos\" INT, " +
-                                     "\"video_list\" VARCHAR(MAX), " +
-                                     "\"uptime\" FLOAT, " +
-                                     "\"created_at\" BIGINT NOT NULL, " +
-                                     "\"updated_at\" BIGINT NOT NULL)";
+                                     "\"video_list\" TEXT, " +
+                                     "\"uptime\" REAL, " +
+                                     "\"created_at\" INTEGER NOT NULL, " +
+                                     "\"updated_at\" INTEGER NOT NULL, " +
+                                     "FOREIGN KEY(node_id) REFERENCES museum_node(id))";
                         Logging.Debug($"Attempting SQL Create Table {table}");
                         command.CommandText = sql;
                         command.ExecuteNonQuery();
 
                         table = "museum_nodelog";
                         sql = $"CREATE TABLE \"{table}\" (" +
-                                     "\"id\" BIGINT NOT NULL IDENTITY PRIMARY KEY, " +
-                                     "\"node_id\" BIGINT NOT NULL FOREIGN KEY REFERENCES museum_node(id), " +
-                                     "\"temperature\" FLOAT, " +
-                                     "\"uptime\" FLOAT, " +
+                                     "\"id\" INTEGER NOT NULL PRIMARY KEY, " +
+                                     "\"node_id\" INTEGER NOT NULL, " +
+                                     "\"temperature\" REAL, " +
+                                     "\"uptime\" REAL, " +
                                      "\"cpu_usage\" INT, " +
                                      "\"disk_space_usage\" INT, " +
                                      "\"ram_usage\" INT, " +
-                                     "\"version\" VARCHAR(25), " +
-                                     "\"created_at\" BIGINT NOT NULL, " +
-                                     "\"updated_at\" BIGINT NOT NULL)";
+                                     "\"version\" TEXT, " +
+                                     "\"created_at\" INTEGER NOT NULL, " +
+                                     "\"updated_at\" INTEGER NOT NULL, " +
+                                     "FOREIGN KEY(node_id) REFERENCES museum_node(id))";
                         Logging.Debug($"Attempting SQL Create Table {table}");
                         command.CommandText = sql;
                         command.ExecuteNonQuery();
 
                         table = "museum_command";
                         sql = $"CREATE TABLE \"{table}\" (" +
-                                    "\"id\" BIGINT NOT NULL IDENTITY PRIMARY KEY, " +
-                                    "\"command\" VARCHAR(100) NOT NULL, " +
-                                    "\"is_enabled\" BIT NOT NULL, " +
-                                    "\"created_at\" BIGINT NOT NULL, " +
-                                    "\"updated_at\" BIGINT NOT NULL)";
+                                    "\"id\" INTEGER NOT NULL PRIMARY KEY, " +
+                                    "\"command\" TEXT NOT NULL, " +
+                                    "\"is_enabled\" INTEGER NOT NULL, " +
+                                    "\"created_at\" INTEGER NOT NULL, " +
+                                    "\"updated_at\" INTEGER NOT NULL)";
                         Logging.Debug($"Attempting SQL Create Table {table}");
                         command.CommandText = sql;
                         command.ExecuteNonQuery();
 
                         table = "museum_commandlog";
                         sql = $"CREATE TABLE \"{table}\" (" +
-                                    "\"id\" BIGINT NOT NULL IDENTITY PRIMARY KEY, " +
-                                    "\"command_id\" BIGINT NOT NULL FOREIGN KEY REFERENCES museum_command(id), " +
-                                    "\"node_id\" BIGINT NOT NULL FOREIGN KEY REFERENCES museum_node(id), " +
-                                    "\"status\" VARCHAR(100), " +
-                                    "\"message\" VARCHAR(MAX), " +
-                                    "\"created_at\" BIGINT NOT NULL, " +
-                                    "\"updated_at\" BIGINT NOT NULL)";
+                                    "\"id\" INTEGER NOT NULL PRIMARY KEY, " +
+                                    "\"command_id\" INTEGER NOT NULL, " +
+                                    "\"node_id\" INTEGER NOT NULL, " +
+                                    "\"status\" TEXT, " +
+                                    "\"message\" TEXT, " +
+                                    "\"created_at\" INTEGER NOT NULL, " +
+                                    "\"updated_at\" INTEGER NOT NULL, " +
+                                    "FOREIGN KEY(command_id) REFERENCES museum_command(id), " +
+                                    "FOREIGN KEY(node_id) REFERENCES museum_node(id))";
                         Logging.Debug($"Attempting SQL Create Table {table}");
                         command.CommandText = sql;
                         command.ExecuteNonQuery();
@@ -257,13 +253,13 @@ namespace MMS.Backend.DatabaseIO
             {
                 Logging.Debug($"SQL Attempting SELECT FROM museum_exhibit");
                 List<ExhibitModel> retval = new List<ExhibitModel>();
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     string sql = $"SELECT * FROM museum_exhibit";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
-                        SqlDataReader reader = command.ExecuteReader();
+                        SQLiteDataReader reader = command.ExecuteReader();
                         if (reader.HasRows)
                         {
                             while (reader.Read())
@@ -310,13 +306,13 @@ namespace MMS.Backend.DatabaseIO
             {
                 Logging.Debug($"SQL Attempting SELECT FROM museum_zone");
                 List<ZoneModel> retval = new List<ZoneModel>();
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     string sql = $"SELECT * FROM museum_zone";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
-                        SqlDataReader reader = command.ExecuteReader();
+                        SQLiteDataReader reader = command.ExecuteReader();
                         if (reader.HasRows)
                         {
                             while (reader.Read())
@@ -361,13 +357,13 @@ namespace MMS.Backend.DatabaseIO
             {
                 Logging.Debug($"SQL Attempting SELECT FROM museum_floor");
                 List<FloorModel> retval = new List<FloorModel>();
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     string sql = $"SELECT * FROM museum_floor";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
-                        SqlDataReader reader = command.ExecuteReader();
+                        SQLiteDataReader reader = command.ExecuteReader();
                         if (reader.HasRows)
                         {
                             while (reader.Read())
@@ -410,13 +406,13 @@ namespace MMS.Backend.DatabaseIO
             {
                 Logging.Debug($"SQL Attempting SELECT FROM museum_node");
                 List<NodeModel> retval = new List<NodeModel>();
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     string sql = $"SELECT * FROM museum_node";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
-                        SqlDataReader reader = command.ExecuteReader();
+                        SQLiteDataReader reader = command.ExecuteReader();
                         if (reader.HasRows)
                         {
                             while (reader.Read())
@@ -507,13 +503,13 @@ namespace MMS.Backend.DatabaseIO
             {
                 Logging.Debug($"SQL Attempting SELECT FROM museum_nodestatus");
                 List<NodeCurrentStatusModel> retval = new List<NodeCurrentStatusModel>();
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     string sql = $"SELECT * FROM museum_nodestatus";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
-                        SqlDataReader reader = command.ExecuteReader();
+                        SQLiteDataReader reader = command.ExecuteReader();
                         if (reader.HasRows)
                         {
                             while (reader.Read())
@@ -585,13 +581,13 @@ namespace MMS.Backend.DatabaseIO
             {
                 Logging.Debug($"SQL Attempting SELECT FROM museum_command");
                 List<CommandModel> retval = new List<CommandModel>();
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     string sql = $"SELECT * FROM museum_command";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
-                        SqlDataReader reader = command.ExecuteReader();
+                        SQLiteDataReader reader = command.ExecuteReader();
                         if (reader.HasRows)
                         {
                             while (reader.Read())
@@ -630,13 +626,13 @@ namespace MMS.Backend.DatabaseIO
             {
                 Logging.Debug($"SQL Attempting SELECT FROM museum_commandlog");
                 List<CommandLogModel> retval = new List<CommandLogModel>();
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     string sql = $"SELECT * FROM museum_commandlog";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
-                        SqlDataReader reader = command.ExecuteReader();
+                        SQLiteDataReader reader = command.ExecuteReader();
                         if (reader.HasRows)
                         {
                             while (reader.Read())
@@ -680,7 +676,7 @@ namespace MMS.Backend.DatabaseIO
                 if (updateExisting) Logging.Debug($"SQL Attempting UPDATE museum_nodelog");
                 else Logging.Debug($"SQL Attempting INSERT INTO museum_nodelog");
                 string sql = "";
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     if (updateExisting) sql = $"UPDATE \"museum_nodelog\" SET " +
@@ -693,24 +689,24 @@ namespace MMS.Backend.DatabaseIO
                         $"\"node_id\", \"temperature\", \"uptime\", \"cpu_usage\", \"disk_space_usage\", " +
                         $"\"ram_usage\", \"version\", \"created_at\", \"updated_at\") VALUES(@node_id, @temperature, " +
                         $"@uptime, @cpu_usage, @disk_space_usage, @ram_usage, @version, @created_at, @updated_at)";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
                         for (int i = 0; i < data.Count; i++)
                         {
                             command.Parameters.Clear();
-                            command.Parameters.Add(new SqlParameter("@node_id", data[i].NodeID));
-                            command.Parameters.Add(new SqlParameter("@temperature", data[i].Temperature));
-                            command.Parameters.Add(new SqlParameter("@uptime", data[i].Uptime.TotalSeconds));
-                            command.Parameters.Add(new SqlParameter("@cpu_usage", data[i].ProcessorUsage));
-                            command.Parameters.Add(new SqlParameter("@disk_space_usage", data[i].DiskSpaceUsage));
-                            command.Parameters.Add(new SqlParameter("@ram_usage", data[i].RamUsage));
-                            command.Parameters.Add(new SqlParameter("@version", data[i].Version));
+                            command.Parameters.Add(new SQLiteParameter("@node_id", data[i].NodeID));
+                            command.Parameters.Add(new SQLiteParameter("@temperature", data[i].Temperature));
+                            command.Parameters.Add(new SQLiteParameter("@uptime", data[i].Uptime.TotalSeconds));
+                            command.Parameters.Add(new SQLiteParameter("@cpu_usage", data[i].ProcessorUsage));
+                            command.Parameters.Add(new SQLiteParameter("@disk_space_usage", data[i].DiskSpaceUsage));
+                            command.Parameters.Add(new SQLiteParameter("@ram_usage", data[i].RamUsage));
+                            command.Parameters.Add(new SQLiteParameter("@version", data[i].Version));
                             data[i].UpdatedAt = DateTime.Now;
-                            command.Parameters.Add(new SqlParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                            command.Parameters.Add(new SQLiteParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                             if (!updateExisting)
                             {
                                 data[i].CreatedAt = DateTime.Now;
-                                command.Parameters.Add(new SqlParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                                command.Parameters.Add(new SQLiteParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                             }
                             command.ExecuteNonQuery();
                         }
@@ -735,7 +731,7 @@ namespace MMS.Backend.DatabaseIO
                 if (updateExisting) Logging.Debug($"SQL Attempting UPDATE museum_nodestatus");
                 else Logging.Debug($"SQL Attempting INSERT INTO museum_nodestatus");
                 string sql = "";
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     if (updateExisting) sql = $"UPDATE \"museum_nodestatus\" SET " +
@@ -755,32 +751,32 @@ namespace MMS.Backend.DatabaseIO
                         $"@ram_usage, @version, @current_timestamp, @current_video_name, " +
                         $"@current_video_number, @current_video_status, @current_volume, " +
                         $"@video_duration, @total_videos, @video_list, @created_at, @updated_at)";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
                         for (int i = 0; i < data.Count; i++)
                         {
                             command.Parameters.Clear();
-                            command.Parameters.Add(new SqlParameter("@node_id", data[i].CurrentStatus.NodeID));
-                            command.Parameters.Add(new SqlParameter("@temperature", data[i].CurrentStatus.Temperature));
-                            command.Parameters.Add(new SqlParameter("@uptime", data[i].CurrentStatus.Uptime.TotalSeconds));
-                            command.Parameters.Add(new SqlParameter("@cpu_usage", data[i].CurrentStatus.ProcessorUsage));
-                            command.Parameters.Add(new SqlParameter("@disk_space_usage", data[i].CurrentStatus.DiskSpaceUsage));
-                            command.Parameters.Add(new SqlParameter("@ram_usage", data[i].CurrentStatus.RamUsage));
-                            command.Parameters.Add(new SqlParameter("@version", data[i].CurrentStatus.Version));
-                            command.Parameters.Add(new SqlParameter("@current_timestamp", data[i].CurrentStatus.TimeStamp.TotalSeconds));
-                            command.Parameters.Add(new SqlParameter("@current_video_name", data[i].CurrentStatus.VideoName));
-                            command.Parameters.Add(new SqlParameter("@current_video_number", data[i].CurrentStatus.VideoNumber));
-                            command.Parameters.Add(new SqlParameter("@current_video_status", data[i].CurrentStatus.VideoStatus));
-                            command.Parameters.Add(new SqlParameter("@current_volume", data[i].CurrentStatus.Volume));
-                            command.Parameters.Add(new SqlParameter("@video_duration", data[i].CurrentStatus.VideoDuration));
-                            command.Parameters.Add(new SqlParameter("@total_videos", data[i].CurrentStatus.TotalVideos));
-                            command.Parameters.Add(new SqlParameter("@video_list", JsonConvert.SerializeObject(data[i].CurrentStatus.VideoList)));
+                            command.Parameters.Add(new SQLiteParameter("@node_id", data[i].CurrentStatus.NodeID));
+                            command.Parameters.Add(new SQLiteParameter("@temperature", data[i].CurrentStatus.Temperature));
+                            command.Parameters.Add(new SQLiteParameter("@uptime", data[i].CurrentStatus.Uptime.TotalSeconds));
+                            command.Parameters.Add(new SQLiteParameter("@cpu_usage", data[i].CurrentStatus.ProcessorUsage));
+                            command.Parameters.Add(new SQLiteParameter("@disk_space_usage", data[i].CurrentStatus.DiskSpaceUsage));
+                            command.Parameters.Add(new SQLiteParameter("@ram_usage", data[i].CurrentStatus.RamUsage));
+                            command.Parameters.Add(new SQLiteParameter("@version", data[i].CurrentStatus.Version));
+                            command.Parameters.Add(new SQLiteParameter("@current_timestamp", data[i].CurrentStatus.TimeStamp.TotalSeconds));
+                            command.Parameters.Add(new SQLiteParameter("@current_video_name", data[i].CurrentStatus.VideoName));
+                            command.Parameters.Add(new SQLiteParameter("@current_video_number", data[i].CurrentStatus.VideoNumber));
+                            command.Parameters.Add(new SQLiteParameter("@current_video_status", data[i].CurrentStatus.VideoStatus));
+                            command.Parameters.Add(new SQLiteParameter("@current_volume", data[i].CurrentStatus.Volume));
+                            command.Parameters.Add(new SQLiteParameter("@video_duration", data[i].CurrentStatus.VideoDuration));
+                            command.Parameters.Add(new SQLiteParameter("@total_videos", data[i].CurrentStatus.TotalVideos));
+                            command.Parameters.Add(new SQLiteParameter("@video_list", JsonConvert.SerializeObject(data[i].CurrentStatus.VideoList)));
                             data[i].CurrentStatus.UpdatedAt = DateTime.Now;
-                            command.Parameters.Add(new SqlParameter("@updated_at", new DateTimeOffset(data[i].CurrentStatus.UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                            command.Parameters.Add(new SQLiteParameter("@updated_at", new DateTimeOffset(data[i].CurrentStatus.UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                             if (!updateExisting)
                             {
                                 data[i].CurrentStatus.CreatedAt = DateTime.Now;
-                                command.Parameters.Add(new SqlParameter("@created_at", new DateTimeOffset(data[i].CurrentStatus.CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                                command.Parameters.Add(new SQLiteParameter("@created_at", new DateTimeOffset(data[i].CurrentStatus.CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                             }
                             command.ExecuteNonQuery();
                         }
@@ -805,7 +801,7 @@ namespace MMS.Backend.DatabaseIO
                 if (updateExisting) Logging.Debug($"SQL Attempting UPDATE museum_node");
                 else Logging.Debug($"SQL Attempting INSERT INTO museum_node");
                 string sql = "";
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     if (updateExisting) sql = $"UPDATE \"museum_node\" SET " +
@@ -831,51 +827,51 @@ namespace MMS.Backend.DatabaseIO
                         $"@total_disk_space, @total_cpu, @total_ram, @exhibit_id, @zone_id, " +
                         $"@floor_id, @content_metadata, @pem_file, @heartbeat_rate, @image, " +
                         $"@is_online, @sequence_id, @is_audio_guide, @category, @is_control_panel, " +
-                        $"@created_at, @updated_at); SELECT CONVERT(BIGINT, SCOPE_IDENTITY());";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                        $"@created_at, @updated_at); SELECT LAST_INSERT_ROWID();";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
                         for (int i = 0; i < data.Count; i++)
                         {
                             command.Parameters.Clear();
-                            command.Parameters.Add(new SqlParameter("@name", data[i].Name));
-                            command.Parameters.Add(new SqlParameter("@node_name", data[i].NodeName));
-                            command.Parameters.Add(new SqlParameter("@description", data[i].Description));
-                            command.Parameters.Add(new SqlParameter("@ip", data[i].IP));
-                            command.Parameters.Add(new SqlParameter("@is_active", data[i].IsActive));
-                            command.Parameters.Add(new SqlParameter("@is_config", data[i].IsConfig));
-                            command.Parameters.Add(new SqlParameter("@os_type", data[i].OSType));
-                            command.Parameters.Add(new SqlParameter("@mac_addr", data[i].MacAddress));
-                            command.Parameters.Add(new SqlParameter("@port", data[i].Port));
-                            command.Parameters.Add(new SqlParameter("@secure_port", data[i].SecurePort));
-                            command.Parameters.Add(new SqlParameter("@unique_reg_code", data[i].RegKey));
-                            command.Parameters.Add(new SqlParameter("@os_name", data[i].OSName));
-                            command.Parameters.Add(new SqlParameter("@os_arch", data[i].OSArchitecture));
-                            command.Parameters.Add(new SqlParameter("@total_disk_space", data[i].TotalDiskSpace));
-                            command.Parameters.Add(new SqlParameter("@total_cpu", data[i].TotalCPU));
-                            command.Parameters.Add(new SqlParameter("@total_ram", data[i].TotalRam));
-                            command.Parameters.Add(new SqlParameter("@exhibit_id", data[i].ExhibitID == -1 ? (object)DBNull.Value : data[i].ExhibitID));
-                            command.Parameters.Add(new SqlParameter("@zone_id", data[i].ZoneID == -1 ? (object)DBNull.Value : data[i].ZoneID));
-                            command.Parameters.Add(new SqlParameter("@floor_id", data[i].FloorID == -1 ? (object)DBNull.Value : data[i].FloorID));
-                            command.Parameters.Add(new SqlParameter("@content_metadata", data[i].ContentMetadata));
-                            command.Parameters.Add(new SqlParameter("@pem_file", data[i].PEMFile));
-                            command.Parameters.Add(new SqlParameter("@heartbeat_rate", data[i].HeartbeatRate));
-                            command.Parameters.Add(new SqlParameter("@image", data[i].Image));
-                            command.Parameters.Add(new SqlParameter("@is_online", data[i].IsOnline));
-                            command.Parameters.Add(new SqlParameter("@sequence_id", data[i].SequenceID));
-                            command.Parameters.Add(new SqlParameter("@is_audio_guide", data[i].IsAudioGuide));
-                            command.Parameters.Add(new SqlParameter("@category", data[i].Category));
-                            command.Parameters.Add(new SqlParameter("@is_control_panel", data[i].IsControlPanel));
+                            command.Parameters.Add(new SQLiteParameter("@name", data[i].Name));
+                            command.Parameters.Add(new SQLiteParameter("@node_name", data[i].NodeName));
+                            command.Parameters.Add(new SQLiteParameter("@description", data[i].Description));
+                            command.Parameters.Add(new SQLiteParameter("@ip", data[i].IP));
+                            command.Parameters.Add(new SQLiteParameter("@is_active", data[i].IsActive));
+                            command.Parameters.Add(new SQLiteParameter("@is_config", data[i].IsConfig));
+                            command.Parameters.Add(new SQLiteParameter("@os_type", data[i].OSType));
+                            command.Parameters.Add(new SQLiteParameter("@mac_addr", data[i].MacAddress));
+                            command.Parameters.Add(new SQLiteParameter("@port", data[i].Port));
+                            command.Parameters.Add(new SQLiteParameter("@secure_port", data[i].SecurePort));
+                            command.Parameters.Add(new SQLiteParameter("@unique_reg_code", data[i].RegKey));
+                            command.Parameters.Add(new SQLiteParameter("@os_name", data[i].OSName));
+                            command.Parameters.Add(new SQLiteParameter("@os_arch", data[i].OSArchitecture));
+                            command.Parameters.Add(new SQLiteParameter("@total_disk_space", data[i].TotalDiskSpace));
+                            command.Parameters.Add(new SQLiteParameter("@total_cpu", data[i].TotalCPU));
+                            command.Parameters.Add(new SQLiteParameter("@total_ram", data[i].TotalRam));
+                            command.Parameters.Add(new SQLiteParameter("@exhibit_id", data[i].ExhibitID == -1 ? (object)DBNull.Value : data[i].ExhibitID));
+                            command.Parameters.Add(new SQLiteParameter("@zone_id", data[i].ZoneID == -1 ? (object)DBNull.Value : data[i].ZoneID));
+                            command.Parameters.Add(new SQLiteParameter("@floor_id", data[i].FloorID == -1 ? (object)DBNull.Value : data[i].FloorID));
+                            command.Parameters.Add(new SQLiteParameter("@content_metadata", data[i].ContentMetadata));
+                            command.Parameters.Add(new SQLiteParameter("@pem_file", data[i].PEMFile));
+                            command.Parameters.Add(new SQLiteParameter("@heartbeat_rate", data[i].HeartbeatRate));
+                            command.Parameters.Add(new SQLiteParameter("@image", data[i].Image));
+                            command.Parameters.Add(new SQLiteParameter("@is_online", data[i].IsOnline));
+                            command.Parameters.Add(new SQLiteParameter("@sequence_id", data[i].SequenceID));
+                            command.Parameters.Add(new SQLiteParameter("@is_audio_guide", data[i].IsAudioGuide));
+                            command.Parameters.Add(new SQLiteParameter("@category", data[i].Category));
+                            command.Parameters.Add(new SQLiteParameter("@is_control_panel", data[i].IsControlPanel));
                             data[i].UpdatedAt = DateTime.Now;
-                            command.Parameters.Add(new SqlParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                            command.Parameters.Add(new SQLiteParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                             if (updateExisting)
                             {
-                                command.Parameters.Add(new SqlParameter("@id", data[i].ID));
+                                command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
                                 command.ExecuteNonQuery();
                             }
                             else
                             {
                                 data[i].CreatedAt = DateTime.Now;
-                                command.Parameters.Add(new SqlParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                                command.Parameters.Add(new SQLiteParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                                 data[i].ID = (long)command.ExecuteScalar();
                             }
                         }
@@ -900,7 +896,7 @@ namespace MMS.Backend.DatabaseIO
                 if (updateExisting) Logging.Debug($"SQL Attempting UPDATE museum_floor");
                 else Logging.Debug($"SQL Attempting INSERT INTO museum_floor");
                 string sql = "";
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     if (updateExisting) sql = $"UPDATE \"museum_floor\" SET " +
@@ -910,27 +906,27 @@ namespace MMS.Backend.DatabaseIO
                     else sql = $"INSERT INTO \"museum_floor\" (" +
                         $"\"name\", \"description\", \"is_active\", \"image\", \"created_at\", \"updated_at\") " +
                         $"VALUES(@name, @description, @is_active, @image, @created_at, " +
-                        $"@updated_at); SELECT CONVERT(BIGINT, SCOPE_IDENTITY());";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                        $"@updated_at); SELECT LAST_INSERT_ROWID();";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
                         for (int i = 0; i < data.Count; i++)
                         {
                             command.Parameters.Clear();
-                            command.Parameters.Add(new SqlParameter("@name", data[i].Name));
-                            command.Parameters.Add(new SqlParameter("@description", data[i].Description));
-                            command.Parameters.Add(new SqlParameter("@is_active", data[i].IsActive));
-                            command.Parameters.Add(new SqlParameter("@image", data[i].Image));
+                            command.Parameters.Add(new SQLiteParameter("@name", data[i].Name));
+                            command.Parameters.Add(new SQLiteParameter("@description", data[i].Description));
+                            command.Parameters.Add(new SQLiteParameter("@is_active", data[i].IsActive));
+                            command.Parameters.Add(new SQLiteParameter("@image", data[i].Image));
                             data[i].UpdatedAt = DateTime.Now;
-                            command.Parameters.Add(new SqlParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                            command.Parameters.Add(new SQLiteParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                             if (updateExisting)
                             {
-                                command.Parameters.Add(new SqlParameter("@id", data[i].ID));
+                                command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
                                 command.ExecuteNonQuery();
                             }
                             else
                             {
                                 data[i].CreatedAt = DateTime.Now;
-                                command.Parameters.Add(new SqlParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                                command.Parameters.Add(new SQLiteParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                                 data[i].ID = (long)command.ExecuteScalar();
                             }
                         }
@@ -955,7 +951,7 @@ namespace MMS.Backend.DatabaseIO
                 if (updateExisting) Logging.Debug($"SQL Attempting UPDATE museum_zone");
                 else Logging.Debug($"SQL Attempting INSERT INTO museum_zone");
                 string sql = "";
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     if (updateExisting) sql = $"UPDATE \"museum_zone\" SET " +
@@ -965,28 +961,28 @@ namespace MMS.Backend.DatabaseIO
                     else sql = $"INSERT INTO \"museum_zone\" (" +
                         $"\"name\", \"description\", \"is_active\", \"image\", \"floor_id\", \"created_at\", \"updated_at\") " +
                         $"VALUES(@name, @description, @is_active, @image, @floor_id, " +
-                        $"@created_at, @updated_at); SELECT CONVERT(BIGINT, SCOPE_IDENTITY());";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                        $"@created_at, @updated_at); SELECT LAST_INSERT_ROWID();";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
                         for (int i = 0; i < data.Count; i++)
                         {
                             command.Parameters.Clear();
-                            command.Parameters.Add(new SqlParameter("@name", data[i].Name));
-                            command.Parameters.Add(new SqlParameter("@description", data[i].Description));
-                            command.Parameters.Add(new SqlParameter("@is_active", data[i].IsActive));
-                            command.Parameters.Add(new SqlParameter("@image", data[i].Image));
-                            command.Parameters.Add(new SqlParameter("@floor_id", data[i].FloorID));
+                            command.Parameters.Add(new SQLiteParameter("@name", data[i].Name));
+                            command.Parameters.Add(new SQLiteParameter("@description", data[i].Description));
+                            command.Parameters.Add(new SQLiteParameter("@is_active", data[i].IsActive));
+                            command.Parameters.Add(new SQLiteParameter("@image", data[i].Image));
+                            command.Parameters.Add(new SQLiteParameter("@floor_id", data[i].FloorID));
                             data[i].UpdatedAt = DateTime.Now;
-                            command.Parameters.Add(new SqlParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                            command.Parameters.Add(new SQLiteParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                             if (updateExisting)
                             {
-                                command.Parameters.Add(new SqlParameter("@id", data[i].ID));
+                                command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
                                 command.ExecuteNonQuery();
                             }
                             else
                             {
                                 data[i].CreatedAt = DateTime.Now;
-                                command.Parameters.Add(new SqlParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                                command.Parameters.Add(new SQLiteParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                                 data[i].ID = (long)command.ExecuteScalar();
                             }
                         }
@@ -1011,7 +1007,7 @@ namespace MMS.Backend.DatabaseIO
                 if (updateExisting) Logging.Debug($"SQL Attempting UPDATE museum_exhibit");
                 else Logging.Debug($"SQL Attempting INSERT INTO museum_exhibit");
                 string sql = "";
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     if (updateExisting) sql = $"UPDATE \"museum_exhibit\" SET " +
@@ -1022,29 +1018,29 @@ namespace MMS.Backend.DatabaseIO
                         $"\"name\", \"description\", \"is_active\", \"is_exhibit_show\", " +
                         $"\"image\", \"zone_id\", \"created_at\", \"updated_at\") " +
                         $"VALUES(@name, @description, @is_active, @is_exhibit_show, @image, " +
-                        $"@zone_id, @created_at, @updated_at); SELECT CONVERT(BIGINT, SCOPE_IDENTITY());";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                        $"@zone_id, @created_at, @updated_at); SELECT LAST_INSERT_ROWID();";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
                         for (int i = 0; i < data.Count; i++)
                         {
                             command.Parameters.Clear();
-                            command.Parameters.Add(new SqlParameter("@name", data[i].Name));
-                            command.Parameters.Add(new SqlParameter("@description", data[i].Description));
-                            command.Parameters.Add(new SqlParameter("@is_active", data[i].IsActive));
-                            command.Parameters.Add(new SqlParameter("@is_exhibit_show", data[i].IsExhibitShow));
-                            command.Parameters.Add(new SqlParameter("@image", data[i].Image));
-                            command.Parameters.Add(new SqlParameter("@zone_id", data[i].ZoneID));
+                            command.Parameters.Add(new SQLiteParameter("@name", data[i].Name));
+                            command.Parameters.Add(new SQLiteParameter("@description", data[i].Description));
+                            command.Parameters.Add(new SQLiteParameter("@is_active", data[i].IsActive));
+                            command.Parameters.Add(new SQLiteParameter("@is_exhibit_show", data[i].IsExhibitShow));
+                            command.Parameters.Add(new SQLiteParameter("@image", data[i].Image));
+                            command.Parameters.Add(new SQLiteParameter("@zone_id", data[i].ZoneID));
                             data[i].UpdatedAt = DateTime.Now;
-                            command.Parameters.Add(new SqlParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                            command.Parameters.Add(new SQLiteParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                             if (updateExisting)
                             {
-                                command.Parameters.Add(new SqlParameter("@id", data[i].ID));
+                                command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
                                 command.ExecuteNonQuery();
                             }
                             else
                             {
                                 data[i].CreatedAt = DateTime.Now;
-                                command.Parameters.Add(new SqlParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                                command.Parameters.Add(new SQLiteParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                                 data[i].ID = (long)command.ExecuteScalar();
                             }
                         }
@@ -1069,7 +1065,7 @@ namespace MMS.Backend.DatabaseIO
                 if (updateExisting) Logging.Debug($"SQL Attempting UPDATE museum_command");
                 else Logging.Debug($"SQL Attempting INSERT INTO museum_command");
                 string sql = "";
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     if (updateExisting) sql = $"UPDATE \"museum_command\" SET " +
@@ -1078,25 +1074,25 @@ namespace MMS.Backend.DatabaseIO
                     else sql = $"INSERT INTO \"museum_command\" (" +
                             $"\"command\", \"is_enabled\", \"created_at\", \"updated_at\") " +
                             $"VALUES(@command, @is_enabled, @created_at, @updated_at); " +
-                            $"SELECT CONVERT(BIGINT, SCOPE_IDENTITY());";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                            $"SELECT LAST_INSERT_ROWID();";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
                         for (int i = 0; i < data.Count; i++)
                         {
                             command.Parameters.Clear();
-                            command.Parameters.Add(new SqlParameter("@command", data[i].Command));
-                            command.Parameters.Add(new SqlParameter("@is_enabled", data[i].IsEnabled));
+                            command.Parameters.Add(new SQLiteParameter("@command", data[i].Command));
+                            command.Parameters.Add(new SQLiteParameter("@is_enabled", data[i].IsEnabled));
                             data[i].UpdatedAt = DateTime.Now;
-                            command.Parameters.Add(new SqlParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                            command.Parameters.Add(new SQLiteParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                             if (updateExisting)
                             {
-                                command.Parameters.Add(new SqlParameter("@id", data[i].ID));
+                                command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
                                 command.ExecuteNonQuery();
                             }
                             else
                             {
                                 data[i].CreatedAt = DateTime.Now;
-                                command.Parameters.Add(new SqlParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                                command.Parameters.Add(new SQLiteParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                                 data[i].ID = (long)command.ExecuteScalar();
                             }
                         }
@@ -1121,7 +1117,7 @@ namespace MMS.Backend.DatabaseIO
                 if (updateExisting) Logging.Debug($"SQL Attempting UPDATE museum_commandlog");
                 else Logging.Debug($"SQL Attempting INSERT INTO museum_commandlog");
                 string sql = "";
-                using (var conn = new SqlConnection(connectionString))
+                using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
                     if (updateExisting) sql = $"UPDATE \"museum_commandlog\" SET " +
@@ -1130,27 +1126,27 @@ namespace MMS.Backend.DatabaseIO
                     else sql = $"INSERT INTO \"museum_commandlog\" (" +
                             $"\"command_id\", \"node_id\", \"status\", \"message\", \"created_at\", \"updated_at\") " +
                             $"VALUES(@command_id, @node_id, @status, @message, @created_at, @updated_at); " +
-                            $"SELECT CONVERT(BIGINT, SCOPE_IDENTITY());";
-                    using (SqlCommand command = new SqlCommand(sql, conn))
+                            $"SELECT LAST_INSERT_ROWID();";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
                         for (int i = 0; i < data.Count; i++)
                         {
                             command.Parameters.Clear();
-                            command.Parameters.Add(new SqlParameter("@status", data[i].Status));
-                            command.Parameters.Add(new SqlParameter("@message", data[i].Message));
+                            command.Parameters.Add(new SQLiteParameter("@status", data[i].Status));
+                            command.Parameters.Add(new SQLiteParameter("@message", data[i].Message));
                             data[i].UpdatedAt = DateTime.Now;
-                            command.Parameters.Add(new SqlParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                            command.Parameters.Add(new SQLiteParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                             if (updateExisting)
                             {
-                                command.Parameters.Add(new SqlParameter("@id", data[i].ID));
+                                command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
                                 command.ExecuteNonQuery();
                             }
                             else
                             {
-                                command.Parameters.Add(new SqlParameter("@command_id", data[i].CommandID));
-                                command.Parameters.Add(new SqlParameter("@node_id", data[i].NodeID));
+                                command.Parameters.Add(new SQLiteParameter("@command_id", data[i].CommandID));
+                                command.Parameters.Add(new SQLiteParameter("@node_id", data[i].NodeID));
                                 data[i].CreatedAt = DateTime.Now;
-                                command.Parameters.Add(new SqlParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                                command.Parameters.Add(new SQLiteParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                                 data[i].ID = (long)command.ExecuteScalar();
                             }
                         }

@@ -1,20 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Collections.ObjectModel;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MMS.Backend;
 using System.Windows.Media.Animation;
+using System.Windows.Navigation;
+using MMS.Backend;
 
 namespace MMS
 {
@@ -28,12 +18,12 @@ namespace MMS
             InitializeComponent();
             Application.Current.Exit += AppExit;
             SidePanel.NavigationRequested += SidePanelNavigationRequested;
-            //Globals.Initialize();
+            Globals.Initialize();
         }
 
         private void AppExit(object sender, ExitEventArgs e)
         {
-            //Globals.Destroy();
+            Globals.Destroy();
         }
 
         private void WindowTopBarMouseDown(object sender, MouseButtonEventArgs e)
@@ -58,7 +48,7 @@ namespace MMS
             animationMain.Duration = (Duration)Application.Current.Resources["DurationFadeIn"];
             animationAux.Duration = (Duration)Application.Current.Resources["DurationFadeIn"];
             switch (e.Uri.ToString())
-            {                
+            {
                 case "UI/Views/AppPages/TitlePage.xaml":
                 case "UI/Views/AppPages/Dashboard.xaml":
                     animationMain.To = (Color)Application.Current.Resources["ColorPrimaryMain1"];

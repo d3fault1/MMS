@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace MMS.DataModels
 {
@@ -82,7 +77,7 @@ namespace MMS.DataModels
         [JsonProperty("totalVideos")]
         public int TotalVideos { get; set; }
         [JsonProperty("video_list")]
-        public string VideoList { get; set; }
+        public string[] VideoList { get; set; }
         [JsonProperty("uptime")]
         public double Uptime { get; set; }
         [JsonProperty("version")]

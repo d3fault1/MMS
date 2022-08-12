@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using MMS.DataModels;
-using MMS.Backend.DatabaseIO;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Net;
 using System.Threading;
 using System.Windows;
-using Newtonsoft.Json;
+using MMS.Backend.DatabaseIO;
+using MMS.DataModels;
 
 namespace MMS.Backend
 {
@@ -18,9 +12,6 @@ namespace MMS.Backend
     {
         public static ConfigurationModel Config { get; set; }
         public static IDatabaseIO DBInterface { get; set; }
-        //public static ObservableCollection<NodeModel> AllDevices { get; set; }
-
-        //public static event NotifyCollectionChangedEventHandler AllDeviceListChanged;
 
         private static Timer DeviceOnlineTimer;
         private static Dictionary<int, bool> OnlineCheckList;
@@ -37,10 +28,8 @@ namespace MMS.Backend
             }
             DeviceOnlineTimer = new Timer(DeviceOnlineCheckExpire);
             OnlineCheckList = new Dictionary<int, bool>();
-            DBInterface = new MsSQLDatabaseIO();
-            //AllDevices = new ObservableCollection<NodeModel>();
+            DBInterface = new SQLiteDatabaseIO();
 
-            //AllDevices.CollectionChanged += AllDevicesCollectionChanged;
             HTTPHandler.Instance.RegisterRequestReceived += HTTPRegisterRequestReceived;
             HTTPHandler.Instance.HeartbeatReceived += HTTPHeartbeatReceived;
             HTTPHandler.Instance.CommandStatusReceived += HTTPCommandStatusReceived;
@@ -103,7 +92,6 @@ namespace MMS.Backend
         {
             HTTPHandler.Instance.Stop();
             DeviceOnlineTimer.Dispose();
-            //AllDevices.Clear();
             Logging.Release();
         }
 
@@ -151,31 +139,6 @@ namespace MMS.Backend
             else TCPHandler.Instance.Send(cmdbytes, node.IP, node.Port);
         }
 
-        //private static void AllDevicesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        //{
-        //    switch (e.Action)
-        //    {
-        //        case NotifyCollectionChangedAction.Add:
-        //            foreach (NodeModel a in e.NewItems)
-        //            {
-        //                OnlineCheckList.Add(AllDevices.IndexOf(a), false);
-        //            }
-        //            break;
-        //        case NotifyCollectionChangedAction.Remove:
-        //            foreach (NodeModel a in e.OldItems)
-        //            {
-        //                OnlineCheckList.Remove(AllDevices.IndexOf(a));
-        //            }
-        //            break;
-        //        case NotifyCollectionChangedAction.Replace:
-        //            break;
-        //        case NotifyCollectionChangedAction.Reset:
-        //            OnlineCheckList.Clear();
-        //            break;
-        //    }
-        //    OnAllDeviceListChanged(sender, e);
-        //}
-
         private static void HTTPRegisterRequestReceived(NodeModel node)
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -218,13 +181,16 @@ namespace MMS.Backend
                         DataHub.Nodes[index].FloorID = node.FloorID;
                         DataHub.Nodes[index].ZoneID = node.ZoneID;
                         DataHub.Nodes[index].ExhibitID = node.ExhibitID;
+                        DataHub.Nodes[index].IsOnline = true;
+                        OnlineCheckList[index] = true;
                     }
-                    //AllDevices[index] = AllDevices[index];
 
                     var obj = DataHub.Nodes[index];
                     var temp = new List<NodeModel>() { obj };
                     DBInterface.WriteNodeData(ref temp, true);
                     DBInterface.WriteNodeStatusData(ref temp, true);
+                    DataHub.Nodes[index].UpdatedAt = temp[0].UpdatedAt;
+                    DataHub.Nodes[index].CurrentStatus.UpdatedAt = temp[0].CurrentStatus.UpdatedAt;
                 }
             });
         }
@@ -253,11 +219,11 @@ namespace MMS.Backend
                     DataHub.Nodes[index].CurrentStatus.TimeStamp = status.TimeStamp;
                     DataHub.Nodes[index].CurrentStatus.Volume = status.Volume;
                     DataHub.Nodes[index].CurrentStatus.Version = status.Version;
-                    //AllDevices[index] = AllDevices[index];
 
                     var obj = DataHub.Nodes[index];
                     var temp = new List<NodeModel>() { obj };
                     DBInterface.WriteNodeStatusData(ref temp, true);
+                    DataHub.Nodes[index].CurrentStatus.UpdatedAt = temp[0].CurrentStatus.UpdatedAt;
 
                     var logobj = new NodeLogModel
                     {
@@ -295,15 +261,9 @@ namespace MMS.Backend
                 if (!OnlineCheckList[i])
                 {
                     DataHub.Nodes[i].IsOnline = false;
-                    //AllDevices[i] = AllDevices[i];
                 }
                 OnlineCheckList[i] = false;
             }
         }
-
-        //private static void OnAllDeviceListChanged(object sender, NotifyCollectionChangedEventArgs e)
-        //{
-        //    AllDeviceListChanged?.Invoke(sender, e);
-        //}
     }
 }

@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Security.Cryptography;
 using System.Net.Sockets;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net;
+using System.Security.Cryptography;
 
 namespace MMS.Backend
 {
@@ -34,7 +29,7 @@ namespace MMS.Backend
                 Logging.Debug("TCPHandler: Error Sending Data. " + e.Message);
                 return false;
             }
-            
+
         }
 
         public byte[] EncryptFromPublicKey(byte[] data, string pem)
@@ -50,7 +45,7 @@ namespace MMS.Backend
                 Logging.Debug("TCPHandler: Data Encryption Successful.");
                 return retbytes;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logging.Debug("TCPHandler: Error During Data Encryption Using Public Key. " + e.Message);
                 return null;

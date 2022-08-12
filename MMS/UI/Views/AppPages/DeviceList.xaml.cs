@@ -1,22 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MMS.UI.Views.AppWindows;
 using MMS.Backend;
 using MMS.DataModels;
+using MMS.UI.Views.AppWindows;
 
 namespace MMS.UI.Views.AppPages
 {
@@ -25,99 +14,32 @@ namespace MMS.UI.Views.AppPages
     /// </summary>
     public partial class DeviceList : Page
     {
-        //private static ObservableCollection<ViewDevicesModel> ViewList { get; set; }
         private Dictionary<long, CommandModel> NodeCurrentCommand { get; }
         private List<Predicate<object>> DeviceListFilters { get; }
 
         public DeviceList()
         {
-            InitializeComponent();
-            //ViewList = new ObservableCollection<ViewDevicesModel>();
             NodeCurrentCommand = new Dictionary<long, CommandModel>();
             DeviceListFilters = new List<Predicate<object>>(3);
             DeviceListFilters.Add(p => true);
             DeviceListFilters.Add(p => true);
             DeviceListFilters.Add(p => true);
+
+            InitializeComponent();
+
             DevicesListView.Items.IsLiveFiltering = true;
+            DevicesListView.Items.LiveFilteringProperties.Add(nameof(NodeModel.Category));
+            DevicesListView.Items.LiveFilteringProperties.Add(nameof(NodeModel.IsConfig));
+            DevicesListView.Items.LiveFilteringProperties.Add(nameof(NodeModel.IsOnline));
+            DevicesListView.Items.LiveFilteringProperties.Add(nameof(FloorModel.Name));
             DevicesListView.Items.Filter = p => CombinedFilterPredicate((NodeModel)p);
-
-            //Globals.AllDeviceListChanged += Globals_AllDeviceListChanged;
         }
-
-        //private void Globals_AllDeviceListChanged(object sender, NotifyCollectionChangedEventArgs e)
-        //{
-        //    switch (e.Action)
-        //    {
-        //        case NotifyCollectionChangedAction.Add:
-        //            foreach (NodeModel a in e.NewItems)
-        //            {
-        //                Dispatcher.Invoke(() =>
-        //                {
-        //                    ViewList.Add(new ViewDevicesModel
-        //                    {
-        //                        Name = a.Name,
-        //                        Mac = a.MacAddress,
-        //                        IP = a.IP,
-        //                        Floor = a.FloorID.ToString(),
-        //                        Zone = a.ZoneID.ToString(),
-        //                        Exhibit = a.ExhibitID.ToString(),
-        //                        Version = a.CurrentStatus.Version,
-        //                        Status = a.IsConfig ? (a.IsOnline ? DeviceStatus.Online : DeviceStatus.Offline) : DeviceStatus.NotConfigured
-        //                    });
-        //                });
-
-        //            }
-        //            break;
-        //        case NotifyCollectionChangedAction.Remove:
-        //            foreach (NodeModel a in e.OldItems)
-        //            {
-        //                var temp = ViewList.FirstOrDefault(v => v.Mac == a.MacAddress);
-        //                if (temp != null) Dispatcher.Invoke(() => ViewList.Remove(temp));
-        //            }
-        //            break;
-        //        case NotifyCollectionChangedAction.Replace:
-        //            foreach (NodeModel a in e.NewItems)
-        //            {
-        //                var temp = ViewList.FirstOrDefault(v => v.Mac == a.MacAddress);
-        //                var index = ViewList.IndexOf(temp);
-        //                Dispatcher.Invoke(() =>
-        //                {
-        //                    var vdm = new ViewDevicesModel
-        //                    {
-        //                        Name = a.Name,
-        //                        Mac = a.MacAddress,
-        //                        IP = a.IP,
-        //                        Floor = a.FloorID.ToString(),
-        //                        Zone = a.ZoneID.ToString(),
-        //                        Exhibit = a.ExhibitID.ToString(),
-        //                        Version = a.CurrentStatus.Version,
-        //                        Status = a.IsConfig ? (a.IsOnline ? DeviceStatus.Online : DeviceStatus.Offline) : DeviceStatus.NotConfigured
-        //                    };
-        //                    if (temp == null) index = -1;
-        //                    if (index == -1)
-        //                    {
-        //                        ViewList.Add(vdm);
-        //                    }
-        //                    else
-        //                    {
-        //                        ViewList[index] = vdm;
-        //                    }
-        //                });
-
-        //            }
-        //            break;
-        //        case NotifyCollectionChangedAction.Reset:
-        //            Dispatcher.Invoke(() => ViewList.Clear());
-        //            break;
-        //    }
-        //    //alldevlist.Items.Refresh();
-        //}
 
         private void ItemActionButtonClick(object sender, RoutedEventArgs e)
         {
             var item = (NodeModel)((Button)sender).DataContext;
             if (item == null) return;
-            if (DataHub.Nodes.IndexOf(item) == -1) return;  
+            if (DataHub.Nodes.IndexOf(item) == -1) return;
 
             if (((Button)sender).Content.ToString() == "Register")
             {
@@ -150,7 +72,6 @@ namespace MMS.UI.Views.AppPages
                     Globals.SendCommand(NodeCurrentCommand[item.ID], item, true);
                 }
             }
-            
         }
 
         private void ConfigureManualClick(object sender, RoutedEventArgs e)
@@ -171,30 +92,33 @@ namespace MMS.UI.Views.AppPages
 
         private void CategorySelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (DevicesListView == null) return;
             var cmbBox = (ComboBox)sender;
             if (cmbBox.SelectedIndex == -1) DeviceListFilters[0] = p => true;
-            else DeviceListFilters[0] = p => ((NodeModel)p).Category == cmbBox.SelectedItem.ToString();
+            else DeviceListFilters[0] = p => ((NodeModel)p).Category == cmbBox.SelectedValue.ToString();
             DevicesListView.Items.Filter = p => CombinedFilterPredicate((NodeModel)p);
         }
 
         private void FloorSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (DevicesListView == null) return;
             var cmbBox = (ComboBox)sender;
             if (cmbBox.SelectedIndex == -1) DeviceListFilters[1] = p => true;
-            else DeviceListFilters[1] = p => ((NodeModel)p).Floor.Name == cmbBox.SelectedItem.ToString();
+            else DeviceListFilters[1] = p => ((NodeModel)p).Floor.Name == cmbBox.SelectedValue.ToString();
             DevicesListView.Items.Filter = p => CombinedFilterPredicate((NodeModel)p);
         }
 
         private void StatusSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (DevicesListView == null) return;
             var cmbBox = (ComboBox)sender;
             if (cmbBox.SelectedIndex == -1) DeviceListFilters[2] = p => true;
             else DeviceListFilters[2] = p =>
             {
-                if (cmbBox.SelectedItem.ToString() == "All") return true;
-                if (cmbBox.SelectedItem.ToString() == "Online") return ((NodeModel)p).IsConfig && ((NodeModel)p).IsOnline;
-                if (cmbBox.SelectedItem.ToString() == "Offline") return ((NodeModel)p).IsConfig && !((NodeModel)p).IsOnline;
-                if (cmbBox.SelectedItem.ToString() == "Not Configured") return !((NodeModel)p).IsConfig;
+                if (cmbBox.SelectedValue.ToString() == "All") return true;
+                if (cmbBox.SelectedValue.ToString() == "Online") return ((NodeModel)p).IsConfig && ((NodeModel)p).IsOnline;
+                if (cmbBox.SelectedValue.ToString() == "Offline") return ((NodeModel)p).IsConfig && !((NodeModel)p).IsOnline;
+                if (cmbBox.SelectedValue.ToString() == "Not Configured") return !((NodeModel)p).IsConfig;
                 return true;
             };
             DevicesListView.Items.Filter = p => CombinedFilterPredicate((NodeModel)p);

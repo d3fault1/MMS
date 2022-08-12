@@ -8,7 +8,7 @@
         xmlns:uc="clr-namespace:MMS.UI.Views.AppUserControls"
         xmlns:pg="clr-namespace:MMS.UI.Views.AppPages"
         mc:Ignorable="d"
-        Title="MainWindow" Height="900" Width="1300" Topmost="True" WindowStyle="None" Background="Transparent"
+        Title="MainWindow" Height="900" Width="1300" WindowStyle="None" Background="Transparent"
         AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Border x:Name="AppWindow" CornerRadius="{StaticResource CorderRadiusLarge}">
         <Border.Background>

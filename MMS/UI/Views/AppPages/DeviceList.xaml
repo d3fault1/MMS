@@ -16,6 +16,8 @@
         <converters:StatusTextBindingConverter x:Key="StatusTextConverter"/>
         <converters:StatusLedBindingConverter x:Key="StatusLedConverter"/>
         <converters:ConfigButtonTextBindingConverter x:Key="ConfigButtonTextConverter"/>
+        <converters:ConfigButtonEligibilityBindingConverter x:Key="ConfigButtonEnableConverter"/>
+        <converters:CommandBoxEligibilityBindingConverter x:Key="CommandBoxEnableConverter"/>
     </Page.Resources>
 
     <Grid>
@@ -30,9 +32,9 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ComboBox x:Name="CategoryOptions" ext:GeneralAssists.HintText="Select Category" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Width="180" Height="40" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" SelectionChanged="CategorySelectionChanged"/>
-        <ComboBox x:Name="FloorOptions" ItemsSource="{x:Static datactx:DataHub.Floors}" ext:GeneralAssists.HintText="Select a Floor" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Width="180" Height="40" Margin="15 0 0 0" Grid.Column="1" Grid.Row="0" SelectionChanged="FloorSelectionChanged"/>
-        <ComboBox x:Name="StatusOptions" ext:GeneralAssists.HintText="Select Status" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Width="180" Height="40" Margin="0 0 15 0" Grid.Column="2" Grid.Row="0" SelectionChanged="StatusSelectionChanged">
+        <ComboBox x:Name="CategoryOptions" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select Category" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Width="180" Height="40" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" SelectionChanged="CategorySelectionChanged"/>
+        <ComboBox x:Name="FloorOptions" SelectedValuePath="Content" ItemsSource="{x:Static datactx:DataHub.Floors}" ext:GeneralAssists.HintText="Select a Floor" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Width="180" Height="40" Margin="15 0 0 0" Grid.Column="1" Grid.Row="0" SelectionChanged="FloorSelectionChanged"/>
+        <ComboBox x:Name="StatusOptions" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select Status" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Width="180" Height="40" Margin="0 0 15 0" Grid.Column="2" Grid.Row="0" SelectionChanged="StatusSelectionChanged">
             <ComboBoxItem>Online</ComboBoxItem>
             <ComboBoxItem>Offline</ComboBoxItem>
             <ComboBoxItem>Not Configured</ComboBoxItem>
@@ -112,11 +114,13 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock x:Name="StatusText" TextAlignment="Center" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}">
-                                        <MultiBinding Converter="{StaticResource StatusTextConverter}">
-                                            <Binding Path="IsConfig"/>
-                                            <Binding Path="IsOnline"/>
-                                        </MultiBinding>
+                                    <TextBlock x:Name="StatusText" TextAlignment="Center" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}" Margin="0 -2 0 0">
+                                        <TextBlock.Text>
+                                            <MultiBinding Converter="{StaticResource StatusTextConverter}">
+                                                <Binding Path="IsConfig"/>
+                                                <Binding Path="IsOnline"/>
+                                            </MultiBinding>
+                                        </TextBlock.Text>
                                     </TextBlock>
                                     <Ellipse Fill="{Binding Path=Text, ElementName=StatusText, Converter={StaticResource StatusLedConverter}}" Width="10" Height="10" Margin="10 0 0 0"/>
                                 </StackPanel>
@@ -129,7 +133,14 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <ComboBox ext:GeneralAssists.HintText="Command" ItemsSource="{x:Static datactx:DataHub.Commands}" FontSize="{StaticResource Small}" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" SelectionChanged="CommandSelectionChanged"/>
+                                <ComboBox DisplayMemberPath="Command" ext:GeneralAssists.HintText="Command" ItemsSource="{x:Static datactx:DataHub.Commands}" FontSize="{StaticResource Small}" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" SelectionChanged="CommandSelectionChanged">
+                                    <ComboBox.IsEnabled>
+                                        <MultiBinding Converter="{StaticResource CommandBoxEnableConverter}">
+                                            <Binding Path="IsConfig"/>
+                                            <Binding Path="IsOnline"/>
+                                        </MultiBinding>
+                                    </ComboBox.IsEnabled>
+                                </ComboBox>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -139,7 +150,14 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Button Content="{Binding Path=IsConfig, Converter={StaticResource ConfigButtonTextConverter}}" Height="28" Style="{StaticResource MMSButtonSmall}" Click="ItemActionButtonClick"/>
+                                <Button Content="{Binding Path=IsConfig, Converter={StaticResource ConfigButtonTextConverter}}" Height="28" Style="{StaticResource MMSButtonSmall}" Click="ItemActionButtonClick">
+                                    <Button.IsEnabled>
+                                        <MultiBinding Converter="{StaticResource ConfigButtonEnableConverter}">
+                                            <Binding Path="IsConfig"/>
+                                            <Binding Path="IsOnline"/>
+                                        </MultiBinding>
+                                    </Button.IsEnabled>
+                                </Button>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

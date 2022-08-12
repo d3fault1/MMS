@@ -20,19 +20,24 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="0" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Width="250">
-                <StackPanel Orientation="Horizontal">
-                    <Grid>
-                        <Image x:Name="OnlineGlow" Opacity="0" Width="100" Height="100" Source="/UI/Assets/onlineglow.png"/>
-                        <Image Opacity="1" Width="100" Height="100" Source="/UI/Assets/onlinenormal.png"/>
-                    </Grid>
-                    <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="10 0 0 0">
-                        <TextBlock Text="Online Devices" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
-                        <TextBlock Text="625" Foreground="{StaticResource BrushPrimaryTheme3}" FontSize="{StaticResource DemiLarge}"/>
-                    </StackPanel>
-                </StackPanel>
-                <Border.Triggers>
-                    <EventTrigger RoutedEvent="Border.MouseEnter">
+
+            <Button Grid.Row="0" Style="{StaticResource MMSFlatButton}" BorderThickness="0" Padding="0" HorizontalAlignment="Left" Width="250" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Click="OnlineDevClick">
+                <Button.Content>
+                    <Border Background="Transparent" BorderThickness="0">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid>
+                                <Image x:Name="OnlineGlow" Opacity="0" Width="100" Height="100" Source="/UI/Assets/onlineglow.png"/>
+                                <Image Opacity="1" Width="100" Height="100" Source="/UI/Assets/onlinenormal.png"/>
+                            </Grid>
+                            <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="10 0 0 0">
+                                <TextBlock Text="Online Devices" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                <TextBlock x:Name="numOnlineDevice" Text="0" Foreground="{StaticResource BrushPrimaryTheme3}" FontSize="{StaticResource DemiLarge}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Button.Content>
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowIn}"
@@ -45,7 +50,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                    <EventTrigger RoutedEvent="Border.MouseLeave">
+                    <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowOut}"
@@ -58,22 +63,26 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                </Border.Triggers>
-            </Border>
+                </Button.Triggers>
+            </Button>
 
-            <Border Grid.Row="1" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Width="250">
-                <StackPanel Orientation="Horizontal">
-                    <Grid>
-                        <Image x:Name="OfflineGlow" Opacity="0" Width="100" Height="100" Source="/UI/Assets/offlineglow.png"/>
-                        <Image Opacity="1" Width="100" Height="100" Source="/UI/Assets/offlinenormal.png"/>
-                    </Grid>
-                    <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="10 0 0 0">
-                        <TextBlock Text="Offline Devices" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
-                        <TextBlock Text="1243" Foreground="{StaticResource BrushPrimaryTheme4}" FontSize="{StaticResource DemiLarge}"/>
-                    </StackPanel>
-                </StackPanel>
-                <Border.Triggers>
-                    <EventTrigger RoutedEvent="Border.MouseEnter">
+            <Button Grid.Row="1" Style="{StaticResource MMSFlatButton}" BorderThickness="0" Padding="0" HorizontalAlignment="Left" Width="250" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Click="OfflineDevClick">
+                <Button.Content>
+                    <Border Background="Transparent" BorderThickness="0">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid>
+                                <Image x:Name="OfflineGlow" Opacity="0" Width="100" Height="100" Source="/UI/Assets/offlineglow.png"/>
+                                <Image Opacity="1" Width="100" Height="100" Source="/UI/Assets/offlinenormal.png"/>
+                            </Grid>
+                            <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="10 0 0 0">
+                                <TextBlock Text="Offline Devices" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                <TextBlock x:Name="numOfflineDevice" Text="0" Foreground="{StaticResource BrushPrimaryTheme4}" FontSize="{StaticResource DemiLarge}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Button.Content>
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowIn}"
@@ -86,7 +95,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                    <EventTrigger RoutedEvent="Border.MouseLeave">
+                    <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowOut}"
@@ -99,22 +108,26 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                </Border.Triggers>
-            </Border>
+                </Button.Triggers>
+            </Button>
 
-            <Border Grid.Row="2" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Width="250">
-                <StackPanel Orientation="Horizontal">
-                    <Grid>
-                        <Image x:Name="NewGlow" Opacity="0" Width="100" Height="100" Source="/UI/Assets/newglow.png"/>
-                        <Image Opacity="1" Width="100" Height="100" Source="/UI/Assets/newnormal.png"/>
-                    </Grid>
-                    <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="10 0 0 0">
-                        <TextBlock Text="New Devices" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
-                        <TextBlock Text="645" Foreground="{StaticResource BrushPrimaryTheme5}" FontSize="{StaticResource DemiLarge}"/>
-                    </StackPanel>
-                </StackPanel>
-                <Border.Triggers>
-                    <EventTrigger RoutedEvent="Border.MouseEnter">
+            <Button Grid.Row="2" Style="{StaticResource MMSFlatButton}" BorderThickness="0" Padding="0" HorizontalAlignment="Left" Width="250" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Click="NewDevClick">
+                <Button.Content>
+                    <Border Background="Transparent" BorderThickness="0">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid>
+                                <Image x:Name="NewGlow" Opacity="0" Width="100" Height="100" Source="/UI/Assets/newglow.png"/>
+                                <Image Opacity="1" Width="100" Height="100" Source="/UI/Assets/newnormal.png"/>
+                            </Grid>
+                            <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="10 0 0 0">
+                                <TextBlock Text="New Devices" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                <TextBlock x:Name="numNewDevice" Text="0" Foreground="{StaticResource BrushPrimaryTheme5}" FontSize="{StaticResource DemiLarge}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Button.Content>
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowIn}"
@@ -127,7 +140,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                    <EventTrigger RoutedEvent="Border.MouseLeave">
+                    <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowOut}"
@@ -140,22 +153,26 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                </Border.Triggers>
-            </Border>
+                </Button.Triggers>
+            </Button>
 
-            <Border Grid.Row="3" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Width="250">
-                <StackPanel Orientation="Horizontal">
-                    <Grid>
-                        <Image x:Name="TotalGlow" Opacity="0" Width="100" Height="100" Source="/UI/Assets/totalglow.png"/>
-                        <Image Opacity="1" Width="100" Height="100" Source="/UI/Assets/totalnormal.png"/>
-                    </Grid>
-                    <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="10 0 0 0">
-                        <TextBlock Text="Total Devices" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
-                        <TextBlock Text="2513" Foreground="{StaticResource BrushPrimaryTheme2}" FontSize="{StaticResource DemiLarge}"/>
-                    </StackPanel>
-                </StackPanel>
-                <Border.Triggers>
-                    <EventTrigger RoutedEvent="Border.MouseEnter">
+            <Button Grid.Row="3" Style="{StaticResource MMSFlatButton}" BorderThickness="0" Padding="0" HorizontalAlignment="Left" Width="250" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Click="TotalDevClick">
+                <Button.Content>
+                    <Border Background="Transparent" BorderThickness="0">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid>
+                                <Image x:Name="TotalGlow" Opacity="0" Width="100" Height="100" Source="/UI/Assets/totalglow.png"/>
+                                <Image Opacity="1" Width="100" Height="100" Source="/UI/Assets/totalnormal.png"/>
+                            </Grid>
+                            <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="10 0 0 0">
+                                <TextBlock Text="Total Devices" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                <TextBlock x:Name="numTotalDevice" Text="0" Foreground="{StaticResource BrushPrimaryTheme2}" FontSize="{StaticResource DemiLarge}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Button.Content>
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowIn}"
@@ -168,7 +185,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                    <EventTrigger RoutedEvent="Border.MouseLeave">
+                    <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowOut}"
@@ -181,8 +198,8 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                </Border.Triggers>
-            </Border>
+                </Button.Triggers>
+            </Button>
         </Grid>
 
         <Grid x:Name="AnimationGroup2" Grid.Column="1" Margin="0 0 0 0">
@@ -191,19 +208,24 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Border Grid.Row="0" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Width="350">
-                <StackPanel Orientation="Horizontal">
-                    <Grid>
-                        <Image x:Name="RamGlow" Source="/UI/Assets/ramglow.png" Opacity="0" Width="150" Height="150" Margin="3 0 0 0"/>
-                        <Image Opacity="1" Width="150" Height="150" Source="/UI/Assets/ramnormal.png" Margin="3 0 0 0"/>
-                    </Grid>
-                    <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="15 0 0 0">
-                        <TextBlock Text="RAM Usage" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
-                        <TextBlock Text="RAM Usage is good so far" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource Small}"/>
-                    </StackPanel>
-                </StackPanel>
-                <Border.Triggers>
-                    <EventTrigger RoutedEvent="Border.MouseEnter">
+
+            <Button Grid.Row="0" Style="{StaticResource MMSFlatButton}" BorderThickness="0" Padding="0" HorizontalAlignment="Left" Width="350" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Click="RamUsageClick">
+                <Button.Content>
+                    <Border Background="Transparent" BorderThickness="0">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid>
+                                <Image x:Name="RamGlow" Source="/UI/Assets/ramglow.png" Opacity="0" Width="150" Height="150" Margin="3 0 0 0"/>
+                                <Image Opacity="1" Width="150" Height="150" Source="/UI/Assets/ramnormal.png" Margin="3 0 0 0"/>
+                            </Grid>
+                            <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="15 0 0 0">
+                                <TextBlock Text="RAM Usage" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
+                                <TextBlock Text="RAM Usage is good so far" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource Small}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Button.Content>
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowIn}"
@@ -216,7 +238,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                    <EventTrigger RoutedEvent="Border.MouseLeave">
+                    <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowOut}"
@@ -229,22 +251,26 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                </Border.Triggers>
-            </Border>
+                </Button.Triggers>
+            </Button>
 
-            <Border Grid.Row="1" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Width="350">
-                <StackPanel Orientation="Horizontal">
-                    <Grid>
-                        <Image x:Name="DiskGlow" Opacity="0" Width="150" Height="150" Source="/UI/Assets/diskglow.png" Margin="4 0 0 0"/>
-                        <Image Opacity="1" Width="150" Height="150" Source="/UI/Assets/disknormal.png" Margin="4 0 0 0"/>
-                    </Grid>
-                    <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="15 0 0 0">
-                        <TextBlock Text="DISK Usage" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
-                        <TextBlock Text="DISK Usage is good so far" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource Small}"/>
-                    </StackPanel>
-                </StackPanel>
-                <Border.Triggers>
-                    <EventTrigger RoutedEvent="Border.MouseEnter">
+            <Button Grid.Row="1" Style="{StaticResource MMSFlatButton}" BorderThickness="0" Padding="0" HorizontalAlignment="Left" Width="350" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Click="DiskUsageClick">
+                <Button.Content>
+                    <Border Background="Transparent" BorderThickness="0">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid>
+                                <Image x:Name="DiskGlow" Opacity="0" Width="150" Height="150" Source="/UI/Assets/diskglow.png" Margin="4 0 0 0"/>
+                                <Image Opacity="1" Width="150" Height="150" Source="/UI/Assets/disknormal.png" Margin="4 0 0 0"/>
+                            </Grid>
+                            <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="15 0 0 0">
+                                <TextBlock Text="DISK Usage" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
+                                <TextBlock Text="DISK Usage is good so far" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource Small}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Button.Content>
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowIn}"
@@ -257,7 +283,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                    <EventTrigger RoutedEvent="Border.MouseLeave">
+                    <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowOut}"
@@ -270,22 +296,26 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                </Border.Triggers>
-            </Border>
+                </Button.Triggers>
+            </Button>
 
-            <Border Grid.Row="2" Background="Transparent" BorderThickness="0" HorizontalAlignment="Left" Width="350">
-                <StackPanel Orientation="Horizontal">
-                    <Grid>
-                        <Image x:Name="CPUGlow" Opacity="0" Width="150" Height="150" Source="/UI/Assets/cpuglow.png" Margin="8 0 0 0"/>
-                        <Image Opacity="1" Width="150" Height="150" Source="/UI/Assets/cpunormal.png" Margin="8 0 0 0"/>
-                    </Grid>
-                    <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="15 0 0 0">
-                        <TextBlock Text="CPU Usage" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
-                        <TextBlock Text="CPU Usage is good so far" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource Small}"/>
-                    </StackPanel>
-                </StackPanel>
-                <Border.Triggers>
-                    <EventTrigger RoutedEvent="Border.MouseEnter">
+            <Button Grid.Row="2" Style="{StaticResource MMSFlatButton}" BorderThickness="0" Padding="0" HorizontalAlignment="Left" Width="350" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" Click="CpuUsageClick">
+                <Button.Content>
+                    <Border Background="Transparent" BorderThickness="0">
+                        <StackPanel Orientation="Horizontal">
+                            <Grid>
+                                <Image x:Name="CPUGlow" Opacity="0" Width="150" Height="150" Source="/UI/Assets/cpuglow.png" Margin="8 0 0 0"/>
+                                <Image Opacity="1" Width="150" Height="150" Source="/UI/Assets/cpunormal.png" Margin="8 0 0 0"/>
+                            </Grid>
+                            <StackPanel VerticalAlignment="Center" Orientation="Vertical" Margin="15 0 0 0">
+                                <TextBlock Text="CPU Usage" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
+                                <TextBlock Text="CPU Usage is good so far" Foreground="{StaticResource BrushFontTer}" FontSize="{StaticResource Small}"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+                </Button.Content>
+                <Button.Triggers>
+                    <EventTrigger RoutedEvent="MouseEnter">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowIn}"
@@ -298,7 +328,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                    <EventTrigger RoutedEvent="Border.MouseLeave">
+                    <EventTrigger RoutedEvent="MouseLeave">
                         <BeginStoryboard>
                             <Storyboard>
                                 <DoubleAnimation Duration="{StaticResource DurationGlowOut}"
@@ -311,8 +341,8 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                </Border.Triggers>
-            </Border>
+                </Button.Triggers>
+            </Button>
         </Grid>
     </Grid>
     <Page.Triggers>

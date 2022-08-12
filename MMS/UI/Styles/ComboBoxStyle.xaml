@@ -150,10 +150,10 @@
                                 </VisualState>
                                 <VisualState x:Name="Disabled">
                                     <Storyboard>
-                                        <ColorAnimation Duration="0"
+                                        <!--<ColorAnimation Duration="0"
                                                         To="{StaticResource ColorDisabledMain}"
                                                         Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)"
-                                                        Storyboard.TargetName="ToggleButton"/>
+                                                        Storyboard.TargetName="ToggleButton"/>-->
                                         <ColorAnimation Duration="0"
                                                         To="{StaticResource ColorFontTer}"
                                                         Storyboard.TargetProperty="(Control.Foreground).(SolidColorBrush.Color)"
