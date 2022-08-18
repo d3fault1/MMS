@@ -1,5 +1,9 @@
-﻿using System.Windows;
+﻿using MMS.Backend;
+using System;
+using System.Linq;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace MMS.UI.Views.AppWindows
 {
@@ -11,6 +15,8 @@ namespace MMS.UI.Views.AppWindows
         public AddDevice()
         {
             InitializeComponent();
+
+            DeviceFloorField.ItemsSource = DataHub.Floors.Select(a => a.Name);
         }
 
         private void CloseClick(object sender, RoutedEventArgs e)
@@ -26,8 +32,26 @@ namespace MMS.UI.Views.AppWindows
 
         private void AddDeviceClick(object sender, RoutedEventArgs e)
         {
-            DialogResult = true;
-            Close();
+            if (CheckFields())
+            {
+                DialogResult = true;
+                Close();
+            }
+        }
+
+        private bool CheckFields()
+        {
+            bool res = true;
+            DeviceNameField.BorderBrush = (Brush)Application.Current.Resources["BrushTransparentAux"];
+            DeviceNameField.BorderThickness = new Thickness(0);
+
+            if (String.IsNullOrWhiteSpace(DeviceNameField.Text))
+            {
+                DeviceNameField.BorderBrush = (Brush)Application.Current.Resources["BrushErrorMain"];
+                DeviceNameField.BorderThickness = new Thickness(2);
+                res = false;
+            }
+            return res;
         }
     }
 }

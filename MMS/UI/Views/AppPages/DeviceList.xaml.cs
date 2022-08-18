@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using MMS.Backend;
 using MMS.DataModels;
+using MMS.UI.Assists;
 using MMS.UI.Views.AppWindows;
 
 namespace MMS.UI.Views.AppPages
@@ -14,6 +16,9 @@ namespace MMS.UI.Views.AppPages
     /// </summary>
     public partial class DeviceList : Page
     {
+        public delegate void TransitionRequestedEventHandler(string page, string data);
+        public event TransitionRequestedEventHandler TransitionRequested;
+
         private Dictionary<long, CommandModel> NodeCurrentCommand { get; }
         private List<Predicate<object>> DeviceListFilters { get; }
 
@@ -27,6 +32,8 @@ namespace MMS.UI.Views.AppPages
 
             InitializeComponent();
 
+            FloorOptions.ItemsSource = DataHub.Floors.Select(a => a.Name).ToList().Append("All");
+
             DevicesListView.Items.IsLiveFiltering = true;
             DevicesListView.Items.LiveFilteringProperties.Add(nameof(NodeModel.Category));
             DevicesListView.Items.LiveFilteringProperties.Add(nameof(NodeModel.IsConfig));
@@ -37,9 +44,17 @@ namespace MMS.UI.Views.AppPages
 
         private void ItemActionButtonClick(object sender, RoutedEventArgs e)
         {
-            var item = (NodeModel)((Button)sender).DataContext;
-            if (item == null) return;
-            if (DataHub.Nodes.IndexOf(item) == -1) return;
+            var itemReference = (NodeModel)((Button)sender).DataContext;
+            if (itemReference == null) return;
+            if (DataHub.Nodes.IndexOf(itemReference) == -1) return;
+
+            var item = new NodeModel
+            {
+                ID = itemReference.ID,
+                MacAddress = itemReference.MacAddress,
+                IP = itemReference.IP,
+                Name = itemReference.Name,
+            };
 
             if (((Button)sender).Content.ToString() == "Register")
             {
@@ -47,12 +62,12 @@ namespace MMS.UI.Views.AppPages
                 addDevWindow.DeviceIP.Text = item.IP;
                 addDevWindow.DeviceMac.Text = item.MacAddress;
                 addDevWindow.DeviceNameField.Text = item.Name;
-                addDevWindow.DeviceNameField.IsEnabled = false;
                 var result = addDevWindow.ShowDialog();
                 if (!result.HasValue) return;
                 if (!result.Value) return;
 
                 item.HeartbeatRate = 10;
+                item.Name = addDevWindow.DeviceNameField.Text;
                 if (addDevWindow.DeviceFloorField.SelectedIndex == -1) item.FloorID = -1;
                 else
                 {
@@ -61,15 +76,15 @@ namespace MMS.UI.Views.AppPages
                     else item.FloorID = floor.ID;
                 }
                 if (addDevWindow.DeviceCategoryField.SelectedIndex == -1) item.Category = "";
-                else item.Category = addDevWindow.DeviceCategoryField.SelectedItem.ToString();
+                else item.Category = addDevWindow.DeviceCategoryField.SelectedValue.ToString();
 
                 Globals.RegisterDevice(item);
             }
             if (((Button)sender).Content.ToString() == "Send")
             {
-                if (NodeCurrentCommand.ContainsKey(item.ID))
+                if (NodeCurrentCommand.ContainsKey(itemReference.ID))
                 {
-                    Globals.SendCommand(NodeCurrentCommand[item.ID], item, true);
+                    Globals.SendCommand(NodeCurrentCommand[itemReference.ID], itemReference, true);
                 }
             }
         }
@@ -95,6 +110,7 @@ namespace MMS.UI.Views.AppPages
             if (DevicesListView == null) return;
             var cmbBox = (ComboBox)sender;
             if (cmbBox.SelectedIndex == -1) DeviceListFilters[0] = p => true;
+            else if (cmbBox.SelectedValue.ToString() == "All") DeviceListFilters[0] = p => true;
             else DeviceListFilters[0] = p => ((NodeModel)p).Category == cmbBox.SelectedValue.ToString();
             DevicesListView.Items.Filter = p => CombinedFilterPredicate((NodeModel)p);
         }
@@ -104,7 +120,8 @@ namespace MMS.UI.Views.AppPages
             if (DevicesListView == null) return;
             var cmbBox = (ComboBox)sender;
             if (cmbBox.SelectedIndex == -1) DeviceListFilters[1] = p => true;
-            else DeviceListFilters[1] = p => ((NodeModel)p).Floor.Name == cmbBox.SelectedValue.ToString();
+            else if (cmbBox.SelectedItem.ToString() == "All") DeviceListFilters[1] = p => true;
+            else DeviceListFilters[1] = p => ((NodeModel)p).Floor?.Name == cmbBox.SelectedItem.ToString();
             DevicesListView.Items.Filter = p => CombinedFilterPredicate((NodeModel)p);
         }
 
@@ -112,6 +129,22 @@ namespace MMS.UI.Views.AppPages
         {
             if (DevicesListView == null) return;
             var cmbBox = (ComboBox)sender;
+            if (cmbBox.SelectedIndex == -1) OnTransitionRequested("total");
+            switch (cmbBox.SelectedValue.ToString())
+            {
+                case "All":
+                    OnTransitionRequested("total");
+                    break;
+                case "Online":
+                    OnTransitionRequested("online");
+                    break;
+                case "Offline":
+                    OnTransitionRequested("offline");
+                    break;
+                case "Not Configured":
+                    OnTransitionRequested("new");
+                    break;
+            }
             if (cmbBox.SelectedIndex == -1) DeviceListFilters[2] = p => true;
             else DeviceListFilters[2] = p =>
             {
@@ -131,6 +164,59 @@ namespace MMS.UI.Views.AppPages
                 if (!predicate.Invoke(p)) return false;
             }
             return true;
+        }
+
+        private void OnTransitionRequested(string data)
+        {
+            TransitionRequested?.Invoke("devicelist", data);
+        }
+
+        private async void DevicesListViewSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var listview = (ListView)sender;
+            var gridview = (GridView)listview.View;
+            double percentTotal = 0;
+            double fixedWidth = 0;
+            for (int i = 0; i < gridview.Columns.Count; i++)
+            {
+                var percentWidth = gridview.Columns[i].ReadLocalValue(ListViewAssists.ColumnWidthPercentageProperty);
+                if (percentWidth == DependencyProperty.UnsetValue)
+                {
+                    var minWidth = gridview.Columns[i].ReadLocalValue(ListViewAssists.ColumnMinWidthProperty);
+                    if (minWidth == DependencyProperty.UnsetValue) gridview.Columns[i].Width = Double.NaN;
+                    else gridview.Columns[i].Width = (double)minWidth;
+                }
+            }
+            await Task.Delay(10);
+            for (int i = 0; i < gridview.Columns.Count; i++)
+            {
+                var percentWidth = gridview.Columns[i].ReadLocalValue(ListViewAssists.ColumnWidthPercentageProperty);
+                if (percentWidth == DependencyProperty.UnsetValue)
+                {
+                    fixedWidth += gridview.Columns[i].ActualWidth;
+                }
+                else
+                {
+                    percentTotal += (double)percentWidth;
+                }
+            }
+            var availableWidth = e.NewSize.Width - fixedWidth - 20;
+            for (int i = 0; i < gridview.Columns.Count; i++)
+            {
+                var percentWidth = gridview.Columns[i].ReadLocalValue(ListViewAssists.ColumnWidthPercentageProperty);
+                if (percentWidth != DependencyProperty.UnsetValue)
+                {
+                    var ratioActual = (double)percentWidth / percentTotal;
+                    var calculatedWidth = ratioActual * availableWidth;
+                    var minWidth = gridview.Columns[i].ReadLocalValue(ListViewAssists.ColumnMinWidthProperty);
+                    if (minWidth != DependencyProperty.UnsetValue)
+                    {
+                        if (calculatedWidth < (double)minWidth) gridview.Columns[i].Width = (double)minWidth;
+                        else gridview.Columns[i].Width = calculatedWidth;
+                    }
+                    else gridview.Columns[i].Width = calculatedWidth;
+                }
+            }
         }
     }
 }

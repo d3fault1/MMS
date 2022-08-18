@@ -47,11 +47,25 @@
                 <TextBlock Margin="5 0 0 0"  Text="Device Name" FontWeight="SemiBold" FontSize="{StaticResource Regular}" Foreground="{StaticResource BrushFontMain}"/>
                 <TextBox x:Name="DeviceNameField" Margin="0 10 0 0" Height="33" Text="21504" Style="{StaticResource MMSTextBox}" FontSize="{StaticResource SemiSmall}" Background="{StaticResource BrushSecondaryAux2}"/>
                 <TextBlock Margin="5 10 0 0" Text="Device Type" FontWeight="SemiBold" FontSize="{StaticResource Regular}" Foreground="{StaticResource BrushFontMain}"/>
-                <ComboBox x:Name="DeviceTypeField" Margin="0 10 0 0" Height="35" ext:GeneralAssists.HintText="Select the device type" FontSize="{StaticResource SemiSmall}" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Background="{StaticResource BrushSecondaryAux2}"/>
+                <ComboBox x:Name="DeviceTypeField" Margin="0 10 0 0" Height="35" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select the device type" FontSize="{StaticResource SemiSmall}" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Background="{StaticResource BrushSecondaryAux2}">
+                    <ComboBoxItem>Interactive</ComboBoxItem>
+                    <ComboBoxItem>Video Playback</ComboBoxItem>
+                    <ComboBoxItem>Projector</ComboBoxItem>
+                    <ComboBoxItem>SOC</ComboBoxItem>
+                    <ComboBoxItem>Dataton Watchout</ComboBoxItem>
+                    <ComboBoxItem>DMX</ComboBoxItem>
+                    <ComboBoxItem>NUC</ComboBoxItem>
+                    <ComboBoxItem>Server</ComboBoxItem>
+                </ComboBox>
                 <TextBlock Margin="5 10 0 0" Text="Floor" FontWeight="SemiBold" FontSize="{StaticResource Regular}" Foreground="{StaticResource BrushFontMain}"/>
-                <ComboBox x:Name="DeviceFloorField" Margin="0 10 0 0" Height="35" ext:GeneralAssists.HintText="Select the floor" FontSize="{StaticResource SemiSmall}" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Background="{StaticResource BrushSecondaryAux2}"/>
+                <ComboBox x:Name="DeviceFloorField" Margin="0 10 0 0" Height="35" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select the floor" FontSize="{StaticResource SemiSmall}" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Background="{StaticResource BrushSecondaryAux2}"/>
                 <TextBlock Margin="5 10 0 0" Text="Category" FontWeight="SemiBold" FontSize="{StaticResource Regular}" Foreground="{StaticResource BrushFontMain}"/>
-                <ComboBox x:Name="DeviceCategoryField" Margin="0 10 0 0" Height="35" ext:GeneralAssists.HintText="Select the category" FontSize="{StaticResource SemiSmall}" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Background="{StaticResource BrushSecondaryAux2}"/>
+                <ComboBox x:Name="DeviceCategoryField" Margin="0 10 0 0" Height="35" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select the category" FontSize="{StaticResource SemiSmall}" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Background="{StaticResource BrushSecondaryAux2}">
+                    <ComboBoxItem>Category 1</ComboBoxItem>
+                    <ComboBoxItem>Category 2</ComboBoxItem>
+                    <ComboBoxItem>Category 3</ComboBoxItem>
+                    <ComboBoxItem>Category 4</ComboBoxItem>
+                </ComboBox>
                 <Border Padding="18" Margin="0 20 0 0" CornerRadius="{StaticResource CorderRadiusLarge}" Background="{StaticResource BrushSecondaryAux2}">
                     <Grid>
                         <Grid.ColumnDefinitions>

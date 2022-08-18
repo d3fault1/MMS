@@ -1,13 +1,13 @@
 ﻿<Page x:Class="MMS.UI.Views.AppPages.DeviceList"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:MMS.UI.Views.AppPages"
       xmlns:datactx="clr-namespace:MMS.Backend"
       xmlns:ext="clr-namespace:MMS.UI.Assists"
       xmlns:converters="clr-namespace:MMS.UI.BindingConverters"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       d:DesignHeight="650" d:DesignWidth="1030"
       Title="DeviceList" ShowsNavigationUI="False" Opacity="1">
 
@@ -32,15 +32,21 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ComboBox x:Name="CategoryOptions" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select Category" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Width="180" Height="40" HorizontalAlignment="Right" Grid.Column="0" Grid.Row="0" SelectionChanged="CategorySelectionChanged"/>
-        <ComboBox x:Name="FloorOptions" SelectedValuePath="Content" ItemsSource="{x:Static datactx:DataHub.Floors}" ext:GeneralAssists.HintText="Select a Floor" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Width="180" Height="40" Margin="15 0 0 0" Grid.Column="1" Grid.Row="0" SelectionChanged="FloorSelectionChanged"/>
-        <ComboBox x:Name="StatusOptions" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select Status" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" Width="180" Height="40" Margin="0 0 15 0" Grid.Column="2" Grid.Row="0" SelectionChanged="StatusSelectionChanged">
+        <ComboBox x:Name="CategoryOptions" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select Category" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" MinWidth="180" MaxWidth="250" Height="40" Margin="30 0 0 0" Grid.Column="0" Grid.Row="0" SelectionChanged="CategorySelectionChanged">
+            <ComboBoxItem>Category 1</ComboBoxItem>
+            <ComboBoxItem>Category 2</ComboBoxItem>
+            <ComboBoxItem>Category 3</ComboBoxItem>
+            <ComboBoxItem>Category 4</ComboBoxItem>
+            <ComboBoxItem>All</ComboBoxItem>
+        </ComboBox>
+        <ComboBox x:Name="FloorOptions" ext:GeneralAssists.HintText="Select a Floor" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" MinWidth="180" MaxWidth="250" Height="40" Margin="25 0 0 0" Grid.Column="1" Grid.Row="0" SelectionChanged="FloorSelectionChanged"/>
+        <ComboBox x:Name="StatusOptions" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select Status" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" MinWidth="180" MaxWidth="250" Height="40" Margin="25 0 0 0" Grid.Column="2" Grid.Row="0" SelectionChanged="StatusSelectionChanged">
             <ComboBoxItem>Online</ComboBoxItem>
             <ComboBoxItem>Offline</ComboBoxItem>
             <ComboBoxItem>Not Configured</ComboBoxItem>
-            <ComboBoxItem IsSelected="True">All</ComboBoxItem>
+            <ComboBoxItem>All</ComboBoxItem>
         </ComboBox>
-        <Button Style="{StaticResource MMSButtonLarge}" Width="180" Height="40" Padding="9 0" HorizontalAlignment="Left" HorizontalContentAlignment="Stretch" Grid.Column="3" Grid.Row="0" Click="ConfigureManualClick">
+        <Button Style="{StaticResource MMSButtonLarge}" MinWidth="180" MaxWidth="250" Height="40" Margin="25 0 30 0" Padding="9 0" HorizontalContentAlignment="Stretch" Grid.Column="3" Grid.Row="0" Click="ConfigureManualClick">
             <Grid Margin="0 -1 0 0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -51,10 +57,10 @@
             </Grid>
         </Button>
 
-        <ListView x:Name="DevicesListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="0 20 0 0" ItemsSource="{x:Static datactx:DataHub.Nodes}" Style="{StaticResource MMSListView}" ItemContainerStyle="{StaticResource MMSListViewItem}">
+        <ListView x:Name="DevicesListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="0 20 0 0" ItemsSource="{x:Static datactx:DataHub.Nodes}" Style="{StaticResource MMSListView}" ItemContainerStyle="{StaticResource MMSListViewItem}" SizeChanged="DevicesListViewSizeChanged">
             <ListView.View>
                 <GridView AllowsColumnReorder="False" ColumnHeaderContainerStyle="{StaticResource MMSGridViewColumnHeader}">
-                    <GridViewColumn Width="50">
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="50">
                         <GridViewColumn.Header>
                             <CheckBox x:Name="HeaderCheckBox" IsChecked="False" Style="{StaticResource MMSCheckBox}"/>
                         </GridViewColumn.Header>
@@ -64,7 +70,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="200">
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="200" ext:ListViewAssists.ColumnWidthPercentage="100">
                         <GridViewColumn.Header>
                             <TextBlock Text="Device Name" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
                         </GridViewColumn.Header>
@@ -77,7 +83,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="90">
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="90">
                         <GridViewColumn.Header>
                             <TextBlock Text="Version" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
                         </GridViewColumn.Header>
@@ -87,7 +93,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="120">
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="120">
                         <GridViewColumn.Header>
                             <TextBlock Text="IP" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
                         </GridViewColumn.Header>
@@ -97,7 +103,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="170">
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="170" ext:ListViewAssists.ColumnWidthPercentage="85">
                         <GridViewColumn.Header>
                             <TextBlock Text="Exhibit" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
                         </GridViewColumn.Header>
@@ -107,7 +113,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="130">
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="130">
                         <GridViewColumn.Header>
                             <TextBlock Text="Status" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
                         </GridViewColumn.Header>
@@ -127,7 +133,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="120">
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="120">
                         <GridViewColumn.Header>
                             <TextBlock Text="Command" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
                         </GridViewColumn.Header>
@@ -144,7 +150,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Width="100">
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="100">
                         <GridViewColumn.Header>
                             <TextBlock Text="Action" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
                         </GridViewColumn.Header>

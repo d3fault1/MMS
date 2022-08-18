@@ -9,7 +9,7 @@ namespace MMS.UI.Views.AppUserControls
     /// </summary>
     public partial class SidePanel : UserControl
     {
-        public delegate void NavigationRequestedEventHandler(Uri TargetPage);
+        public delegate void NavigationRequestedEventHandler(Uri TargetPage, string from, string data);
         public event NavigationRequestedEventHandler NavigationRequested;
 
         public SidePanel()
@@ -19,12 +19,12 @@ namespace MMS.UI.Views.AppUserControls
 
         private void DeviceDashboardClick(object sender, RoutedEventArgs e)
         {
-            OnNavigationRequested("/UI/Views/AppPages/Dashboard.xaml");
+            OnNavigationRequested("/UI/Views/AppPages/Dashboard.xaml", null);
         }
 
         private void TotalDevicesClick(object sender, RoutedEventArgs e)
         {
-            OnNavigationRequested("/UI/Views/AppPages/DeviceList.xaml");
+            OnNavigationRequested("/UI/Views/AppPages/DeviceList.xaml", "total");
         }
 
         private void ContentUploadClick(object sender, RoutedEventArgs e)
@@ -62,9 +62,9 @@ namespace MMS.UI.Views.AppUserControls
 
         }
 
-        private void OnNavigationRequested(string RelativeTargetUri)
+        private void OnNavigationRequested(string RelativeTargetUri, string data)
         {
-            NavigationRequested?.Invoke(new Uri(RelativeTargetUri, UriKind.Relative));
+            NavigationRequested?.Invoke(new Uri(RelativeTargetUri, UriKind.Relative), "sidepanel", data);
         }
     }
 }

@@ -44,7 +44,7 @@ namespace MMS.UI.BindingConverters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             string stat = (string)value;
-            if (stat == "Online") return Brushes.Green;
+            if (stat == "Online") return Brushes.LightGreen;
             if (stat == "Offline") return Brushes.Red;
             if (stat == "Not Configured") return Brushes.Gray;
             return Brushes.Gray;

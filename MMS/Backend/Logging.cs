@@ -48,7 +48,7 @@ namespace MMS.Backend
 
         public static void Error(string message)
         {
-            logwriter?.WriteLine($"[Error]\t\t{DateTime.Now.TimeOfDay:hh\\:mm\\:ss\\.fff}\t{message}");
+            logwriter?.WriteLine($"[Error]\t{DateTime.Now.TimeOfDay:hh\\:mm\\:ss\\.fff}\t{message}");
         }
     }
 }

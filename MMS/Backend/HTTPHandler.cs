@@ -298,7 +298,6 @@ namespace MMS.Backend
                     regrespmodel.MacAddress = regq.MacAddress;
                     regrespmodel.HeartbeatRate = regq.HeartbeatRate;
                     regrespmodel.Status = "REG_APPROVED";
-                    //regrespmodel.AuthToken = Helper.GenerateAuthToken(16);
 
                     HTTPGeneralRespModel respmodel = new HTTPGeneralRespModel();
                     respmodel.ResponseModel = regrespmodel;
@@ -318,7 +317,8 @@ namespace MMS.Backend
                     else
                     {
                         node.HeartbeatRate = regrespmodel.HeartbeatRate;
-                        //node.RegKey = regrespmodel.AuthToken;
+                        node.Name = regq.Name;
+                        node.Category = regq.Category;
                         node.FloorID = regq.FloorID;
                         node.ZoneID = regq.ZoneID;
                         node.ExhibitID = regq.ExhibitID;

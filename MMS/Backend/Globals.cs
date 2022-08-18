@@ -10,6 +10,9 @@ namespace MMS.Backend
 {
     class Globals
     {
+        public delegate void PushNotifyRequestedEventHandler(string title, string message, string type);
+        public static event PushNotifyRequestedEventHandler PushNotifyRequested;
+
         public static ConfigurationModel Config { get; set; }
         public static IDatabaseIO DBInterface { get; set; }
 
@@ -39,12 +42,14 @@ namespace MMS.Backend
             {
                 if (DBInterface.CreateDatabase())
                 {
-                    Thread.Sleep(5000);
+                    Thread.Sleep(3000);
                     if (!DBInterface.CreateTables())
                     {
                         Logging.Error("Could not create database tables");
                         return false;
                     }
+                    Thread.Sleep(1000);
+                    FillReqData();
                 }
                 else
                 {
@@ -62,8 +67,6 @@ namespace MMS.Backend
                 Logging.Error("Unexpected exception occured while setting up database");
                 return false;
             }
-
-            //FillReqData();
 
             var read_floors = DBInterface.ReadFloorData();
             foreach (var fl in read_floors) DataHub.Floors.Add(fl);
@@ -97,30 +100,87 @@ namespace MMS.Backend
 
         public static void FillReqData()
         {
-            FloorModel fmode = new FloorModel
+            List<CommandModel> c1 = new List<CommandModel>
             {
-                IsActive = true,
-                Name = "Test Floor"
+                new CommandModel
+                {
+                    Command = "halt",
+                    IsEnabled = true
+                },
+                new CommandModel
+                {
+                    Command = "run",
+                    IsEnabled = true
+                },
+                new CommandModel
+                {
+                    Command = "restart",
+                    IsEnabled = true
+                },
+                new CommandModel
+                {
+                    Command = "reboot",
+                    IsEnabled = true
+                },
+                new CommandModel
+                {
+                    Command = "nextVideo",
+                    IsEnabled = true
+                },
+                new CommandModel
+                {
+                    Command = "previousVideo",
+                    IsEnabled = true
+                },
+                new CommandModel
+                {
+                    Command = "gotoTime",
+                    IsEnabled = true
+                },
+                new CommandModel
+                {
+                    Command = "VOLUME",
+                    IsEnabled = true
+                },
+                new CommandModel
+                {
+                    Command = "playByName",
+                    IsEnabled = true
+                },
+                new CommandModel
+                {
+                    Command = "shutdown",
+                    IsEnabled = true
+                },
+                new CommandModel
+                {
+                    Command = "TurnOn",
+                    IsEnabled = true
+                }
             };
-            ZoneModel zmode = new ZoneModel
+            List<FloorModel> f1 = new List<FloorModel>
             {
-                IsActive = true,
-                Name = "Test Zone"
+                new FloorModel
+                {
+                    Name = "Floor 1",
+                    IsActive = true,
+                    Description = "Floor 1"
+                },
+                new FloorModel
+                {
+                    Name = "Floor 2",
+                    IsActive = true,
+                    Description = "Floor 2"
+                },
+                new FloorModel
+                {
+                    Name = "Floor 3",
+                    IsActive = true,
+                    Description = "Floor 3"
+                }
             };
-            ExhibitModel exmode = new ExhibitModel
-            {
-                IsActive = true,
-                IsExhibitShow = true,
-                Name = "Test Exhibit"
-            };
-            List<FloorModel> fl = new List<FloorModel> { fmode };
-            List<ZoneModel> zl = new List<ZoneModel> { zmode };
-            List<ExhibitModel> exl = new List<ExhibitModel> { exmode };
-            DBInterface.WriteFloorData(ref fl);
-            zl[0].FloorID = fl[0].ID;
-            DBInterface.WriteZoneData(ref zl);
-            exl[0].ZoneID = zl[0].ID;
-            DBInterface.WriteExhibitData(ref exl);
+            DBInterface.WriteCommandData(ref c1);
+            DBInterface.WriteFloorData(ref f1);
         }
 
         public static void RegisterDevice(NodeModel device)
@@ -158,7 +218,9 @@ namespace MMS.Backend
 
                     if (DataHub.Nodes[index].IsConfig)
                     {
-                        Logging.Error($"Registration request received for already configured device {DataHub.Nodes[index].MacAddress}");
+                        if (node.IsConfig) return;
+                        HTTPHandler.Instance.RegisterQueue.Add(node);
+                        //Logging.Error($"Registration request received for already configured device {DataHub.Nodes[index].MacAddress}");
                         return;
                     }
 
@@ -178,11 +240,13 @@ namespace MMS.Backend
                     if (node.IsConfig)
                     {
                         DataHub.Nodes[index].HeartbeatRate = node.HeartbeatRate;
+                        DataHub.Nodes[index].Category = node.Category;
                         DataHub.Nodes[index].FloorID = node.FloorID;
                         DataHub.Nodes[index].ZoneID = node.ZoneID;
                         DataHub.Nodes[index].ExhibitID = node.ExhibitID;
                         DataHub.Nodes[index].IsOnline = true;
                         OnlineCheckList[index] = true;
+                        OnPushNotifyRequested("Info", "Device Registered Successfully", "info");
                     }
 
                     var obj = DataHub.Nodes[index];
@@ -264,6 +328,11 @@ namespace MMS.Backend
                 }
                 OnlineCheckList[i] = false;
             }
+        }
+
+        private static void OnPushNotifyRequested(string title, string message, string type)
+        {
+            PushNotifyRequested?.Invoke(title, message, type);
         }
     }
 }

@@ -443,7 +443,9 @@ namespace MMS.DataModels
             }
             set
             {
+                if (_currentstatus != null) _currentstatus.PropertyChanged -= CurrentStatusPropertyChanged;
                 _currentstatus = value;
+                _currentstatus.PropertyChanged += CurrentStatusPropertyChanged;
                 OnPropertyChanged(nameof(CurrentStatus));
             }
         }
@@ -454,6 +456,11 @@ namespace MMS.DataModels
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void CurrentStatusPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(CurrentStatus));
         }
         #endregion
     }

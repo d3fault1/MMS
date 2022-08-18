@@ -19,6 +19,7 @@ namespace MMS.Backend
                 client.Connect(ip, port);
                 var stream = client.GetStream();
                 stream.Write(data, 0, data.Length);
+                stream.Flush();
                 client.Close();
                 client.Dispose();
                 Logging.Debug("TCPHandler: Data Sent Successfully.");

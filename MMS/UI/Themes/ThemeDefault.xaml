@@ -38,6 +38,8 @@
     <Color x:Key="ColorFontMain">#FFFFFFFF</Color>
     <Color x:Key="ColorFontAux">#FF434343</Color>
     <Color x:Key="ColorFontTer">#FFC7C7C7</Color>
+
+    <Color x:Key="ColorErrorMain">#FFFF1A1A</Color>
     
     <!--Brushes-->
     <LinearGradientBrush x:Key="BrushPrimary1" StartPoint="0.5 0" EndPoint="0.5 1">
@@ -78,6 +80,7 @@
     <SolidColorBrush x:Key="BrushFontMain" Color="{StaticResource ColorFontMain}"/>
     <SolidColorBrush x:Key="BrushFontAux" Color="{StaticResource ColorFontAux}"/>
     <SolidColorBrush x:Key="BrushFontTer" Color="{StaticResource ColorFontTer}"/>
+    <SolidColorBrush x:Key="BrushErrorMain" Color="{StaticResource ColorErrorMain}"/>
 
     <!--Font Sizes-->
     <core:Double x:Key="Small">12</core:Double>

@@ -3,7 +3,7 @@
                     xmlns:ext="clr-namespace:MMS.UI.Assists">
 
     <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
-    
+
     <Style x:Key="GridViewColumnHeaderGripper" TargetType="{x:Type Thumb}">
         <Setter Property="Width" Value="5"/>
         <Setter Property="BorderThickness" Value="0"/>
@@ -47,7 +47,7 @@
                         </VisualStateManager.VisualStateGroups>
                         <Border x:Name="HeaderBorder" Background="{TemplateBinding Background}" TextBlock.Foreground="{TemplateBinding Foreground}" TextBlock.FontSize="{TemplateBinding FontSize}"
                                 BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Margin="{TemplateBinding Padding}" TextBlock.FontWeight="{TemplateBinding FontWeight}">
-                                <ContentPresenter x:Name="HeaderContent" RecognizesAccessKey="True" 
+                            <ContentPresenter x:Name="HeaderContent" RecognizesAccessKey="True" 
                                               VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
                                               HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
                                               SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
@@ -104,11 +104,11 @@
                 <ControlTemplate TargetType="{x:Type ListView}">
                     <Border Name="Border" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" TextBlock.FontSize="{TemplateBinding FontSize}"
                             Background="{TemplateBinding Background}" TextBlock.Foreground="{TemplateBinding Foreground}">
-                        <DockPanel Margin="{TemplateBinding Padding}">
-                            <Border DockPanel.Dock="Top" BorderBrush="{StaticResource BrushTransparentMain}" 
+                        <ScrollViewer Style="{StaticResource MMSScrollViewer}" VerticalScrollBarVisibility="Disabled" Focusable="False">
+                            <DockPanel Margin="{TemplateBinding Padding}">
+                                <Border DockPanel.Dock="Top" BorderBrush="{StaticResource BrushTransparentMain}" 
                                                     BorderThickness="0" Background="{StaticResource BrushSecondaryAux3}" 
                                                     CornerRadius="{StaticResource CornerRadiusRegular}" Padding="4" TextBlock.FontSize="{TemplateBinding FontSize}">
-                                <ScrollViewer Style="{StaticResource MMSScrollViewer}" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" Focusable="False" FontSize="{TemplateBinding FontSize}">
                                     <GridViewHeaderRowPresenter Columns="{Binding Path=TemplatedParent.View.Columns, RelativeSource={RelativeSource Self}}" 
                                                             ColumnHeaderContainerStyle="{Binding Path=TemplatedParent.View.ColumnHeaderContainerStyle, RelativeSource={RelativeSource Self}}"
                                                             ColumnHeaderTemplate="{Binding Path=TemplatedParent.View.ColumnHeaderTemplate, RelativeSource={RelativeSource Self}}"
@@ -117,12 +117,12 @@
                                                             ColumnHeaderContextMenu="{Binding Path=TemplatedParent.View.ColumnHeaderContextMenu, RelativeSource={RelativeSource Self}}"
                                                             ColumnHeaderToolTip="{Binding Path=TemplatedParent.View.ColumnHeaderToolTip, RelativeSource={RelativeSource Self}}"
                                                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                </Border>
+                                <ScrollViewer Style="{StaticResource MMSScrollViewer}" KeyboardNavigation.DirectionalNavigation="Local" HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsPresenter TextBlock.FontSize="{TemplateBinding FontSize}" TextBlock.Foreground="{TemplateBinding Foreground}" Margin="2 10 2 0"/>
                                 </ScrollViewer>
-                            </Border>
-                            <ScrollViewer Style="{StaticResource MMSScrollViewer}" KeyboardNavigation.DirectionalNavigation="Local">
-                                <ItemsPresenter TextBlock.FontSize="{TemplateBinding FontSize}" TextBlock.Foreground="{TemplateBinding Foreground}" Margin="2 10 2 0"/>
-                            </ScrollViewer>
-                        </DockPanel>
+                            </DockPanel>
+                        </ScrollViewer>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsGrouping" Value="True">
@@ -200,5 +200,5 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
 </ResourceDictionary>
