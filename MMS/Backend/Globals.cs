@@ -219,7 +219,7 @@ namespace MMS.Backend
                     if (DataHub.Nodes[index].IsConfig)
                     {
                         if (node.IsConfig) return;
-                        HTTPHandler.Instance.RegisterQueue.Add(node);
+                        RegisterDevice(node);
                         //Logging.Error($"Registration request received for already configured device {DataHub.Nodes[index].MacAddress}");
                         return;
                     }

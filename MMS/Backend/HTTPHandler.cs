@@ -316,7 +316,7 @@ namespace MMS.Backend
                     if (body == "") header = "HTTP/1.1 500 Internal Server Error\r\nServer: MMSHTTPServer";
                     else
                     {
-                        node.HeartbeatRate = regrespmodel.HeartbeatRate;
+                        node.HeartbeatRate = regq.HeartbeatRate;
                         node.Name = regq.Name;
                         node.Category = regq.Category;
                         node.FloorID = regq.FloorID;
