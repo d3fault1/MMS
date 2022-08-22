@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Sockets;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace MMS.Backend
 {
@@ -44,7 +45,7 @@ namespace MMS.Backend
                 encryptor.ImportParameters(param);
                 var retbytes = encryptor.Encrypt(data, false);
                 Logging.Debug("TCPHandler: Data Encryption Successful.");
-                return retbytes;
+                return Encoding.UTF8.GetBytes(Convert.ToBase64String(retbytes));
             }
             catch (Exception e)
             {
