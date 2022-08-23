@@ -9,8 +9,8 @@
         xmlns:pg="clr-namespace:MMS.UI.Views.AppPages"
         mc:Ignorable="d"
         Title="MainWindow" MinHeight="750" MinWidth="1100" Height="900" Width="1300" WindowStyle="None" Background="Transparent"
-        AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowState="Maximized">
-    <Border x:Name="AppWindow" CornerRadius="{StaticResource CorderRadiusLarge}">
+        AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowState="Maximized" StateChanged="MainWindowStateChanged">
+    <Border x:Name="AppWindow" CornerRadius="0">
         <Border.Background>
             <LinearGradientBrush StartPoint="0.5 0" EndPoint="0.5 1">
                 <GradientStop Color="{StaticResource ColorPrimaryMain1}"/>

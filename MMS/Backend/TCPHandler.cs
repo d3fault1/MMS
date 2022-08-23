@@ -1,7 +1,11 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Net.Sockets;
 using System.Security.Cryptography;
-using System.Text;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.OpenSsl;
+using Org.BouncyCastle.Crypto.Parameters;
 
 namespace MMS.Backend
 {
@@ -39,11 +43,11 @@ namespace MMS.Backend
             try
             {
                 Logging.Debug("TCPHandler: Encrypting Data with Public Key.");
+                MemoryStream memstream = new MemoryStream(Encoding.UTF8.GetBytes(pem));
+                RSAParameters param = DotNetUtilities.ToRSAParameters((RsaKeyParameters)new PemReader(new StreamReader(memstream)).ReadObject());
                 RSACryptoServiceProvider encryptor = new RSACryptoServiceProvider();
-                RSAParameters param = encryptor.ExportParameters(false);
-                param.Modulus = Convert.FromBase64String(pem.Replace("-----BEGIN PUBLIC KEY-----", "").Replace("-----END PUBLIC KEY-----", "").Replace("\n", ""));
                 encryptor.ImportParameters(param);
-                var retbytes = encryptor.Encrypt(data, false);
+                var retbytes = encryptor.Encrypt(data, true);
                 Logging.Debug("TCPHandler: Data Encryption Successful.");
                 return Encoding.UTF8.GetBytes(Convert.ToBase64String(retbytes));
             }

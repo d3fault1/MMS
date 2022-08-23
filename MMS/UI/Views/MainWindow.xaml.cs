@@ -180,5 +180,11 @@ namespace MMS
             ((LinearGradientBrush)AppWindow.Background).GradientStops[1].BeginAnimation(GradientStop.ColorProperty, animationAux);
             PagePresenter.Navigate(TargetPage, param);
         }
+
+        private void MainWindowStateChanged(object sender, EventArgs e)
+        {
+            if (WindowState == WindowState.Maximized) AppWindow.CornerRadius = new CornerRadius(0);
+            else AppWindow.CornerRadius = (CornerRadius)Application.Current.Resources["CorderRadiusLarge"];
+        }
     }
 }
