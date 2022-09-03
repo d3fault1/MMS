@@ -86,57 +86,6 @@
         </Style.Triggers>
     </Style>
 
-    <Style x:Key="MMSListView" TargetType="{x:Type ListView}">
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Setter Property="OverridesDefaultStyle" Value="True"/>
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="BorderBrush" Value="{StaticResource BrushTransparentMain}"/>
-        <Setter Property="Background" Value="{StaticResource BrushTransparentMain}"/>
-        <Setter Property="Foreground" Value="{StaticResource BrushSecondaryMain}"/>
-        <Setter Property="FontSize" Value="{StaticResource Regular}"/>
-        <Setter Property="Padding" Value="5"/>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ListView}">
-                    <Border Name="Border" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" TextBlock.FontSize="{TemplateBinding FontSize}"
-                            Background="{TemplateBinding Background}" TextBlock.Foreground="{TemplateBinding Foreground}">
-                        <ScrollViewer Style="{StaticResource MMSScrollViewer}" VerticalScrollBarVisibility="Disabled" Focusable="False">
-                            <DockPanel Margin="{TemplateBinding Padding}">
-                                <Border DockPanel.Dock="Top" BorderBrush="{StaticResource BrushTransparentMain}" 
-                                                    BorderThickness="0" Background="{StaticResource BrushSecondaryAux3}" 
-                                                    CornerRadius="{StaticResource CornerRadiusRegular}" Padding="4" TextBlock.FontSize="{TemplateBinding FontSize}">
-                                    <GridViewHeaderRowPresenter Columns="{Binding Path=TemplatedParent.View.Columns, RelativeSource={RelativeSource Self}}" 
-                                                            ColumnHeaderContainerStyle="{Binding Path=TemplatedParent.View.ColumnHeaderContainerStyle, RelativeSource={RelativeSource Self}}"
-                                                            ColumnHeaderTemplate="{Binding Path=TemplatedParent.View.ColumnHeaderTemplate, RelativeSource={RelativeSource Self}}"
-                                                            ColumnHeaderTemplateSelector="{Binding Path=TemplatedParent.View.ColumnHeaderTemplateSelector, RelativeSource={RelativeSource Self}}"
-                                                            AllowsColumnReorder="{Binding Path=TemplatedParent.View.AllowsColumnReorder, RelativeSource={RelativeSource Self}}"
-                                                            ColumnHeaderContextMenu="{Binding Path=TemplatedParent.View.ColumnHeaderContextMenu, RelativeSource={RelativeSource Self}}"
-                                                            ColumnHeaderToolTip="{Binding Path=TemplatedParent.View.ColumnHeaderToolTip, RelativeSource={RelativeSource Self}}"
-                                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                                </Border>
-                                <ScrollViewer Style="{StaticResource MMSScrollViewer}" KeyboardNavigation.DirectionalNavigation="Local" HorizontalScrollBarVisibility="Disabled">
-                                    <ItemsPresenter TextBlock.FontSize="{TemplateBinding FontSize}" TextBlock.Foreground="{TemplateBinding Foreground}" Margin="2 10 2 0"/>
-                                </ScrollViewer>
-                            </DockPanel>
-                        </ScrollViewer>
-                    </Border>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsGrouping" Value="True">
-                            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Border" Property="Background" Value="{StaticResource BrushDisabledMain}"/>
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <Style x:Key="MMSListViewItem" TargetType="{x:Type ListViewItem}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -196,6 +145,58 @@
                         </VisualStateManager.VisualStateGroups>
                         <GridViewRowPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
                     </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MMSListView" TargetType="{x:Type ListView}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushTransparentMain}"/>
+        <Setter Property="Background" Value="{StaticResource BrushTransparentMain}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushSecondaryMain}"/>
+        <Setter Property="FontSize" Value="{StaticResource Regular}"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource MMSListViewItem}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListView}">
+                    <Border Name="Border" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" TextBlock.FontSize="{TemplateBinding FontSize}"
+                            Background="{TemplateBinding Background}" TextBlock.Foreground="{TemplateBinding Foreground}">
+                        <ScrollViewer Style="{StaticResource MMSScrollViewer}" VerticalScrollBarVisibility="Disabled" Focusable="False">
+                            <DockPanel Margin="{TemplateBinding Padding}">
+                                <Border DockPanel.Dock="Top" BorderBrush="{StaticResource BrushTransparentMain}" 
+                                                    BorderThickness="0" Background="{StaticResource BrushSecondaryAux3}" 
+                                                    CornerRadius="{StaticResource CornerRadiusRegular}" Padding="4" TextBlock.FontSize="{TemplateBinding FontSize}">
+                                    <GridViewHeaderRowPresenter Columns="{Binding Path=TemplatedParent.View.Columns, RelativeSource={RelativeSource Self}}" 
+                                                            ColumnHeaderContainerStyle="{Binding Path=TemplatedParent.View.ColumnHeaderContainerStyle, RelativeSource={RelativeSource Self}}"
+                                                            ColumnHeaderTemplate="{Binding Path=TemplatedParent.View.ColumnHeaderTemplate, RelativeSource={RelativeSource Self}}"
+                                                            ColumnHeaderTemplateSelector="{Binding Path=TemplatedParent.View.ColumnHeaderTemplateSelector, RelativeSource={RelativeSource Self}}"
+                                                            AllowsColumnReorder="{Binding Path=TemplatedParent.View.AllowsColumnReorder, RelativeSource={RelativeSource Self}}"
+                                                            ColumnHeaderContextMenu="{Binding Path=TemplatedParent.View.ColumnHeaderContextMenu, RelativeSource={RelativeSource Self}}"
+                                                            ColumnHeaderToolTip="{Binding Path=TemplatedParent.View.ColumnHeaderToolTip, RelativeSource={RelativeSource Self}}"
+                                                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                </Border>
+                                <ScrollViewer Style="{StaticResource MMSScrollViewer}" KeyboardNavigation.DirectionalNavigation="Local" HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsPresenter TextBlock.FontSize="{TemplateBinding FontSize}" TextBlock.Foreground="{TemplateBinding Foreground}" Margin="2 10 2 0"/>
+                                </ScrollViewer>
+                            </DockPanel>
+                        </ScrollViewer>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsGrouping" Value="True">
+                            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource BrushDisabledMain}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -133,28 +133,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <!--<Style.Triggers>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsMouseOver}" Value="True"/>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsEnabled}" Value="False"/>
-                </MultiDataTrigger.Conditions>
-                <MultiDataTrigger.Setters>
-                    <Setter Property="Background" Value="{StaticResource BrushDisabledAux}"/>
-                    <Setter Property="Foreground" Value="{StaticResource BrushFontAux}"/>
-                </MultiDataTrigger.Setters>
-            </MultiDataTrigger>
-            <MultiDataTrigger>
-                <MultiDataTrigger.Conditions>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ListViewItem}, Path=IsMouseOver}" Value="False"/>
-                    <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsEnabled}" Value="False"/>
-                </MultiDataTrigger.Conditions>
-                <MultiDataTrigger.Setters>
-                    <Setter Property="Background" Value="{StaticResource BrushDisabledMain}"/>
-                    <Setter Property="Foreground" Value="{StaticResource BrushFontTer}"/>
-                </MultiDataTrigger.Setters>
-            </MultiDataTrigger>
-        </Style.Triggers>-->
     </Style>
 
     <Style x:Key="MMSFlatButton" TargetType="{x:Type Button}">

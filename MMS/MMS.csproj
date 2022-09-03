@@ -90,11 +90,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="UI\Styles\CalendarStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="UI\Styles\CheckBoxStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="UI\Styles\ComboBoxStyle.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Styles\DatePickerStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -109,6 +117,10 @@
     <Page Include="UI\Styles\ScrollViewerStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Styles\SliderStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Styles\TextBoxStyle.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -131,6 +143,18 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Views\AppPages\TitlePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\AppUserControls\ContentUploader.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\AppUserControls\DateRange.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\AppUserControls\MediaPlayer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -173,6 +197,15 @@
     </Compile>
     <Compile Include="UI\Views\AppPages\TitlePage.xaml.cs">
       <DependentUpon>TitlePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\AppUserControls\ContentUploader.xaml.cs">
+      <DependentUpon>ContentUploader.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\AppUserControls\DateRange.xaml.cs">
+      <DependentUpon>DateRange.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\AppUserControls\MediaPlayer.xaml.cs">
+      <DependentUpon>MediaPlayer.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Views\AppUserControls\SidePanel.xaml.cs">
       <DependentUpon>SidePanel.xaml</DependentUpon>
@@ -240,6 +273,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="UI\Assets\addnewdevice.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UI\Assets\deletebin.png" />
+    <Resource Include="UI\Assets\mediaplayernext.png" />
+    <Resource Include="UI\Assets\mediaplayerplay.png" />
+    <Resource Include="UI\Assets\mediaplayerrestart.png" />
+    <Resource Include="UI\Assets\mediaplayervol.png" />
+    <Resource Include="UI\Assets\mediaplayprev.png" />
+    <Resource Include="UI\Assets\uploadcloud.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.116.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.116.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />

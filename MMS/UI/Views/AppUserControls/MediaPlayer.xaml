@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="MMS.UI.Views.AppUserControls.MediaPlayer"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:MMS.UI.Views.AppUserControls"
+             mc:Ignorable="d" 
+             d:DesignHeight="200" d:DesignWidth="350">
+
+    <Border Padding="10" Background="{StaticResource BrushPrimary3}" BorderBrush="{StaticResource BrushPrimaryTheme3}" BorderThickness="1" CornerRadius="{StaticResource CornerRadiusRegular}">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="4*"/>
+                <RowDefinition Height="10*"/>
+                <RowDefinition Height="6*"/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="VideoName" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}">
+                INDIA AT INDEPENDENCE : The British Legacy
+            </TextBlock>
+            <TextBlock x:Name="Exhibit" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}">
+                INDIA 1947 (WATCHOUT)
+            </TextBlock>
+            <Button Style="{StaticResource MMSFlatButton}" Grid.Row="2" Grid.Column="1" Width="20" Height="20">
+                <Image Source="/UI/Assets/mediaplayprev.png" SnapsToDevicePixels="True"/>
+            </Button>
+            <Button Style="{StaticResource MMSFlatButton}" Grid.Row="2" Grid.Column="2" Width="35" Height="35">
+                <Image Source="/UI/Assets/mediaplayerplay.png" SnapsToDevicePixels="True"/>
+            </Button>
+            <Button Style="{StaticResource MMSFlatButton}" Grid.Row="2" Grid.Column="3" Width="20" Height="20">
+                <Image Source="/UI/Assets/mediaplayernext.png" SnapsToDevicePixels="True"/>
+            </Button>
+            <Button Style="{StaticResource MMSFlatButton}" Grid.Row="3" Grid.Column="0" Width="20" Height="20">
+                <Image Source="/UI/Assets/mediaplayerrestart.png" SnapsToDevicePixels="True"/>
+            </Button>
+            <Button Style="{StaticResource MMSFlatButton}" Grid.Row="3" Grid.Column="4" Width="20" Height="20">
+                <Image Source="/UI/Assets/mediaplayervol.png" SnapsToDevicePixels="True"/>
+            </Button>
+            <Slider Style="{StaticResource MMSSlider}" Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsMoveToPointEnabled="True"/>
+        </Grid>
+    </Border>
+    
+</UserControl>

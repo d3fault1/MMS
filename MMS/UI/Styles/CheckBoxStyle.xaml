@@ -21,8 +21,8 @@
                                     Background="{TemplateBinding Background}" TextBlock.Foreground="{TemplateBinding Background}"
                                     TextBlock.FontSize="{TemplateBinding FontSize}">
                                 <Grid>
-                                    <Rectangle Visibility="Collapsed" Width="9" Height="9" x:Name="CheckMark" SnapsToDevicePixels="False" Fill="{TemplateBinding Foreground}"/>
-                                    <Rectangle Visibility="Collapsed" Width="9" Height="9" x:Name="InderminateMark" SnapsToDevicePixels="False" Fill="{StaticResource BrushSecondaryAux4}"/>
+                                    <Rectangle Visibility="Collapsed" Margin="2" x:Name="CheckMark" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SnapsToDevicePixels="False" Fill="{TemplateBinding Foreground}"/>
+                                    <Rectangle Visibility="Collapsed" Margin="2" x:Name="InderminateMark" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SnapsToDevicePixels="False" Fill="{StaticResource BrushSecondaryAux4}"/>
                                 </Grid>
                             </Border> 
                         </BulletDecorator.Bullet>

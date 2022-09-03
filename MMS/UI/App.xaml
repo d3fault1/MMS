@@ -15,6 +15,9 @@
                 <ResourceDictionary Source="Styles\ListViewStyle.xaml"/>
                 <ResourceDictionary Source="Styles\PanelCategoryStyle.xaml"/>
                 <ResourceDictionary Source="Styles\TextBoxStyle.xaml"/>
+                <ResourceDictionary Source="Styles\CalendarStyle.xaml"/>
+                <ResourceDictionary Source="Styles\DatePickerStyle.xaml"/>
+                <ResourceDictionary Source="Styles\SliderStyle.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
