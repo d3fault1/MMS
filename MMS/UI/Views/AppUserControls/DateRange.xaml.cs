@@ -42,7 +42,7 @@ namespace MMS.UI.Views.AppUserControls
 
         private void OnDateRangeChanged()
         {
-            DateRangeChangedEventArgs eventArgs = new DateRangeChangedEventArgs(Applied, From.SelectedDate, To.SelectedDate);
+            DateRangeChangedEventArgs eventArgs = new DateRangeChangedEventArgs(Applied, From?.SelectedDate, To?.SelectedDate);
             DateRangeChanged?.Invoke(this, eventArgs);
         }
     }

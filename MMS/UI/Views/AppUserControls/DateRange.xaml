@@ -5,12 +5,33 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MMS.UI.Views.AppUserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="40" d:DesignWidth="500">
+             d:DesignHeight="60" d:DesignWidth="500" MinWidth="400">
     <Grid>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <CheckBox x:Name="Enabled" IsChecked="True" IsThreeState="False" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource MMSCheckBox}" Checked="EnabledChecked" Unchecked="EnabledUnchecked" Margin="5 0 0 0"/>
-            <DatePicker x:Name="From" Width="140" IsEnabled="{Binding ElementName=Enabled, Path=IsChecked}" Style="{StaticResource MMSDatePicker}" SelectedDateChanged="FromDateChanged" Margin="10 0 0 0"/>
-            <Line x:Name="Range" X1="0" X2="20" Y1="0" Y2="0" IsEnabled="{Binding ElementName=Enabled, Path=IsChecked}" StrokeThickness="1" VerticalAlignment="Center" Margin="8 3 2 0">
+        <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" IsEnabled="{Binding ElementName=Enabled, Path=IsChecked}" CornerRadius="{StaticResource CornerRadiusRegular}" BorderThickness="0">
+            <Border.Style>
+                <Style TargetType="{x:Type Border}">
+                    <Setter Property="BorderBrush" Value="{StaticResource BrushSecondaryMain}"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="BorderBrush" Value="{StaticResource BrushDisabledAux}"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
+        <Grid Margin="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <CheckBox x:Name="Enabled" Grid.Row="0" Grid.Column="0" IsChecked="True" IsThreeState="False" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource MMSCheckBox}" Checked="EnabledChecked" Unchecked="EnabledUnchecked" Margin="0 4 0 0"/>
+            <DatePicker x:Name="From" Grid.Row="0" Grid.Column="1" MinWidth="140" MaxHeight="40" IsEnabled="{Binding ElementName=Enabled, Path=IsChecked}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" Style="{StaticResource MMSDatePicker}" SelectedDateChanged="FromDateChanged" Margin="7"/>
+            <Line x:Name="Range" Grid.Row="0" Grid.Column="2" X1="0" X2="20" Y1="0" Y2="0" IsEnabled="{Binding ElementName=Enabled, Path=IsChecked}" StrokeThickness="1" VerticalAlignment="Center" Margin="8 3 2 0">
                 <Line.Style>
                     <Style TargetType="{x:Type Line}">
                         <Setter Property="Stroke" Value="{StaticResource BrushSecondaryMain}"/>
@@ -22,7 +43,7 @@
                     </Style>
                 </Line.Style>
             </Line>
-            <DatePicker x:Name="To" Width="140" IsEnabled="{Binding ElementName=Enabled, Path=IsChecked}" Style="{StaticResource MMSDatePicker}" SelectedDateChanged="ToDateChanged" Margin="10 0 0 0"/>
-        </StackPanel>
+            <DatePicker x:Name="To" Grid.Row="0" Grid.Column="3" MinWidth="140" MaxHeight="40" IsEnabled="{Binding ElementName=Enabled, Path=IsChecked}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" Style="{StaticResource MMSDatePicker}" SelectedDateChanged="ToDateChanged" Margin="7"/>
+        </Grid>
     </Grid>
 </UserControl>

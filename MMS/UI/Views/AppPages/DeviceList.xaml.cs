@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using MMS.Backend;
 using MMS.DataModels;
-using MMS.UI.Assists;
+using MMS.UI.Helper;
 using MMS.UI.Views.AppWindows;
 
 namespace MMS.UI.Views.AppPages
@@ -171,52 +170,11 @@ namespace MMS.UI.Views.AppPages
             TransitionRequested?.Invoke("devicelist", data);
         }
 
-        private async void DevicesListViewSizeChanged(object sender, SizeChangedEventArgs e)
+        private void DevicesListViewSizeChanged(object sender, SizeChangedEventArgs e)
         {
             var listview = (ListView)sender;
             var gridview = (GridView)listview.View;
-            double percentTotal = 0;
-            double fixedWidth = 0;
-            for (int i = 0; i < gridview.Columns.Count; i++)
-            {
-                var percentWidth = gridview.Columns[i].ReadLocalValue(ListViewAssists.ColumnWidthPercentageProperty);
-                if (percentWidth == DependencyProperty.UnsetValue)
-                {
-                    var minWidth = gridview.Columns[i].ReadLocalValue(ListViewAssists.ColumnMinWidthProperty);
-                    if (minWidth == DependencyProperty.UnsetValue) gridview.Columns[i].Width = Double.NaN;
-                    else gridview.Columns[i].Width = (double)minWidth;
-                }
-            }
-            await Task.Delay(10);
-            for (int i = 0; i < gridview.Columns.Count; i++)
-            {
-                var percentWidth = gridview.Columns[i].ReadLocalValue(ListViewAssists.ColumnWidthPercentageProperty);
-                if (percentWidth == DependencyProperty.UnsetValue)
-                {
-                    fixedWidth += gridview.Columns[i].ActualWidth;
-                }
-                else
-                {
-                    percentTotal += (double)percentWidth;
-                }
-            }
-            var availableWidth = e.NewSize.Width - fixedWidth - 20;
-            for (int i = 0; i < gridview.Columns.Count; i++)
-            {
-                var percentWidth = gridview.Columns[i].ReadLocalValue(ListViewAssists.ColumnWidthPercentageProperty);
-                if (percentWidth != DependencyProperty.UnsetValue)
-                {
-                    var ratioActual = (double)percentWidth / percentTotal;
-                    var calculatedWidth = ratioActual * availableWidth;
-                    var minWidth = gridview.Columns[i].ReadLocalValue(ListViewAssists.ColumnMinWidthProperty);
-                    if (minWidth != DependencyProperty.UnsetValue)
-                    {
-                        if (calculatedWidth < (double)minWidth) gridview.Columns[i].Width = (double)minWidth;
-                        else gridview.Columns[i].Width = calculatedWidth;
-                    }
-                    else gridview.Columns[i].Width = calculatedWidth;
-                }
-            }
+            UIHelper.UniformGridViewColumnSize(gridview, e);
         }
     }
 }

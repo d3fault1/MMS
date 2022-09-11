@@ -22,9 +22,15 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="2*" MinWidth="180" MaxWidth="250"/>
+            <ColumnDefinition Width="*" MinWidth="25" MaxWidth="40"/>
+            <ColumnDefinition Width="2*" MinWidth="180" MaxWidth="250"/>
+            <ColumnDefinition Width="*" MinWidth="25" MaxWidth="40"/>
+            <ColumnDefinition Width="2*" MinWidth="180" MaxWidth="250"/>
+            <ColumnDefinition Width="*" MinWidth="25" MaxWidth="40"/>
+            <ColumnDefinition Width="2*" MinWidth="180" MaxWidth="250"/>
+            <ColumnDefinition Width="30"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -32,21 +38,21 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ComboBox x:Name="CategoryOptions" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select Category" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" MinWidth="180" MaxWidth="250" Height="40" Margin="30 0 0 0" Grid.Column="0" Grid.Row="0" SelectionChanged="CategorySelectionChanged">
+        <ComboBox x:Name="CategoryOptions" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select Category" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" MinWidth="180" MaxWidth="250" Height="40" Grid.Column="1" Grid.Row="0" SelectionChanged="CategorySelectionChanged">
             <ComboBoxItem>Category 1</ComboBoxItem>
             <ComboBoxItem>Category 2</ComboBoxItem>
             <ComboBoxItem>Category 3</ComboBoxItem>
             <ComboBoxItem>Category 4</ComboBoxItem>
             <ComboBoxItem>All</ComboBoxItem>
         </ComboBox>
-        <ComboBox x:Name="FloorOptions" ext:GeneralAssists.HintText="Select a Floor" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" MinWidth="180" MaxWidth="250" Height="40" Margin="25 0 0 0" Grid.Column="1" Grid.Row="0" SelectionChanged="FloorSelectionChanged"/>
-        <ComboBox x:Name="StatusOptions" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select Status" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" MinWidth="180" MaxWidth="250" Height="40" Margin="25 0 0 0" Grid.Column="2" Grid.Row="0" SelectionChanged="StatusSelectionChanged">
+        <ComboBox x:Name="FloorOptions" ext:GeneralAssists.HintText="Select a Floor" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" MinWidth="180" MaxWidth="250" Height="40" Grid.Column="3" Grid.Row="0" SelectionChanged="FloorSelectionChanged"/>
+        <ComboBox x:Name="StatusOptions" SelectedValuePath="Content" ext:GeneralAssists.HintText="Select Status" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" MinWidth="180" MaxWidth="250" Height="40" Grid.Column="5" Grid.Row="0" SelectionChanged="StatusSelectionChanged">
             <ComboBoxItem>Online</ComboBoxItem>
             <ComboBoxItem>Offline</ComboBoxItem>
             <ComboBoxItem>Not Configured</ComboBoxItem>
             <ComboBoxItem>All</ComboBoxItem>
         </ComboBox>
-        <Button Style="{StaticResource MMSButtonLarge}" MinWidth="180" MaxWidth="250" Height="40" Margin="25 0 30 0" Padding="9 0" HorizontalContentAlignment="Stretch" Grid.Column="3" Grid.Row="0" Click="ConfigureManualClick">
+        <Button Style="{StaticResource MMSButtonLarge}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" MinWidth="180" MaxWidth="250" Height="40" Padding="9 0" HorizontalContentAlignment="Stretch" Grid.Column="7" Grid.Row="0" Click="ConfigureManualClick">
             <Grid Margin="0 -1 0 0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -57,7 +63,7 @@
             </Grid>
         </Button>
 
-        <ListView x:Name="DevicesListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="0 20 0 0" ItemsSource="{x:Static datactx:DataHub.Nodes}" Style="{StaticResource MMSListView}" ItemContainerStyle="{StaticResource MMSListViewItem}" SizeChanged="DevicesListViewSizeChanged">
+        <ListView x:Name="DevicesListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="10" Margin="0 20 0 0" ItemsSource="{x:Static datactx:DataHub.Nodes}" Style="{StaticResource MMSListView}" SizeChanged="DevicesListViewSizeChanged">
             <ListView.View>
                 <GridView AllowsColumnReorder="False" ColumnHeaderContainerStyle="{StaticResource MMSGridViewColumnHeader}">
                     <GridViewColumn ext:ListViewAssists.ColumnMinWidth="50">
@@ -139,7 +145,7 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <ComboBox DisplayMemberPath="Command" ext:GeneralAssists.HintText="Command" ItemsSource="{x:Static datactx:DataHub.Commands}" FontSize="{StaticResource Small}" Style="{StaticResource MMSComboBox}" ItemContainerStyle="{StaticResource MMSComboBoxItem}" SelectionChanged="CommandSelectionChanged">
+                                <ComboBox DisplayMemberPath="Command" ext:GeneralAssists.HintText="Command" ItemsSource="{x:Static datactx:DataHub.Commands}" FontSize="{StaticResource Small}" Style="{StaticResource MMSComboBox}" SelectionChanged="CommandSelectionChanged">
                                     <ComboBox.IsEnabled>
                                         <MultiBinding Converter="{StaticResource CommandBoxEnableConverter}">
                                             <Binding Path="IsConfig"/>

@@ -9,7 +9,7 @@
         xmlns:pg="clr-namespace:MMS.UI.Views.AppPages"
         mc:Ignorable="d"
         Title="MainWindow" MinHeight="750" MinWidth="1100" Height="900" Width="1300" WindowStyle="None" Background="Transparent"
-        AllowsTransparency="True" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowState="Maximized" StateChanged="MainWindowStateChanged">
+        AllowsTransparency="True" ResizeMode="CanResizeWithGrip" WindowStartupLocation="CenterScreen" WindowState="Maximized" StateChanged="MainWindowStateChanged">
     <Border x:Name="AppWindow" CornerRadius="0">
         <Border.Background>
             <LinearGradientBrush StartPoint="0.5 0" EndPoint="0.5 1">
@@ -44,7 +44,7 @@
                 <TextBox Style="{StaticResource MMSSearchBox}" ext:GeneralAssists.HintText="Search" Width="200" Height="37"/>
             </StackPanel>
             <uc:SidePanel x:Name="SidePanel" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Margin="20"/>
-            <Frame x:Name="PagePresenter" Source="/UI/Views/AppPages/TitlePage.xaml" NavigationUIVisibility="Hidden" Grid.Row="2" Grid.Column="1" Margin="5 25 25 25" Navigated="FrameNavigated"/>
+            <Frame x:Name="PagePresenter" Source="/UI/Views/AppPages/ControlPanel.xaml" NavigationUIVisibility="Hidden" Grid.Row="2" Grid.Column="1" Margin="5 25 25 25" Navigated="FrameNavigated"/>
         </Grid>
     </Border>
 </Window>

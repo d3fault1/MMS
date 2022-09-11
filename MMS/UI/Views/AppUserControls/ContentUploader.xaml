@@ -10,19 +10,18 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="65*"/>
-                <ColumnDefinition Width="35*"/>
+                <ColumnDefinition Width="35*" MaxWidth="120" MinWidth="100"/>
             </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Width="210" Height="110" Padding="20 0" CornerRadius="{StaticResource CornerRadiusRegular}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2">
-                <DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Border Grid.Column="0" Margin="10" Padding="20 0" CornerRadius="{StaticResource CornerRadiusRegular}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Image Width="45" Height="35" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/UI/Assets/uploadcloud.png"/>
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Center" Width="100">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Center" Width="100" Margin="30 0 0 0">
                         <TextBlock Text="Drop Files Here" HorizontalAlignment="Center" FontSize="{StaticResource Small}" Foreground="{StaticResource BrushFontTer}"/>
                         <TextBlock Text="Or" HorizontalAlignment="Center" FontSize="{StaticResource Small}" Foreground="{StaticResource BrushFontTer}" Margin="0 2 0 0"/>
-                        <Button Content="Browse Files" Height="30" FontSize="{StaticResource Small}" Foreground="{StaticResource BrushSecondaryMain}" 
-                                Style="{StaticResource MMSButtonLarge}" Background="{StaticResource BrushTransparentAux}" BorderBrush="{StaticResource BrushSecondaryMain}" 
-                                BorderThickness="2" Margin="0 4 0 0" Click="BrowseClick"/>
+                        <Button Content="Browse Files" Height="30" Style="{StaticResource MMSButtonLarge}" BorderBrush="{StaticResource BrushSecondaryMain}" 
+                                BorderThickness="2" FontSize="{StaticResource Small}" Padding="-2 -2 0 0" Margin="0 4 0 0" Click="BrowseClick"/>
                     </StackPanel>
-                </DockPanel>
+                </StackPanel>
             </Border>
             <Button Width="90" Height="25" Grid.Column="1" Style="{StaticResource MMSButtonSmall}" Content="Upload" Click="UploadClick"/>
         </Grid>

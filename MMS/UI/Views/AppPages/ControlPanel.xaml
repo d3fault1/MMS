@@ -1,0 +1,27 @@
+﻿<Page x:Class="MMS.UI.Views.AppPages.ControlPanel"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MMS.UI.Views.AppPages"
+      xmlns:uc="clr-namespace:MMS.UI.Views.AppUserControls"
+      xmlns:ext="clr-namespace:MMS.UI.Assists"
+      mc:Ignorable="d" 
+      d:DesignHeight="650" d:DesignWidth="1030"
+      Title="ControlPanel">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="2*" MinWidth="180" MaxWidth="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <ComboBox x:Name="FloorOptions" ext:GeneralAssists.HintText="Select a Floor" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" MinWidth="180" MaxWidth="250" Height="40" Grid.Column="1" Grid.Row="0"/>
+        
+    </Grid>
+</Page>

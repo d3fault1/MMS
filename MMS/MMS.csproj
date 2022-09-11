@@ -83,7 +83,6 @@
     <Compile Include="Backend\DatabaseIO\DatabaseEngines\SQLiteDatabaseIO.cs" />
     <Compile Include="Backend\DataHub.cs" />
     <Compile Include="Backend\Globals.cs" />
-    <Compile Include="Backend\Helper.cs" />
     <Compile Include="Backend\Logging.cs" />
     <Compile Include="Backend\SNMPHandler.cs" />
     <Page Include="UI\Styles\ButtonStyle.xaml">
@@ -134,11 +133,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="UI\Views\AppPages\CommandLog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\AppPages\ContentUpload.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\AppPages\ControlPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Views\AppPages\Dashboard.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UI\Views\AppPages\DeviceList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Views\AppPages\SoftwareUpdate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -189,11 +204,24 @@
     <Compile Include="UI\Assists\GeneralAssists.cs" />
     <Compile Include="UI\Assists\ListViewAssists.cs" />
     <Compile Include="UI\BindingConverters\DataToViewConverters.cs" />
+    <Compile Include="UI\Helper\UIHelper.cs" />
+    <Compile Include="UI\Views\AppPages\CommandLog.xaml.cs">
+      <DependentUpon>CommandLog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\AppPages\ContentUpload.xaml.cs">
+      <DependentUpon>ContentUpload.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\AppPages\ControlPanel.xaml.cs">
+      <DependentUpon>ControlPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Views\AppPages\Dashboard.xaml.cs">
       <DependentUpon>Dashboard.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Views\AppPages\DeviceList.xaml.cs">
       <DependentUpon>DeviceList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Views\AppPages\SoftwareUpdate.xaml.cs">
+      <DependentUpon>SoftwareUpdate.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Views\AppPages\TitlePage.xaml.cs">
       <DependentUpon>TitlePage.xaml</DependentUpon>
@@ -282,6 +310,10 @@
     <Resource Include="UI\Assets\mediaplayervol.png" />
     <Resource Include="UI\Assets\mediaplayprev.png" />
     <Resource Include="UI\Assets\uploadcloud.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="UI\Assets\downarrow.png" />
+    <Resource Include="UI\Assets\uparrow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.116.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets" Condition="Exists('..\packages\Stub.System.Data.SQLite.Core.NetFramework.1.0.116.0\build\net46\Stub.System.Data.SQLite.Core.NetFramework.targets')" />

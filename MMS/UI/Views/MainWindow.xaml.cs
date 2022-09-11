@@ -25,7 +25,7 @@ namespace MMS
             Application.Current.Exit += AppExit;
             SidePanel.NavigationRequested += NavigationRequested;
             Globals.PushNotifyRequested += PushNotifyRequested;
-            Globals.Initialize();
+            //Globals.Initialize();
         }
 
         private async void PushNotifyRequested(string title, string message, string type)
@@ -53,7 +53,7 @@ namespace MMS
 
         private void AppExit(object sender, ExitEventArgs e)
         {
-            Globals.Destroy();
+            //Globals.Destroy();
         }
 
         private void WindowTopBarMouseDown(object sender, MouseButtonEventArgs e)
@@ -82,7 +82,6 @@ namespace MMS
             switch (e.Uri.ToString())
             {
                 case "UI/Views/AppPages/TitlePage.xaml":
-
                     break;
                 case "UI/Views/AppPages/Dashboard.xaml":
                     ((Dashboard)e.Content).NavigationRequested += NavigationRequested;
@@ -90,7 +89,7 @@ namespace MMS
                 case "UI/Views/AppPages/DeviceList.xaml":
                     ((DeviceList)e.Content).TransitionRequested += TransitionRequested;
                     var page = (DeviceList)e.Content;
-                    switch (e.ExtraData.ToString())
+                    switch (e.ExtraData?.ToString())
                     {
                         case "online":
                             page.StatusOptions.SelectedIndex = 0;

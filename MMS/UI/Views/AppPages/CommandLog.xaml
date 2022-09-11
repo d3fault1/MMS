@@ -1,0 +1,109 @@
+﻿<Page x:Class="MMS.UI.Views.AppPages.CommandLog"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:MMS.UI.Views.AppPages"
+      xmlns:ext="clr-namespace:MMS.UI.Assists"
+      xmlns:uc="clr-namespace:MMS.UI.Views.AppUserControls"
+      mc:Ignorable="d" 
+      d:DesignHeight="650" d:DesignWidth="1030"
+      Title="CommandLog">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30"/>
+            <ColumnDefinition Width="2*" MinWidth="180" MaxWidth="250"/>
+            <ColumnDefinition Width="*" MinWidth="25" MaxWidth="40"/>
+            <ColumnDefinition Width="2*" MaxWidth="250"/>
+            <ColumnDefinition Width="*" MinWidth="25" MaxWidth="40"/>
+            <ColumnDefinition Width="2*" MinWidth="430" MaxWidth="500"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <ComboBox x:Name="FloorOptions" ext:GeneralAssists.HintText="Select a Floor" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" MinWidth="180" MaxWidth="250" Height="40" Grid.Column="1" Grid.Row="0"/>
+        <ComboBox x:Name="CommandOptions" ext:GeneralAssists.HintText="Select a Command" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" MinWidth="180" MaxWidth="250" Height="40" Grid.Column="3" Grid.Row="0"/>
+        <uc:DateRange x:Name="DateRangeOptions" MaxWidth="500" Grid.Column="5" Grid.Row="0"/>
+
+        <ListView x:Name="CommandLogListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" Margin="0 20 0 0" Style="{StaticResource MMSListView}" SizeChanged="CommandLogListViewSizeChanged">
+            <ListView.View>
+                <GridView AllowsColumnReorder="False" ColumnHeaderContainerStyle="{StaticResource MMSGridViewColumnHeader}">
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="60">
+                        <GridViewColumn.Header>
+                            <TextBlock Text="S No." Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="1" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="190" ext:ListViewAssists.ColumnWidthPercentage="70">
+                        <GridViewColumn.Header>
+                            <TextBlock Text="Device Name" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Memory Wall" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="140" ext:ListViewAssists.ColumnWidthPercentage="30">
+                        <GridViewColumn.Header>
+                            <TextBlock Text="Command" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="SHOW ON UI" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="130">
+                        <GridViewColumn.Header>
+                            <TextBlock Text="Status" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Success" Foreground="{StaticResource BrushPrimaryTheme3}" FontSize="{StaticResource Small}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="210" ext:ListViewAssists.ColumnWidthPercentage="100">
+                        <GridViewColumn.Header>
+                            <TextBlock Text="Message" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Halt: Command Received for Watchout Display" TextWrapping="WrapWithOverflow" TextAlignment="Center" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="100">
+                        <GridViewColumn.Header>
+                            <TextBlock Text="Updated By" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Ankit" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="150">
+                        <GridViewColumn.Header>
+                            <TextBlock Text="Date/Time" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
+                        </GridViewColumn.Header>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Time" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Page>
