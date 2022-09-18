@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace MMS.DataModels
 {
-    class FloorModel : INotifyPropertyChanged
+    public class FloorModel : INotifyPropertyChanged
     {
         #region Private Variables
         private long _id = -1;

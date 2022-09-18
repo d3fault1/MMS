@@ -150,6 +150,42 @@
         </Setter>
     </Style>
 
+    <Style x:Key="MMSListViewItemFlat" TargetType="{x:Type ListViewItem}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushTransparentMain}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Background" Value="{StaticResource BrushTransparentMain}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushSecondaryMain}"/>
+        <Setter Property="FontSize" Value="{StaticResource Small}"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListViewItem}">
+                    <Border x:Name="Border" Padding="0 18" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
+                            Background="{TemplateBinding Background}" TextBlock.Foreground="{TemplateBinding Foreground}" 
+                            TextBlock.FontSize="{TemplateBinding FontSize}" BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="{StaticResource CornerRadiusRegular}">
+                        <VisualStateManager.VisualStateGroups>
+                            <VisualStateGroup x:Name="CommonStates">
+                                <VisualState x:Name="Normal"/>
+                                <VisualState x:Name="MouseOver"/>
+                                <VisualState x:Name="Disabled"/>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="SelectionStates">
+                                <VisualState x:Name="Unselected"/>
+                                <VisualState x:Name="Selected"/>
+                                <VisualState x:Name="SelectedUnfocused"/>
+                            </VisualStateGroup>
+                        </VisualStateManager.VisualStateGroups>
+                        <ContentPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style x:Key="MMSListView" TargetType="{x:Type ListView}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -183,6 +219,46 @@
                                                             ColumnHeaderToolTip="{Binding Path=TemplatedParent.View.ColumnHeaderToolTip, RelativeSource={RelativeSource Self}}"
                                                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                                 </Border>
+                                <ScrollViewer Style="{StaticResource MMSScrollViewer}" KeyboardNavigation.DirectionalNavigation="Local" HorizontalScrollBarVisibility="Disabled">
+                                    <ItemsPresenter TextBlock.FontSize="{TemplateBinding FontSize}" TextBlock.Foreground="{TemplateBinding Foreground}" Margin="2 10 2 0"/>
+                                </ScrollViewer>
+                            </DockPanel>
+                        </ScrollViewer>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsGrouping" Value="True">
+                            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{StaticResource BrushDisabledMain}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MMSListViewFlat" TargetType="{x:Type ListView}">
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BrushTransparentMain}"/>
+        <Setter Property="Background" Value="{StaticResource BrushTransparentMain}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushSecondaryMain}"/>
+        <Setter Property="FontSize" Value="{StaticResource Regular}"/>
+        <Setter Property="Padding" Value="5"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource MMSListViewItemFlat}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListView}">
+                    <Border Name="Border" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" TextBlock.FontSize="{TemplateBinding FontSize}"
+                            Background="{TemplateBinding Background}" TextBlock.Foreground="{TemplateBinding Foreground}">
+                        <ScrollViewer Style="{StaticResource MMSScrollViewer}" VerticalScrollBarVisibility="Disabled" Focusable="False">
+                            <DockPanel Margin="{TemplateBinding Padding}">
                                 <ScrollViewer Style="{StaticResource MMSScrollViewer}" KeyboardNavigation.DirectionalNavigation="Local" HorizontalScrollBarVisibility="Disabled">
                                     <ItemsPresenter TextBlock.FontSize="{TemplateBinding FontSize}" TextBlock.Foreground="{TemplateBinding Foreground}" Margin="2 10 2 0"/>
                                 </ScrollViewer>

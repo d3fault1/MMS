@@ -5,7 +5,7 @@ using MMS.Backend;
 
 namespace MMS.DataModels
 {
-    class ZoneModel : INotifyPropertyChanged
+    public class ZoneModel : INotifyPropertyChanged
     {
         #region Private Variables
         private long _id = -1;

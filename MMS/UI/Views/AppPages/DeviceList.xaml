@@ -76,7 +76,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="200" ext:ListViewAssists.ColumnWidthPercentage="100">
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="140" ext:ListViewAssists.ColumnWidthPercentage="100">
                         <GridViewColumn.Header>
                             <TextBlock Text="Device Name" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
                         </GridViewColumn.Header>
@@ -109,7 +109,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="170" ext:ListViewAssists.ColumnWidthPercentage="85">
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="130" ext:ListViewAssists.ColumnWidthPercentage="85">
                         <GridViewColumn.Header>
                             <TextBlock Text="Exhibit" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Regular}"/>
                         </GridViewColumn.Header>
@@ -170,6 +170,28 @@
                                         </MultiBinding>
                                     </Button.IsEnabled>
                                 </Button>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn ext:ListViewAssists.ColumnMinWidth="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Style="{StaticResource MMSButtonLarge}" BorderThickness="0">
+                                        <Viewbox>
+                                            <Grid Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Background}">
+                                                <Path x:Name="editIcon" Margin="3" Fill="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Foreground}" Data="F1 M24,24z M0,0z M14.06,9L15,9.94 5.92,19 5,19 5,18.08 14.06,9 M17.66,3C17.41,3,17.15,3.1,16.96,3.29L15.13,5.12 18.88,8.87 20.71,7.04C21.1,6.65,21.1,6,20.71,5.63L18.37,3.29C18.17,3.09,17.92,3,17.66,3 M14.06,6.19L3,17.25 3,21 6.75,21 17.81,9.94 14.06,6.19z"/>
+                                            </Grid>
+                                        </Viewbox>
+                                    </Button>
+                                    <Button Style="{StaticResource MMSButtonLarge}" BorderThickness="0" Margin="10 0 0 0">
+                                        <Viewbox>
+                                            <Grid Background="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Background}">
+                                                <Path x:Name="deleteIcon" Margin="3" Fill="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Foreground}" Data="F1 M24,24z M0,0z M9,3L9,4 4,4 4,6 5,6 5,19A2,2,0,0,0,7,21L17,21A2,2,0,0,0,19,19L19,6 20,6 20,4 15,4 15,3 9,3 M7,6L17,6 17,19 7,19 7,6 M9,8L9,17 11,17 11,8 9,8 M13,8L13,17 15,17 15,8 13,8z"/>
+                                            </Grid>
+                                        </Viewbox>
+                                    </Button>
+                                </StackPanel>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

@@ -3,10 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:bind="clr-namespace:MMS.UI.BindingConverters"
              xmlns:local="clr-namespace:MMS.UI.Views.AppUserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="350">
+             DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" d:DesignHeight="200" d:DesignWidth="350">
 
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+        <bind:BooleanToVisibilityInverseConverter x:Key="BoolToVisibilityInverse"/>
+    </UserControl.Resources>
     <Border Padding="10" Background="{StaticResource BrushPrimary3}" BorderBrush="{StaticResource BrushPrimaryTheme3}" BorderThickness="1" CornerRadius="{StaticResource CornerRadiusRegular}">
         <Grid>
             <Grid.ColumnDefinitions>
@@ -28,22 +33,59 @@
             <TextBlock x:Name="Exhibit" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="5" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}">
                 INDIA 1947 (WATCHOUT)
             </TextBlock>
-            <Button Style="{StaticResource MMSFlatButton}" Grid.Row="2" Grid.Column="1" Width="20" Height="20">
-                <Image Source="/UI/Assets/mediaplayprev.png" SnapsToDevicePixels="True"/>
+            <Button x:Name="prevButton" Style="{StaticResource MMSFlatButton}" Grid.Row="2" Grid.Column="1" Width="16" Height="16" Click="prevButtonClick">
+                <Viewbox>
+                    <Grid>
+                        <Path Fill="{StaticResource BrushSecondaryMain}" Data="F1 M21,18z M0,0z M4.43861,7.77158C3.78833,8.14703,3.78833,9.08564,4.43861,9.46108L14.4368,15.2335C15.0871,15.609,15.9,15.1397,15.9,14.3888L15.9,2.84387C15.9,2.09298,15.0871,1.62368,14.4368,1.99912L4.43861,7.77158z"/>
+                        <Path Stroke="{StaticResource BrushSecondaryMain}" Data="F1 M21,18z M0,0z M2,2.92676L2,13.494" StrokeThickness="2.27601" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Miter" StrokeMiterLimit="1"/>
+                    </Grid>
+                </Viewbox>
             </Button>
-            <Button Style="{StaticResource MMSFlatButton}" Grid.Row="2" Grid.Column="2" Width="35" Height="35">
-                <Image Source="/UI/Assets/mediaplayerplay.png" SnapsToDevicePixels="True"/>
+            <Button x:Name="playButton" Style="{StaticResource MMSFlatButton}" Grid.Row="2" Grid.Column="2" Width="30" Height="30" Click="playButtonClick">
+                <Viewbox>
+                    <Grid>
+                        <Path Fill="{StaticResource BrushSecondaryMain}">
+                            <Path.Data>
+                                <EllipseGeometry RadiusX="18" RadiusY="18" Center="18,18"/>
+                            </Path.Data>
+                        </Path>
+                        <Path Visibility="{Binding Path=IsPlaying, Converter={StaticResource BoolToVisibilityInverse}}" Fill="{StaticResource BrushSecondaryAux4}" Data="F1 M36,36z M0,0z M24.5681,16.3921C25.5782,16.9753,25.5782,18.4332,24.5681,19.0164L15.6423,24.1697C14.6322,24.7529,13.3696,24.0239,13.3696,22.8576L13.3696,12.5509C13.3696,11.3845,14.6322,10.6556,15.6423,11.2387L24.5681,16.3921z"/>
+                        <Path Visibility="{Binding Path=IsPlaying, Converter={StaticResource BoolToVisibility}}" Stroke="{StaticResource BrushSecondaryAux4}" Data="F1 M36,37z M0,0z M13.4688,13.3043L13.4688,23.1225" StrokeThickness="4.87717" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Miter" StrokeMiterLimit="1"/>
+                        <Path Visibility="{Binding Path=IsPlaying, Converter={StaticResource BoolToVisibility}}" Stroke="{StaticResource BrushSecondaryAux4}" Data="F1 M36,37z M0,0z M21.9775,13.3044L21.9775,23.1226" StrokeThickness="4.87717" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Miter" StrokeMiterLimit="1"/>
+                    </Grid>
+                </Viewbox>
             </Button>
-            <Button Style="{StaticResource MMSFlatButton}" Grid.Row="2" Grid.Column="3" Width="20" Height="20">
-                <Image Source="/UI/Assets/mediaplayernext.png" SnapsToDevicePixels="True"/>
+            <Button x:Name="nextButton" Style="{StaticResource MMSFlatButton}" Grid.Row="2" Grid.Column="3" Width="16" Height="16" Click="nextButtonClick">
+                <Viewbox>
+                    <Grid>
+                        <Path Fill="{StaticResource BrushSecondaryMain}" Data="F1 M21,18z M0,0z M16.661,7.77158C17.3113,8.14703,17.3113,9.08564,16.661,9.46108L6.6628,15.2335C6.01251,15.609,5.19965,15.1397,5.19965,14.3888L5.19965,2.84387C5.19965,2.09298,6.01251,1.62368,6.6628,1.99912L16.661,7.77158z"/>
+                        <Path Stroke="{StaticResource BrushSecondaryMain}" Data="F1 M21,18z M0,0z M19.0996,2.92676L19.0996,13.494" StrokeThickness="2.27601" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Miter" StrokeMiterLimit="1"/>
+                    </Grid>
+                </Viewbox>
             </Button>
-            <Button Style="{StaticResource MMSFlatButton}" Grid.Row="3" Grid.Column="0" Width="20" Height="20">
-                <Image Source="/UI/Assets/mediaplayerrestart.png" SnapsToDevicePixels="True"/>
+            <Button x:Name="restartButton" Style="{StaticResource MMSFlatButton}" Grid.Row="3" Grid.Column="0" Width="16" Height="16" Click="restartButtonClick">
+                <Viewbox>
+                    <Grid>
+                        <Path Stroke="{StaticResource BrushSecondaryMain}" Data="F1 M17,19z M0,0z M13.4705,1.09961L15.9795,3.60856 13.4705,6.11751 M3.43473,17.826L0.925781,15.317 3.43473,12.808" StrokeThickness="1.67263" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" StrokeMiterLimit="1"/>
+                        <Path Stroke="{StaticResource BrushSecondaryMain}" Data="F1 M17,19z M0,0z M15.9795,3.6084L6.78,3.6084C5.22737,3.6084 3.73832,4.22518 2.64044,5.32306 1.54256,6.42094 0.925781,7.90998 0.925781,9.46262 M0.925781,15.3168L10.1253,15.3168C11.6779,15.3168 13.1669,14.7001 14.2648,13.6022 15.3627,12.5043 15.9795,11.0153 15.9795,9.46262" StrokeThickness="1.67263" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" StrokeMiterLimit="1"/>
+                    </Grid>
+                </Viewbox>
             </Button>
-            <Button Style="{StaticResource MMSFlatButton}" Grid.Row="3" Grid.Column="4" Width="20" Height="20">
-                <Image Source="/UI/Assets/mediaplayervol.png" SnapsToDevicePixels="True"/>
+            <Button x:Name="volumeButton" Style="{StaticResource MMSFlatButton}" Grid.Row="3" Grid.Column="4" Width="16" Height="16" MouseEnter="volumeButtonMouseEnter" MouseLeave="volumeButtonMouseLeave" Click="volumeButtonClick">
+                <Viewbox>
+                    <Grid>
+                        <Path Visibility="{Binding Path=IsMute, Converter={StaticResource BoolToVisibilityInverse}}" Fill="{StaticResource BrushSecondaryMain}" Data="F1 M20,20z M0,0z M17.7152,12.7991C17.2738,13.1573 16.6242,13.0943 16.2661,12.6529 15.9052,12.2128 15.9696,11.5636 16.411,11.2025 16.8951,10.8026 17.1742,10.2273 17.1742,9.61757 17.1742,9.00832 16.8951,8.43169 16.4095,8.03454 15.9681,7.67362 15.9037,7.02427 16.2646,6.58418 16.4672,6.33464 16.7635,6.20583 17.0615,6.20583 17.2909,6.20583 17.5231,6.2823 17.7137,6.43794 18.6812,7.23036 19.2351,8.38532 19.2351,9.61757 19.2351,10.8498 18.6812,12.0048 17.7152,12.7991z M12.9322,19.1132C12.4384,19.3359,11.8584,19.247,11.4539,18.8874L5.6589,13.7394 2.0609,13.7394C0.922684,13.7394,0,12.8167,0,11.7171L0,7.63395C0,6.49573,0.922684,5.61169,2.0609,5.61169L5.66062,5.61169 11.4526,0.463722C11.7085,0.120237 12.0348,1.90735E-05 12.3654,1.90735E-05 12.556,1.90735E-05 12.7501,0.0399933 12.9305,0.121828 13.4259,0.343504 13.7394,0.832968 13.7394,1.37395L13.7394,17.8612C13.7394,18.4017,13.4259,18.9303,12.9322,19.1132z"/>
+                        <Path Visibility="{Binding Path=IsMute, Converter={StaticResource BoolToVisibility}}" Fill="{StaticResource BrushSecondaryMain}" Data="F1 M23,20z M0,0z M22.5447,7.6876L20.5092,9.72308 22.5464,11.7958C22.9522,12.2018 22.9522,12.859 22.5464,13.2647 22.1404,13.6707 21.4831,13.6704 21.0775,13.2647L19.042,11.2292 16.9688,13.2652C16.5629,13.6712 15.9056,13.6708 15.4999,13.2652 15.0941,12.8592 15.0941,12.202 15.4999,11.7962L17.5354,9.76074 15.4999,7.72525C15.0941,7.31928 15.0939,6.66207 15.4999,6.25631 15.9059,5.85056 16.5631,5.85056 16.9688,6.25631L19.042,8.29482 21.0757,6.21866C21.4817,5.8129 22.1389,5.81268 22.5447,6.21866 22.9504,6.62463 22.9504,7.28184 22.5447,7.6876z"/>
+                        <Path Visibility="{Binding Path=IsMute, Converter={StaticResource BoolToVisibility}}" Fill="{StaticResource BrushSecondaryMain}" Data="F1 M23,20z M0,0z M12.9322,19.1132C12.4384,19.3359,11.8584,19.247,11.4539,18.8874L5.6589,13.7394 2.0609,13.7394C0.922684,13.7394,0,12.8167,0,11.7171L0,7.63393C0,6.49571,0.922684,5.61167,2.0609,5.61167L5.66062,5.61167 11.4526,0.463703C11.7085,0.120219 12.0348,0 12.3654,0 12.556,0 12.7501,0.0399739 12.9305,0.121809 13.4259,0.343485 13.7394,0.832948 13.7394,1.37394L13.7394,17.8612C13.7394,18.4017,13.4259,18.9303,12.9322,19.1132z"/>
+                    </Grid>
+                </Viewbox>
             </Button>
-            <Slider Style="{StaticResource MMSSlider}" Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsMoveToPointEnabled="True"/>
+            <Popup x:Name="volumeSliderPopup" AllowsTransparency="True" IsOpen="False" HorizontalOffset="-7" Placement="Top" PlacementTarget="{Binding ElementName=volumeButton}" PopupAnimation="Fade" Width="30" Height="90" MouseLeave="volumeSliderPopupMouseLeave">
+                <Grid Background="#01FFFFFF">
+                    <Slider Margin="0 -5 0 0" Style="{StaticResource MMSSlider}" Height="70" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Stretch" IsMoveToPointEnabled="True"/>
+                </Grid>
+            </Popup>
+            <Slider x:Name="playerSlider" Style="{StaticResource MMSSlider}" Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Stretch" VerticalAlignment="Center" IsMoveToPointEnabled="True"/>
         </Grid>
     </Border>
     

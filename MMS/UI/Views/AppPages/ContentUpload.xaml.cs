@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using MMS.UI.Helper;
+using MMS.UI.Helpers;
 
 namespace MMS.UI.Views.AppPages
 {
@@ -31,6 +31,16 @@ namespace MMS.UI.Views.AppPages
             var listview = (ListView)sender;
             var gridview = (GridView)listview.View;
             UIHelper.UniformGridViewColumnSize(gridview, e);
+        }
+
+        private void deviceOptionsTextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void deviceOptionsSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

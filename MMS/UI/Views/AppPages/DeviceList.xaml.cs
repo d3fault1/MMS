@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using MMS.Backend;
 using MMS.DataModels;
-using MMS.UI.Helper;
+using MMS.UI.Helpers;
 using MMS.UI.Views.AppWindows;
 
 namespace MMS.UI.Views.AppPages
@@ -57,7 +57,7 @@ namespace MMS.UI.Views.AppPages
 
             if (((Button)sender).Content.ToString() == "Register")
             {
-                AddDevice addDevWindow = new AddDevice();
+                AddEditDevice addDevWindow = new AddEditDevice(false);
                 addDevWindow.DeviceIP.Text = item.IP;
                 addDevWindow.DeviceMac.Text = item.MacAddress;
                 addDevWindow.DeviceNameField.Text = item.Name;
@@ -90,7 +90,7 @@ namespace MMS.UI.Views.AppPages
 
         private void ConfigureManualClick(object sender, RoutedEventArgs e)
         {
-            AddDevice manualDeviceDialog = new AddDevice();
+            AddEditDevice manualDeviceDialog = new AddEditDevice(false);
             manualDeviceDialog.DeviceIP.Text = "N/A";
             manualDeviceDialog.DeviceMac.Text = "N/A";
             manualDeviceDialog.ShowDialog();

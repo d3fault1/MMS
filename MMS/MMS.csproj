@@ -177,7 +177,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Views\AppWindows\AddDevice.xaml">
+    <Page Include="UI\Views\AppWindows\AddEditDevice.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -204,6 +204,7 @@
     <Compile Include="UI\Assists\GeneralAssists.cs" />
     <Compile Include="UI\Assists\ListViewAssists.cs" />
     <Compile Include="UI\BindingConverters\DataToViewConverters.cs" />
+    <Compile Include="UI\BindingConverters\UIConverters.cs" />
     <Compile Include="UI\Helper\UIHelper.cs" />
     <Compile Include="UI\Views\AppPages\CommandLog.xaml.cs">
       <DependentUpon>CommandLog.xaml</DependentUpon>
@@ -238,8 +239,8 @@
     <Compile Include="UI\Views\AppUserControls\SidePanel.xaml.cs">
       <DependentUpon>SidePanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Views\AppWindows\AddDevice.xaml.cs">
-      <DependentUpon>AddDevice.xaml</DependentUpon>
+    <Compile Include="UI\Views\AppWindows\AddEditDevice.xaml.cs">
+      <DependentUpon>AddEditDevice.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -303,12 +304,6 @@
     <Resource Include="UI\Assets\addnewdevice.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="UI\Assets\deletebin.png" />
-    <Resource Include="UI\Assets\mediaplayernext.png" />
-    <Resource Include="UI\Assets\mediaplayerplay.png" />
-    <Resource Include="UI\Assets\mediaplayerrestart.png" />
-    <Resource Include="UI\Assets\mediaplayervol.png" />
-    <Resource Include="UI\Assets\mediaplayprev.png" />
     <Resource Include="UI\Assets\uploadcloud.png" />
   </ItemGroup>
   <ItemGroup>

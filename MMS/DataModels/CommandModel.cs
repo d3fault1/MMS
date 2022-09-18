@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace MMS.DataModels
 {
-    class CommandModel : INotifyPropertyChanged
+    public class CommandModel : INotifyPropertyChanged
     {
         #region Private Variables
         private long _id = -1;

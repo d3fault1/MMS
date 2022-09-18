@@ -2,9 +2,10 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using MMS.UI.Assists;
 
-namespace MMS.UI.Helper
+namespace MMS.UI.Helpers
 {
     public static class UIHelper
     {
@@ -54,6 +55,19 @@ namespace MMS.UI.Helper
                     percentTotal -= (double)percentWidth;
                 }
             }
+        }
+
+        public static FrameworkElement GetVisualChild(FrameworkElement parent, string name)
+        {
+            var childCount = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < childCount; i++)
+            {
+                var child = (FrameworkElement)VisualTreeHelper.GetChild(parent, i);
+                if (child.Name == name) return child;
+                var nextChild = GetVisualChild(child, name);
+                if (nextChild != default) return nextChild;
+            }
+            return default;
         }
     }
 }

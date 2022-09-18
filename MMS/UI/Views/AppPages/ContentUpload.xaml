@@ -25,7 +25,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Text="Upload Content" FontSize="{StaticResource SemiLarge}" Foreground="{StaticResource BrushFontMain}" Grid.Row="0" Grid.Column="1"/>
-        <ComboBox ext:GeneralAssists.HintText="Select a Device" IsEditable="True" Width="220" Height="40" HorizontalAlignment="Left" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" Grid.Row="1" Grid.Column="1"/>
+        <ComboBox x:Name="deviceOptions" ext:GeneralAssists.HintText="Select a Device" IsEditable="True" Width="220" Height="40" HorizontalAlignment="Left" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" Grid.Row="1" Grid.Column="1" TextBoxBase.TextChanged="deviceOptionsTextChanged" SelectionChanged="deviceOptionsSelectionChanged"/>
         <uc:ContentUploader Grid.Row="1" Grid.Column="2" Margin="30"/>
         <TextBlock Text="Content Details" VerticalAlignment="Center" FontSize="{StaticResource SemiLarge}" Foreground="{StaticResource BrushFontMain}" Grid.Row="3" Grid.Column="1"/>
         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Right" Margin="0 0 20 0">

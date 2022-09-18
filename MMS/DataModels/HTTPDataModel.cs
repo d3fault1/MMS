@@ -2,7 +2,7 @@
 
 namespace MMS.DataModels
 {
-    class HTTPRegistrationReqModel
+    public class HTTPRegistrationReqModel
     {
         [JsonProperty("name")]
         public string Name { get; set; }

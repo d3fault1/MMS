@@ -3,13 +3,19 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:MMS.UI.Views.AppPages"
+      xmlns:local="clr-namespace:MMS.Backend"
       xmlns:ext="clr-namespace:MMS.UI.Assists"
+      xmlns:bind="clr-namespace:MMS.UI.BindingConverters"
       xmlns:uc="clr-namespace:MMS.UI.Views.AppUserControls"
       mc:Ignorable="d" 
       d:DesignHeight="650" d:DesignWidth="1030"
       Title="CommandLog">
 
+    <Page.Resources>
+        <bind:CommandLogDateBindingConverter x:Key="DateConverter"/>
+        <bind:CommandLogTimeBindingConverter x:Key="TimeConverter"/>
+    </Page.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30"/>
@@ -25,11 +31,11 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <ComboBox x:Name="FloorOptions" ext:GeneralAssists.HintText="Select a Floor" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" MinWidth="180" MaxWidth="250" Height="40" Grid.Column="1" Grid.Row="0"/>
-        <ComboBox x:Name="CommandOptions" ext:GeneralAssists.HintText="Select a Command" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" MinWidth="180" MaxWidth="250" Height="40" Grid.Column="3" Grid.Row="0"/>
-        <uc:DateRange x:Name="DateRangeOptions" MaxWidth="500" Grid.Column="5" Grid.Row="0"/>
+        <ComboBox x:Name="FloorOptions" ext:GeneralAssists.HintText="Select a Floor" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" MinWidth="180" MaxWidth="250" Height="40" Grid.Column="1" Grid.Row="0" SelectionChanged="FloorSelectionChanged"/>
+        <ComboBox x:Name="CommandOptions" ext:GeneralAssists.HintText="Select a Command" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" MinWidth="180" MaxWidth="250" Height="40" Grid.Column="3" Grid.Row="0" SelectionChanged="CommandSelectionChanged"/>
+        <uc:DateRange x:Name="DateRangeOptions" MaxWidth="500" Grid.Column="5" Grid.Row="0" DateRangeChanged="DateRangeChanged"/>
 
-        <ListView x:Name="CommandLogListView" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" Margin="0 20 0 0" Style="{StaticResource MMSListView}" SizeChanged="CommandLogListViewSizeChanged">
+        <ListView x:Name="CommandLogListView" ItemsSource="{x:Static local:DataHub.CommandLogs}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" Margin="0 20 0 0" Style="{StaticResource MMSListView}" SizeChanged="CommandLogListViewSizeChanged">
             <ListView.View>
                 <GridView AllowsColumnReorder="False" ColumnHeaderContainerStyle="{StaticResource MMSGridViewColumnHeader}">
                     <GridViewColumn ext:ListViewAssists.ColumnMinWidth="60">
@@ -38,7 +44,7 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="1" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                <TextBlock Text="{Binding ID}" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -48,7 +54,7 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Memory Wall" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                <TextBlock Text="{Binding Node.Name}" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -58,7 +64,7 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="SHOW ON UI" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                <TextBlock Text="{Binding Command.Command}" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -68,7 +74,7 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Success" Foreground="{StaticResource BrushPrimaryTheme3}" FontSize="{StaticResource Small}"/>
+                                <TextBlock Text="{Binding Status}" Foreground="{StaticResource BrushPrimaryTheme3}" FontSize="{StaticResource Small}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -78,7 +84,7 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Halt: Command Received for Watchout Display" TextWrapping="WrapWithOverflow" TextAlignment="Center" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                <TextBlock Text="{Binding Message}" TextWrapping="WrapWithOverflow" TextAlignment="Center" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -88,7 +94,7 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Ankit" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                <TextBlock Text="Node" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -98,7 +104,10 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Time" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding UpdatedAt, Converter={StaticResource DateConverter}}" HorizontalAlignment="Center" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                    <TextBlock Text="{Binding UpdatedAt, Converter={StaticResource TimeConverter}}" HorizontalAlignment="Center" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                </StackPanel>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

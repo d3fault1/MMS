@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace MMS.DataModels
 {
-    class NodeCurrentStatusModel : INotifyPropertyChanged
+    public class NodeCurrentStatusModel : INotifyPropertyChanged
     {
         #region Private Variables
         private long _nodeid = -1;

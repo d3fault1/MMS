@@ -100,4 +100,32 @@ namespace MMS.UI.BindingConverters
             throw new NotImplementedException();
         }
     }
+
+    class CommandLogDateBindingConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            DateTime lastseen = (DateTime)value;
+            return $"{lastseen:ddd MMM dd yyyy}";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class CommandLogTimeBindingConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            DateTime lastseen = (DateTime)value;
+            return $"{lastseen:HH:mm:ss}";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

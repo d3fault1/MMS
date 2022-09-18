@@ -1,6 +1,6 @@
 ﻿namespace MMS.DataModels
 {
-    class ConfigurationModel
+    public class ConfigurationModel
     {
         public int HTTPServerPort { get; set; }
         public string DBInstance { get; set; }

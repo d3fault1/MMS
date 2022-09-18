@@ -29,22 +29,22 @@ namespace MMS.UI.Views.AppUserControls
 
         private void ContentUploadClick(object sender, RoutedEventArgs e)
         {
-
+            OnNavigationRequested("/UI/Views/AppPages/ContentUpload.xaml", null);
         }
 
         private void SoftwareUpdateClick(object sender, RoutedEventArgs e)
         {
-
+            OnNavigationRequested("/UI/Views/AppPages/SoftwareUpdate.xaml", null);
         }
 
         private void CommandLogsClick(object sender, RoutedEventArgs e)
         {
-
+            OnNavigationRequested("/UI/Views/AppPages/CommandLog.xaml", null);
         }
 
         private void ControlPanelClick(object sender, RoutedEventArgs e)
         {
-
+            OnNavigationRequested("/UI/Views/AppPages/ControlPanel.xaml", null);
         }
 
         private void PowerOnOffClick(object sender, RoutedEventArgs e)

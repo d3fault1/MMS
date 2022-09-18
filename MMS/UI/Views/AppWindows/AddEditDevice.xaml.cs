@@ -10,12 +10,22 @@ namespace MMS.UI.Views.AppWindows
     /// <summary>
     /// Interaction logic for AddDevice.xaml
     /// </summary>
-    public partial class AddDevice : Window
+    public partial class AddEditDevice : Window
     {
-        public AddDevice()
+        public AddEditDevice(bool isedit)
         {
             InitializeComponent();
 
+            if (isedit)
+            {
+                Title = "EditDevice";
+                windowHeader.Text = "Edit Device Details";
+            }
+            else
+            {
+                Title = "AddDevice";
+                windowHeader.Text = "Add Device Details";
+            }
             DeviceFloorField.ItemsSource = DataHub.Floors.Select(a => a.Name);
         }
 

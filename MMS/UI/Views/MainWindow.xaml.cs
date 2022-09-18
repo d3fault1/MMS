@@ -45,7 +45,7 @@ namespace MMS
                 case "none":
                     taskbarIcon.ShowBalloonTip(title, message, BalloonIcon.None);
                     break;
-            }   
+            }
             await Task.Delay(3000);
             taskbarIcon.HideBalloonTip();
             taskbarIcon.Visibility = Visibility.Collapsed;
@@ -79,6 +79,10 @@ namespace MMS
 
         private void FrameNavigated(object sender, NavigationEventArgs e)
         {
+            DoubleAnimation opacityMain = new DoubleAnimation();
+            opacityMain.Duration = (Duration)Application.Current.Resources["DurationFadeIn"];
+            opacityMain.From = 0;
+            opacityMain.To = 1;
             switch (e.Uri.ToString())
             {
                 case "UI/Views/AppPages/TitlePage.xaml":
@@ -104,6 +108,18 @@ namespace MMS
                             page.StatusOptions.SelectedIndex = 3;
                             break;
                     }
+                    break;
+                case "UI/Views/AppPages/CommandLog.xaml":
+                    ((CommandLog)e.Content).BeginAnimation(OpacityProperty, opacityMain);
+                    break;
+                case "UI/Views/AppPages/ContentUpload.xaml":
+                    ((ContentUpload)e.Content).BeginAnimation(OpacityProperty, opacityMain);
+                    break;
+                case "UI/Views/AppPages/SoftwareUpdate.xaml":
+                    ((SoftwareUpdate)e.Content).BeginAnimation(OpacityProperty, opacityMain);
+                    break;
+                case "UI/Views/AppPages/ControlPanel.xaml":
+                    ((ControlPanel)e.Content).BeginAnimation(OpacityProperty, opacityMain);
                     break;
             }
         }
@@ -141,8 +157,10 @@ namespace MMS
         {
             ColorAnimation animationMain = new ColorAnimation();
             ColorAnimation animationAux = new ColorAnimation();
+
             animationMain.Duration = (Duration)Application.Current.Resources["DurationFadeIn"];
             animationAux.Duration = (Duration)Application.Current.Resources["DurationFadeIn"];
+
             switch (TargetPage.ToString())
             {
                 case "/UI/Views/AppPages/TitlePage.xaml":
@@ -173,6 +191,14 @@ namespace MMS
                             animationAux.To = (Color)Application.Current.Resources["ColorPrimaryAux2"];
                             break;
                     }
+                    break;
+                case "/UI/Views/AppPages/CommandLog.xaml":                  
+                    break;
+                case "/UI/Views/AppPages/ContentUpload.xaml":
+                    break;
+                case "/UI/Views/AppPages/SoftwareUpdate.xaml":
+                    break;
+                case "/UI/Views/AppPages/ControlPanel.xaml":
                     break;
             }
             ((LinearGradientBrush)AppWindow.Background).GradientStops[0].BeginAnimation(GradientStop.ColorProperty, animationMain);

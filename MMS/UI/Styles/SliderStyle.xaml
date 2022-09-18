@@ -18,8 +18,8 @@
     <Style x:Key="MMSSliderThumb" TargetType="{x:Type Thumb}">
         <Setter Property="SnapsToDevicePixels" Value="True"/>
         <Setter Property="OverridesDefaultStyle" Value="True"/>
-        <Setter Property="Height" Value="14"/>
-        <Setter Property="Width" Value="14"/>
+        <Setter Property="Height" Value="10"/>
+        <Setter Property="Width" Value="10"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
@@ -69,7 +69,7 @@
                     <RepeatButton Style="{StaticResource MMSSliderButton}" Command="Slider.IncreaseLarge"/>
                 </Track.IncreaseRepeatButton>
             </Track>
-            <Line Y1="1" Y2="1" X1="0" X2="{Binding ElementName=Completion, Path=ActualWidth}" StrokeThickness="{Binding ElementName=TrackBackground, Path=Height}" 
+            <Line Y1="2" Y2="2" X1="0" X2="{Binding ElementName=Completion, Path=ActualWidth}" StrokeThickness="{Binding ElementName=TrackBackground, Path=Height}" 
                   StrokeStartLineCap="Round" StrokeEndLineCap="Round" VerticalAlignment="Center" 
                   Stroke="{TemplateBinding Foreground}" Fill="{TemplateBinding Foreground}" Grid.Row="1" Panel.ZIndex="1"/>
             <TickBar x:Name="BottomTick" SnapsToDevicePixels="True" Grid.Row="2" Fill="{TemplateBinding Foreground}" Placement="Bottom" Height="4" Visibility="Collapsed"/>
@@ -108,7 +108,7 @@
                     <RepeatButton Style="{StaticResource MMSSliderButton}" Command="Slider.IncreaseLarge"/>
                 </Track.IncreaseRepeatButton>
             </Track>
-            <Line X1="1" X2="1" Y1="0" Y2="{Binding ElementName=Completion, Path=ActualHeight}" StrokeThickness="{Binding ElementName=TrackBackground, Path=Width}" 
+            <Line X1="2" X2="2" Y1="0" Y2="{Binding ElementName=Completion, Path=ActualHeight}" StrokeThickness="{Binding ElementName=TrackBackground, Path=Width}" 
                   StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" 
                   Stroke="{TemplateBinding Foreground}" Fill="{TemplateBinding Foreground}" Grid.Column="1" Panel.ZIndex="1">
                 <Line.LayoutTransform>
@@ -138,13 +138,13 @@
         <Setter Property="Foreground" Value="{StaticResource BrushSecondaryMain}"/>
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
-                <Setter Property="MinWidth" Value="104"/>
+                <Setter Property="MinWidth" Value="50"/>
                 <Setter Property="MinHeight" Value="21"/>
                 <Setter Property="Template" Value="{StaticResource HorizontalSlider}" />
             </Trigger>
             <Trigger Property="Orientation" Value="Vertical">
                 <Setter Property="MinWidth" Value="21"/>
-                <Setter Property="MinHeight" Value="104"/>
+                <Setter Property="MinHeight" Value="50"/>
                 <Setter Property="Template" Value="{StaticResource VerticalSlider}" />
             </Trigger>
         </Style.Triggers>
