@@ -1,21 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MMS.Backend;
+﻿using MMS.Backend;
 using MMS.DataModels;
 using MMS.UI.Helpers;
 using MMS.UI.Views.AppUserControls;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace MMS.UI.Views.AppPages
 {
@@ -34,11 +25,11 @@ namespace MMS.UI.Views.AppPages
             InitializeComponent();
 
             FloorOptions.ItemsSource = DataHub.Floors.Select(a => a.Name).ToList().Append("All");
-            CommandOptions.ItemsSource = DataHub.Commands.Select(a => a.Command).ToList().Append("All");
+            CommandOptions.ItemsSource = DataHub.Commands.Select(a => a.CommandName).ToList().Append("All");
 
             CommandLogListView.Items.IsLiveFiltering = true;
             CommandLogListView.Items.LiveFilteringProperties.Add(nameof(FloorModel.Name));
-            CommandLogListView.Items.LiveFilteringProperties.Add(nameof(CommandModel.Command));
+            CommandLogListView.Items.LiveFilteringProperties.Add(nameof(CommandModel.CommandName));
         }
 
         private void CommandLogListViewSizeChanged(object sender, SizeChangedEventArgs e)
@@ -90,6 +81,7 @@ namespace MMS.UI.Views.AppPages
             {
                 CommandLogFilters[2] = p => true;
             }
+            CommandLogListView.Items.Filter = p => CombinedFilterPredicate((CommandLogModel)p);
         }
 
         private bool CombinedFilterPredicate(CommandLogModel p)

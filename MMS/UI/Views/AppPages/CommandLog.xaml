@@ -64,7 +64,7 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Command.Command}" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                <TextBlock Text="{Binding Command.CommandName}" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -94,7 +94,7 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="Node" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
+                                <TextBlock Text="{Binding UpdatedBy}" Foreground="{StaticResource BrushFontMain}" FontSize="{StaticResource Small}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -19,6 +21,8 @@ namespace MMS.Backend
         private static Timer DeviceOnlineTimer;
         private static Dictionary<int, bool> OnlineCheckList;
 
+        public static Dictionary<string, long> CommandHistory = new Dictionary<string, long>();
+
         public static bool Initialize()
         {
             Logging.Initialize();
@@ -32,6 +36,8 @@ namespace MMS.Backend
             DeviceOnlineTimer = new Timer(DeviceOnlineCheckExpire);
             OnlineCheckList = new Dictionary<int, bool>();
             DBInterface = new SQLiteDatabaseIO();
+
+            SetupHttpFilesFolder();
 
             HTTPHandler.Instance.RegisterRequestReceived += HTTPRegisterRequestReceived;
             HTTPHandler.Instance.HeartbeatReceived += HTTPHeartbeatReceived;
@@ -78,14 +84,19 @@ namespace MMS.Backend
             foreach (var cmdlog in read_commandlogs) DataHub.CommandLogs.Add(cmdlog);
 
             var read_devices = DBInterface.ReadNodeData();
-            var read_status = DBInterface.ReadNodeStatusData();
+            //var read_status = DBInterface.ReadNodeStatusData();
+            var read_files = DBInterface.ReadNodeFileData();
             foreach (var dev in read_devices)
             {
                 dev.IsOnline = false;
-                dev.CurrentStatus = read_status.FirstOrDefault(a => a.NodeID == dev.ID) ?? new NodeCurrentStatusModel();
+                //dev.CurrentStatus = read_status.FirstOrDefault(a => a.NodeID == dev.ID) ?? new NodeCurrentStatusModel();
+                dev.CurrentStatus = new NodeCurrentStatusModel();
+                var dev_files = read_files.Where(a => a.NodeID == dev.ID);
+                foreach (var dev_file in dev_files) dev.Files.Add(dev_file);
                 DataHub.Nodes.Add(dev);
             }
 
+            CommandHistory.Clear();
             DeviceOnlineTimer.Change(0, 30000);
             HTTPHandler.Instance.Start();
             return true;
@@ -98,63 +109,114 @@ namespace MMS.Backend
             Logging.Release();
         }
 
+        public static void SetupHttpFilesFolder()
+        {
+            if (!Directory.Exists(@"files"))
+            {
+                Directory.CreateDirectory(@"files");
+                Directory.CreateDirectory(@"files\media\content");
+                Directory.CreateDirectory(@"files\media\software");
+            }
+            else
+            {
+                if (!Directory.Exists(@"files\media\content")) Directory.CreateDirectory(@"files\media\content");
+                if (!Directory.Exists(@"files\media\software")) Directory.CreateDirectory(@"files\media\software");
+            }
+        }
+
         public static void FillReqData()
         {
             List<CommandModel> c1 = new List<CommandModel>
             {
                 new CommandModel
                 {
+                    CommandName = "Halt",
                     Command = "halt",
+                    CommandNumber = (int)CommandNumber.Halt,
                     IsEnabled = true
                 },
                 new CommandModel
                 {
+                    CommandName = "Run",
                     Command = "run",
+                    CommandNumber = (int)CommandNumber.Play,
                     IsEnabled = true
                 },
                 new CommandModel
                 {
+                    CommandName = "Reset",
                     Command = "restart",
+                    CommandNumber = (int)CommandNumber.Reset,
                     IsEnabled = true
                 },
                 new CommandModel
                 {
+                    CommandName = "Reboot",
                     Command = "reboot",
+                    CommandNumber = (int)CommandNumber.Restart,
                     IsEnabled = true
                 },
                 new CommandModel
                 {
+                    CommandName = "Next",
                     Command = "nextVideo",
+                    CommandNumber = (int)CommandNumber.Next,
                     IsEnabled = true
                 },
                 new CommandModel
                 {
+                    CommandName = "Previous",
                     Command = "previousVideo",
+                    CommandNumber = (int)CommandNumber.Previous,
                     IsEnabled = true
                 },
                 new CommandModel
                 {
+                    CommandName = "Goto Time",
                     Command = "gotoTime",
+                    CommandNumber = (int)CommandNumber.GotoTime,
                     IsEnabled = true
                 },
                 new CommandModel
                 {
+                    CommandName = "Volume",
                     Command = "VOLUME",
+                    CommandNumber = (int)CommandNumber.VolumeValue,
                     IsEnabled = true
                 },
                 new CommandModel
                 {
+                    CommandName = "Play By Name",
                     Command = "playByName",
+                    CommandNumber = (int)CommandNumber.PlayByName,
                     IsEnabled = true
                 },
                 new CommandModel
                 {
+                    CommandName = "ShutDown",
                     Command = "shutdown",
+                    CommandNumber = (int)CommandNumber.ShutDown,
                     IsEnabled = true
                 },
                 new CommandModel
                 {
+                    CommandName = "Power On",
                     Command = "TurnOn",
+                    CommandNumber = (int)CommandNumber.PowerOn,
+                    IsEnabled = true
+                },
+                new CommandModel
+                {
+                    CommandName = "Add Content",
+                    Command = "ADD_CONTENT",
+                    CommandNumber = (int)CommandNumber.AddContent,
+                    IsEnabled = true
+                },
+                new CommandModel
+                {
+                    CommandName = "Software Update",
+                    Command = "SOFTWARE_UPDATE",
+                    CommandNumber = (int)CommandNumber.Update,
                     IsEnabled = true
                 }
             };
@@ -190,13 +252,39 @@ namespace MMS.Backend
 
         public static void SendCommand(CommandModel command, NodeModel node, bool secure)
         {
-            var cmdbytes = Encoding.UTF8.GetBytes(command.Command);
+            if (command == null)
+            {
+                Logging.Error("Send Command Failed. Command Not Found");
+                return;
+            }
+            if (node == null)
+            {
+                Logging.Error("Send Command Failed. Node Not Found");
+                return;
+            }
+            var cmdbytes = Encoding.UTF8.GetBytes(command.GetFinalizedCommand());
+            CommandHistory.Add(command.SessionID, command.ID);
             if (secure)
             {
                 var cmdbytesenc = TCPHandler.Instance.EncryptFromPublicKey(cmdbytes, node.PEMFile);
                 TCPHandler.Instance.Send(cmdbytesenc, node.IP, node.SecurePort);
             }
             else TCPHandler.Instance.Send(cmdbytes, node.IP, node.Port);
+            var cmdlog = new CommandLogModel
+            {
+                CommandID = command.ID,
+                NodeID = node.ID,
+                CommandSessionID = command.SessionID,
+                Status = "SUCCESS",
+                Message = "TCP request sent successfully",
+                UpdatedBy = "MMS",
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+            var temp = new List<CommandLogModel>() { cmdlog };
+            DBInterface.WriteCommandLogData(ref temp);
+            DataHub.CommandLogs.Add(temp[0]);
+            Logging.Info("Send Command Successful");
         }
 
         private static void HTTPRegisterRequestReceived(NodeModel node)
@@ -307,14 +395,18 @@ namespace MMS.Backend
 
         private static void HTTPCommandStatusReceived(CommandLogModel cmdstatus, string mac)
         {
-            var dev = DataHub.Nodes.FirstOrDefault(a => a.MacAddress == mac);
-            if (dev != null)
+            Application.Current.Dispatcher.Invoke(() =>
             {
-                cmdstatus.NodeID = dev.ID;
-                var temp = new List<CommandLogModel>() { cmdstatus };
-                DBInterface.WriteCommandLogData(ref temp);
-                DataHub.CommandLogs.Add(temp[0]);
-            }
+                var dev = DataHub.Nodes.FirstOrDefault(a => a.MacAddress == mac);
+                if (dev != null)
+                {
+                    cmdstatus.NodeID = dev.ID;
+                    cmdstatus.CommandID = CommandHistory[cmdstatus.CommandSessionID];
+                    var temp = new List<CommandLogModel>() { cmdstatus };
+                    DBInterface.WriteCommandLogData(ref temp);
+                    DataHub.CommandLogs.Add(temp[0]);
+                }
+            });
         }
 
         private static void DeviceOnlineCheckExpire(object sender)
@@ -334,5 +426,24 @@ namespace MMS.Backend
         {
             PushNotifyRequested?.Invoke(title, message, type);
         }
+    }
+
+    public enum CommandNumber
+    {
+        Play,
+        Pause,
+        GotoTime,
+        PlayByName,
+        Mute,
+        VolumeValue,
+        Previous,
+        Next,
+        Reset,
+        Halt,
+        Restart,
+        ShutDown,
+        PowerOn,
+        AddContent,
+        Update
     }
 }

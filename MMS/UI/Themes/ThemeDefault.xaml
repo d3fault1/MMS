@@ -4,6 +4,7 @@
     
     <!--Colors-->
     <Color x:Key="ColorPrimaryMain1">#FF826294</Color>
+    <Color x:Key="ColorPrimaryTheme1">#FFA86294</Color>
     <Color x:Key="ColorPrimaryAux1">#FF383965</Color>
 
     <Color x:Key="ColorPrimaryMain2">#FF8C9DCE</Color>
@@ -28,6 +29,10 @@
     <Color x:Key="ColorSecondaryAux2">#33000000</Color>
     <Color x:Key="ColorSecondaryAux3">#1DFFFFFF</Color>
     <Color x:Key="ColorSecondaryAux4">#FF6A6A6A</Color>
+
+    <Color x:Key="ColorWhiteShade1">#16FFFFFF</Color>
+    <Color x:Key="ColorWhiteShade2">#48FFFFFF</Color>
+    <Color x:Key="ColorWhiteShade3">#64FFFFFF</Color>
 
     <Color x:Key="ColorTransparentMain">#00000000</Color>
     <Color x:Key="ColorTransparentAux">#00FFFFFF</Color>
@@ -62,7 +67,12 @@
         <GradientStop Color="{StaticResource ColorPrimaryMain5}" />
         <GradientStop Color="{StaticResource ColorPrimaryAux5}" Offset="1"/>
     </LinearGradientBrush>
+    <LinearGradientBrush x:Key="BrushTransparentShade" StartPoint="0 0" EndPoint="1 1">
+        <GradientStop Color="{StaticResource ColorWhiteShade1}" Offset="1"/>
+        <GradientStop Color="{StaticResource ColorWhiteShade2}"/>
+    </LinearGradientBrush>
 
+    <SolidColorBrush x:Key="BrushPrimaryTheme1" Color="{StaticResource ColorPrimaryTheme1}"/>
     <SolidColorBrush x:Key="BrushPrimaryTheme2" Color="{StaticResource ColorPrimaryTheme2}"/>
     <SolidColorBrush x:Key="BrushPrimaryTheme3" Color="{StaticResource ColorPrimaryTheme3}"/>
     <SolidColorBrush x:Key="BrushPrimaryTheme4" Color="{StaticResource ColorPrimaryTheme4}"/>
@@ -81,6 +91,7 @@
     <SolidColorBrush x:Key="BrushFontAux" Color="{StaticResource ColorFontAux}"/>
     <SolidColorBrush x:Key="BrushFontTer" Color="{StaticResource ColorFontTer}"/>
     <SolidColorBrush x:Key="BrushErrorMain" Color="{StaticResource ColorErrorMain}"/>
+    <SolidColorBrush x:Key="BrushWhiteShadeTheme" Color="{StaticResource ColorWhiteShade3}"/>
 
     <!--Font Sizes-->
     <core:Double x:Key="Small">12</core:Double>

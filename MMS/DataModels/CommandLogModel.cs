@@ -11,8 +11,10 @@ namespace MMS.DataModels
         private long _id = -1;
         private long _commandid = -1;
         private long _nodeid = -1;
+        private string _commandsessionid = "";
         private string _status = "";
         private string _message = "";
+        private string _updatedby = "";
         private DateTime _createdat = DateTime.MinValue;
         private DateTime _updatedat = DateTime.MinValue;
         #endregion
@@ -67,6 +69,18 @@ namespace MMS.DataModels
                 return DataHub.Nodes.FirstOrDefault(a => a.ID == NodeID);
             }
         }
+        public string CommandSessionID
+        {
+            get
+            {
+                return _commandsessionid;
+            }
+            set
+            {
+                _commandsessionid = value;
+                OnPropertyChanged(nameof(CommandSessionID));
+            }
+        }
         public string Status
         {
             get
@@ -89,6 +103,18 @@ namespace MMS.DataModels
             {
                 _message = value;
                 OnPropertyChanged(nameof(Message));
+            }
+        }
+        public string UpdatedBy
+        {
+            get
+            {
+                return _updatedby;
+            }
+            set
+            {
+                _updatedby = value;
+                OnPropertyChanged(nameof(UpdatedBy));
             }
         }
         public DateTime CreatedAt

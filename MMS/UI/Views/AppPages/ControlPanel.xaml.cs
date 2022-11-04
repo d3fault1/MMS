@@ -3,7 +3,7 @@ using MMS.UI.Views.AppUserControls;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Shapes;
+using MMS.DataModels;
 
 namespace MMS.UI.Views.AppPages
 {
@@ -17,6 +17,9 @@ namespace MMS.UI.Views.AppPages
         public ControlPanel()
         {
             InitializeComponent();
+            DeviceListView.Items.IsLiveFiltering = true;
+            DeviceListView.Items.LiveFilteringProperties.Add(nameof(NodeModel.IsConfig));
+            DeviceListView.Items.Filter = p => ((NodeModel)p).IsConfig;
         }
 
         private void DeviceListViewLoaded(object sender, RoutedEventArgs e)

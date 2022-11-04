@@ -102,7 +102,7 @@ namespace MMS.DataModels
     class HTTPCommandStatusReqModel
     {
         [JsonProperty("command_log_id")]
-        public int ID { get; set; }
+        public string ID { get; set; }
         [JsonProperty("mac_addr")]
         public string MacAddress { get; set; }
         [JsonProperty("command_status")]

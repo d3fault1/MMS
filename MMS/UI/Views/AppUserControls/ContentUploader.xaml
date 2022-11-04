@@ -5,14 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:MMS.UI.Views.AppUserControls"
              mc:Ignorable="d" 
-             d:DesignHeight="200" d:DesignWidth="400">
+             d:DesignHeight="200" d:DesignWidth="400" Loaded="UploaderLoaded">
     <Border Padding="10" CornerRadius="{StaticResource CornerRadiusRegular}" Background="{StaticResource BrushSecondaryAux3}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="65*"/>
                 <ColumnDefinition Width="35*" MaxWidth="120" MinWidth="100"/>
             </Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Margin="10" Padding="20 0" CornerRadius="{StaticResource CornerRadiusRegular}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2">
+            <Border Grid.Column="0" Margin="10" Padding="20 0" CornerRadius="{StaticResource CornerRadiusRegular}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" Drop="ContentDropped" DragOver="UploaderDragOver">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
                     <Image Width="45" Height="35" Stretch="Uniform" HorizontalAlignment="Left" VerticalAlignment="Center" Source="/UI/Assets/uploadcloud.png"/>
                     <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Center" Width="100" Margin="30 0 0 0">

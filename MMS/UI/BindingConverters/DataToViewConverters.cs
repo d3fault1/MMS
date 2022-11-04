@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -101,6 +102,20 @@ namespace MMS.UI.BindingConverters
         }
     }
 
+    class ContentDateBindingConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            DateTime lastseen = (DateTime)value;
+            return $"{lastseen:dd-MM-yyyy}";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     class CommandLogDateBindingConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -121,6 +136,34 @@ namespace MMS.UI.BindingConverters
         {
             DateTime lastseen = (DateTime)value;
             return $"{lastseen:HH:mm:ss}";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class PlaceholderTextBindingConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (String.IsNullOrWhiteSpace((string)value)) return parameter;
+            else return value;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    class ContentFileNameBindingConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            string fullpath = (string)value;
+            return Path.GetFileNameWithoutExtension(fullpath);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

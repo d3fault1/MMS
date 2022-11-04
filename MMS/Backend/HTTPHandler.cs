@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -148,36 +149,36 @@ namespace MMS.Backend
                             if (reqRouteArr.Length == 3)
                             {
                                 var path = reqRouteArr[1].Trim();
-                                if (ConfiguredRoutes.ContainsKey(path))
+                                if (reqRouteArr[0].Trim().ToUpper() == "POST")
                                 {
-                                    if (reqRouteArr[0].Trim().ToUpper() == "POST")
+                                    if (reqArr.Length == 2)
                                     {
-                                        if (reqArr.Length == 2)
+                                        if (ConfiguredRoutes.ContainsKey(path))
                                         {
                                             Logging.Debug($"HTTP server handler: post request received at {path}");
                                             respString = ConfiguredRoutes[path].Invoke(reqArr[1]);
                                         }
                                         else
                                         {
-                                            Logging.Debug("HTTP server handler: invalid request header");
-                                            respString = HandleBadRequest();
+                                            Logging.Debug($"HTTP server handler: request received at an unconfigured route");
+                                            respString = HandleNotFoundRequest();
                                         }
-                                    }
-                                    else if (reqRouteArr[0].Trim().ToUpper() == "GET")
-                                    {
-                                        Logging.Debug($"HTTP server handler: get request received at {path}");
-                                        respString = HandleBadRequest();
                                     }
                                     else
                                     {
-                                        Logging.Debug("HTTP server handler: unsupported request method");
+                                        Logging.Debug("HTTP server handler: invalid request header");
                                         respString = HandleBadRequest();
                                     }
                                 }
+                                else if (reqRouteArr[0].Trim().ToUpper() == "GET")
+                                {
+                                    Logging.Debug($"HTTP server handler: get request received at {path}");
+                                    respString = HandleBadRequest();
+                                }
                                 else
                                 {
-                                    Logging.Debug($"HTTP server handler: request received at an unconfigured route");
-                                    respString = HandleNotFoundRequest();
+                                    Logging.Debug("HTTP server handler: unsupported request method");
+                                    respString = HandleBadRequest();
                                 }
                             }
                             else
@@ -442,9 +443,10 @@ namespace MMS.Backend
             Logging.Info($"Command status received. ID: {csmodel.ID}");
             CommandLogModel logmodel = new CommandLogModel
             {
-                CommandID = csmodel.ID,
+                CommandSessionID = csmodel.ID,
                 Status = csmodel.Status,
                 Message = csmodel.Message,
+                UpdatedBy = "Node",
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now
             };
@@ -471,6 +473,13 @@ namespace MMS.Backend
             OnCommandStatusReceived(logmodel, csmodel.MacAddress);
 
             return response;
+        }
+
+        private string HandleFileRequest(string path)
+        {
+            string filepath = Path.Combine("files", path);
+            if (File.Exists(filepath)) return filepath;
+            else return "";
         }
 
         private string HandleBadRequest()

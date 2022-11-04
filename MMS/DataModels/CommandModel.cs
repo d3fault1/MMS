@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace MMS.DataModels
@@ -7,7 +8,11 @@ namespace MMS.DataModels
     {
         #region Private Variables
         private long _id = -1;
+        private string _commandname = "";
         private string _command = "";
+        private int _commandnumber = -1;
+        private string _sessionid = "";
+        private List<string> _parameters = new List<string>();
         private bool _isenabled = false;
         private DateTime _createdat = DateTime.MinValue;
         private DateTime _updatedat = DateTime.MinValue;
@@ -25,6 +30,18 @@ namespace MMS.DataModels
                 OnPropertyChanged(nameof(ID));
             }
         }
+        public string CommandName
+        {
+            get
+            {
+                return _commandname;
+            }
+            set
+            {
+                _commandname = value;
+                OnPropertyChanged(nameof(CommandName));
+            }
+        }
         public string Command
         {
             get
@@ -35,6 +52,37 @@ namespace MMS.DataModels
             {
                 _command = value;
                 OnPropertyChanged(nameof(Command));
+            }
+        }
+        public int CommandNumber
+        {
+            get
+            {
+                return _commandnumber;
+            }
+            set
+            {
+                _commandnumber = value;
+                OnPropertyChanged(nameof(CommandNumber));
+            }
+        }
+        public string SessionID
+        {
+            get
+            {
+                return _sessionid;
+            }
+            set
+            {
+                _sessionid = value;
+                OnPropertyChanged(nameof(SessionID));
+            }
+        }
+        public List<string> Parameters
+        {
+            get
+            {
+                return _parameters;
             }
         }
         public bool IsEnabled
@@ -73,6 +121,20 @@ namespace MMS.DataModels
                 OnPropertyChanged(nameof(UpdatedAt));
             }
         }
+
+        #region Functions
+        public void Prepare()
+        {
+            Parameters.Clear();
+        }
+        public string GetFinalizedCommand()
+        {
+            SessionID = Guid.NewGuid().ToString("N");
+            string finalizedCommand = Command + " " + SessionID;
+            foreach (var parameter in Parameters) finalizedCommand += " " + parameter;
+            return finalizedCommand;
+        }
+        #endregion
 
         #region Notify Event and Functions
         public event PropertyChangedEventHandler PropertyChanged;

@@ -6,6 +6,7 @@
       xmlns:local="clr-namespace:MMS.UI.Views.AppPages"
       xmlns:uc="clr-namespace:MMS.UI.Views.AppUserControls"
       xmlns:ext="clr-namespace:MMS.UI.Assists"
+      xmlns:data="clr-namespace:MMS.Backend"
       mc:Ignorable="d" 
       d:DesignHeight="650" d:DesignWidth="1030"
       Title="ControlPanel">
@@ -22,7 +23,7 @@
         </Grid.RowDefinitions>
 
         <ComboBox x:Name="FloorOptions" ext:GeneralAssists.HintText="Select a Floor" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" MinWidth="180" MaxWidth="250" Height="40" Grid.Column="1" Grid.Row="0"/>
-        <ListView x:Name="DeviceListView" Style="{StaticResource MMSListViewFlat}" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" SizeChanged="DeviceListViewSizeChanged" Loaded="DeviceListViewLoaded">
+        <ListView x:Name="DeviceListView" ItemsSource="{x:Static data:DataHub.Nodes}" Style="{StaticResource MMSListViewFlat}" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" SizeChanged="DeviceListViewSizeChanged" Loaded="DeviceListViewLoaded">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <UniformGrid x:Name="panelGrid" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
@@ -30,15 +31,9 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <uc:MediaPlayer x:Name="mediaPlayer" MinWidth="350" MaxWidth="410" Height="200"/>
+                    <uc:MediaPlayer x:Name="mediaPlayer" Node="{Binding}" MinWidth="350" MaxWidth="410" Height="200"/>
                 </DataTemplate>
             </ListView.ItemTemplate>
-            <ListItem/>
-            <ListItem/>
-            <ListItem/>
-            <ListItem/>
-            <ListItem/>
-            <ListItem/>
         </ListView>
     </Grid>
 </Page>

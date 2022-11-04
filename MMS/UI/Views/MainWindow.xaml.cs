@@ -25,7 +25,7 @@ namespace MMS
             Application.Current.Exit += AppExit;
             SidePanel.NavigationRequested += NavigationRequested;
             Globals.PushNotifyRequested += PushNotifyRequested;
-            //Globals.Initialize();
+            Globals.Initialize();
         }
 
         private async void PushNotifyRequested(string title, string message, string type)
@@ -53,7 +53,7 @@ namespace MMS
 
         private void AppExit(object sender, ExitEventArgs e)
         {
-            //Globals.Destroy();
+            Globals.Destroy();
         }
 
         private void WindowTopBarMouseDown(object sender, MouseButtonEventArgs e)

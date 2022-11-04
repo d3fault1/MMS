@@ -6,10 +6,16 @@
       xmlns:local="clr-namespace:MMS.UI.Views.AppPages"
       xmlns:uc="clr-namespace:MMS.UI.Views.AppUserControls"
       xmlns:ext="clr-namespace:MMS.UI.Assists"
+      xmlns:bind="clr-namespace:MMS.UI.BindingConverters"
       mc:Ignorable="d" 
       d:DesignHeight="650" d:DesignWidth="1030"
       Title="ContentUpload">
 
+    <Page.Resources>
+        <bind:ContentFileNameBindingConverter x:Key="ContentNameConverter"/>
+        <bind:ContentDateBindingConverter x:Key="ContentDateConverter"/>
+    </Page.Resources>
+    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30"/>
@@ -25,24 +31,32 @@
         </Grid.RowDefinitions>
 
         <TextBlock Text="Upload Content" FontSize="{StaticResource SemiLarge}" Foreground="{StaticResource BrushFontMain}" Grid.Row="0" Grid.Column="1"/>
-        <ComboBox x:Name="deviceOptions" ext:GeneralAssists.HintText="Select a Device" IsEditable="True" Width="220" Height="40" HorizontalAlignment="Left" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" Grid.Row="1" Grid.Column="1" TextBoxBase.TextChanged="deviceOptionsTextChanged" SelectionChanged="deviceOptionsSelectionChanged"/>
-        <uc:ContentUploader Grid.Row="1" Grid.Column="2" Margin="30"/>
+        <ComboBox x:Name="deviceOptions" DisplayMemberPath="Name" ext:GeneralAssists.HintText="Select a Device" IsEditable="True" Width="220" Height="40" HorizontalAlignment="Left" Style="{StaticResource MMSComboBox}" BorderBrush="{StaticResource BrushSecondaryMain}" BorderThickness="2" Grid.Row="1" Grid.Column="1" TextBoxBase.TextChanged="deviceOptionsTextChanged" SelectionChanged="deviceOptionsSelectionChanged"/>
+        <uc:ContentUploader x:Name="Uploader" Mode="Content" Grid.Row="1" Grid.Column="2" Margin="30"/>
         <TextBlock Text="Content Details" VerticalAlignment="Center" FontSize="{StaticResource SemiLarge}" Foreground="{StaticResource BrushFontMain}" Grid.Row="3" Grid.Column="1"/>
         <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2" HorizontalAlignment="Right" Margin="0 0 20 0">
-            <Button Padding="5 0" Height="30" Style="{StaticResource MMSButtonLarge}">
+            <Button Padding="5 0" Height="30" Style="{StaticResource MMSButtonLarge}" Click="UpButtonClick">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="/UI/Assets/uparrow.png" Width="16" Height="16"/>
-                    <TextBlock Text="Move Up" Margin="2 0 0 0" VerticalAlignment="Center" FontSize="{StaticResource Regular}" Foreground="{StaticResource BrushFontMain}"/>
+                    <Viewbox Width="16" Height="16" Margin="0 2 0 0">
+                        <Grid>
+                            <Path Fill="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Foreground}" Data="F1 M34,58z M0,0z M19.3494,1.06048C18.6711,0.382984 17.7516,0.00244141 16.7928,0.00244141 15.8341,0.00244141 14.9146,0.382984 14.2363,1.06048L0.970979,14.3258C0.33193,15.0116 -0.0159732,15.9187 0.000563639,16.8559 0.0171005,17.7932 0.396786,18.6874 1.05963,19.3503 1.72247,20.0131 2.61672,20.3928 3.55398,20.4093 4.49124,20.4259 5.39833,20.078 6.08414,19.4389L13.175,12.348 13.175,54.2663C13.175,55.2258 13.5562,56.146 14.2347,56.8245 14.9131,57.5029 15.8333,57.8841 16.7928,57.8841 17.7523,57.8841 18.6725,57.5029 19.351,56.8245 20.0295,56.146 20.4106,55.2258 20.4106,54.2663L20.4106,12.348 27.5015,19.4389C28.1873,20.078 29.0944,20.4259 30.0317,20.4093 30.9689,20.3928 31.8632,20.0131 32.526,19.3503 33.1889,18.6874 33.5686,17.7932 33.5851,16.8559 33.6016,15.9187 33.2537,15.0116 32.6147,14.3258L19.3494,1.06048z"/>
+                        </Grid>
+                    </Viewbox>
+                    <TextBlock Text="Move Up" Margin="2 -2 2 0" VerticalAlignment="Center" FontSize="{StaticResource Regular}" Foreground="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Foreground}"/>
                 </StackPanel>
             </Button>
-            <Button Padding="5 0" Height="30" Style="{StaticResource MMSButtonLarge}" Margin="10 0 0 0">
+            <Button Padding="5 0" Height="30" Style="{StaticResource MMSButtonLarge}" Margin="10 0 0 0" Click="DownButtonClick">
                 <StackPanel Orientation="Horizontal">
-                    <Image Source="/UI/Assets/downarrow.png" Width="16" Height="16"/>
-                    <TextBlock Text="Move Down" Margin="2 -2 0 0" VerticalAlignment="Center" FontSize="{StaticResource Regular}" Foreground="{StaticResource BrushFontMain}"/>
+                    <Viewbox Width="16" Height="16" Margin="0 2 0 0">
+                        <Grid>
+                            <Path Fill="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Foreground}" Data="F1 M34,59z M0,0z M19.3494,57.4395C18.6711,58.117 17.7516,58.4976 16.7928,58.4976 15.8341,58.4976 14.9146,58.117 14.2363,57.4395L0.970979,44.1742C0.33193,43.4884 -0.0159732,42.5813 0.000563639,41.6441 0.0171005,40.7068 0.396786,39.8126 1.05963,39.1497 1.72247,38.4869 2.61672,38.1072 3.55398,38.0907 4.49124,38.0741 5.39833,38.422 6.08414,39.0611L13.175,46.152 13.175,4.23369C13.175,3.27419 13.5562,2.35399 14.2347,1.67552 14.9131,0.997051 15.8333,0.615887 16.7928,0.615887 17.7523,0.615887 18.6725,0.997051 19.351,1.67552 20.0295,2.35399 20.4106,3.27419 20.4106,4.23369L20.4106,46.152 27.5015,39.0611C28.1873,38.422 29.0944,38.0741 30.0317,38.0907 30.9689,38.1072 31.8632,38.4869 32.526,39.1497 33.1889,39.8126 33.5686,40.7068 33.5851,41.6441 33.6016,42.5813 33.2537,43.4884 32.6147,44.1742L19.3494,57.4395z"/>
+                        </Grid>
+                    </Viewbox>
+                    <TextBlock Text="Move Down" Margin="2 -2 2 0" VerticalAlignment="Center" FontSize="{StaticResource Regular}" Foreground="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Button}, Path=Foreground}"/>
                 </StackPanel>
             </Button>
         </StackPanel>
-        <ListView Grid.Row="4" Grid.Column="0" Margin="0 10 0 0" Grid.ColumnSpan="3" Style="{StaticResource MMSListView}" SizeChanged="ContentDetailsListViewSizeChanged">
+        <ListView x:Name="ContentDetailsView" Grid.Row="4" Grid.Column="0" Margin="0 10 0 0" Grid.ColumnSpan="3" Style="{StaticResource MMSListView}" SizeChanged="ContentDetailsListViewSizeChanged">
             <ListView.View>
                 <GridView ColumnHeaderContainerStyle="{StaticResource MMSGridViewColumnHeader}">
                     <GridViewColumn ext:ListViewAssists.ColumnMinWidth="50">
@@ -51,7 +65,7 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <CheckBox IsChecked="False" Style="{StaticResource MMSCheckBox}"/>
+                                <CheckBox IsChecked="{Binding IsSelected}" Style="{StaticResource MMSCheckBox}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -61,13 +75,13 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="1" FontSize="{StaticResource Small}" Foreground="{StaticResource BrushFontMain}"/>
+                                <TextBlock Text="{Binding Position}" FontSize="{StaticResource Small}" Foreground="{StaticResource BrushFontMain}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn ext:ListViewAssists.ColumnMinWidth="220">
                         <GridViewColumn.Header>
-                            <TextBlock Text="File Name" FontSize="{StaticResource Regular}" Foreground="{StaticResource BrushFontMain}"/>
+                            <TextBlock Text="{Binding NodeFile, Converter={StaticResource ContentNameConverter}}" FontSize="{StaticResource Regular}" Foreground="{StaticResource BrushFontMain}"/>
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
@@ -81,7 +95,7 @@
                         </GridViewColumn.Header>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="25-7-2022" FontSize="{StaticResource Small}" Foreground="{StaticResource BrushFontMain}"/>
+                                <TextBlock Text="{Binding UpdatedAt, Converter={StaticResource ContentDateConverter}}" FontSize="{StaticResource Small}" Foreground="{StaticResource BrushFontMain}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

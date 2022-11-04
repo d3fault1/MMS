@@ -3,17 +3,13 @@ using System.ComponentModel;
 
 namespace MMS.DataModels
 {
-    public class NodeLogModel : INotifyPropertyChanged
+    public class NodeFileModel : INotifyPropertyChanged
     {
         #region Private Variables
         private long _id = -1;
         private long _nodeid = -1;
-        private TimeSpan _uptime = TimeSpan.Zero;
-        private double _temperature = 0;
-        private int _processorusage = 0;
-        private int _diskspaceusage = 0;
-        private int _ramusage = 0;
-        private string _version = "";
+        private string _nodefile = "";
+        private int _position = -1;
         private DateTime _createdat = DateTime.MinValue;
         private DateTime _updatedat = DateTime.MinValue;
         #endregion
@@ -42,76 +38,28 @@ namespace MMS.DataModels
                 OnPropertyChanged(nameof(NodeID));
             }
         }
-        public TimeSpan Uptime
+        public string NodeFile
         {
             get
             {
-                return _uptime;
+                return _nodefile;
             }
             set
             {
-                _uptime = value;
-                OnPropertyChanged(nameof(Uptime));
+                _nodefile = value;
+                OnPropertyChanged(nameof(NodeFile));
             }
         }
-        public double Temperature
+        public int Position
         {
             get
             {
-                return _temperature;
+                return _position;
             }
             set
             {
-                _temperature = value;
-                OnPropertyChanged(nameof(Temperature));
-            }
-        }
-        public int ProcessorUsage
-        {
-            get
-            {
-                return _processorusage;
-            }
-            set
-            {
-                _processorusage = value;
-                OnPropertyChanged(nameof(ProcessorUsage));
-            }
-        }
-        public int DiskSpaceUsage
-        {
-            get
-            {
-                return _diskspaceusage;
-            }
-            set
-            {
-                _diskspaceusage = value;
-                OnPropertyChanged(nameof(DiskSpaceUsage));
-            }
-        }
-        public int RamUsage
-        {
-            get
-            {
-                return _ramusage;
-            }
-            set
-            {
-                _ramusage = value;
-                OnPropertyChanged(nameof(RamUsage));
-            }
-        }
-        public string Version
-        {
-            get
-            {
-                return _version;
-            }
-            set
-            {
-                _version = value;
-                OnPropertyChanged(nameof(Version));
+                _position = value;
+                OnPropertyChanged(nameof(Position));
             }
         }
         public DateTime CreatedAt
@@ -138,6 +86,7 @@ namespace MMS.DataModels
                 OnPropertyChanged(nameof(UpdatedAt));
             }
         }
+
 
         #region Notify Event and Functions
         public event PropertyChangedEventHandler PropertyChanged;

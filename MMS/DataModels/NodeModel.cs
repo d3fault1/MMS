@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Collections.Specialized;
 using MMS.Backend;
 
 namespace MMS.DataModels
@@ -40,6 +42,7 @@ namespace MMS.DataModels
         private DateTime _createdat = DateTime.MinValue;
         private DateTime _updatedat = DateTime.MinValue;
         private NodeCurrentStatusModel _currentstatus = new NodeCurrentStatusModel();
+        private ObservableCollection<NodeFileModel> _files = new ObservableCollection<NodeFileModel>();
         #endregion
 
         public long ID
@@ -449,6 +452,20 @@ namespace MMS.DataModels
                 OnPropertyChanged(nameof(CurrentStatus));
             }
         }
+        public ObservableCollection<NodeFileModel> Files
+        {
+            get
+            {
+                return _files;
+            }
+        }
+
+        public NodeModel()
+        {
+            if (_currentstatus != null) _currentstatus.PropertyChanged += CurrentStatusPropertyChanged;
+            if (_files != null) _files.CollectionChanged += FilesCollectionChanged;
+        }
+
 
         #region Notify Event and Functions
         public event PropertyChangedEventHandler PropertyChanged;
@@ -461,6 +478,21 @@ namespace MMS.DataModels
         private void CurrentStatusPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             OnPropertyChanged(nameof(CurrentStatus));
+        }
+
+        private void FilesPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(Files));
+        }
+
+        private void FilesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action != NotifyCollectionChangedAction.Reset && e.Action != NotifyCollectionChangedAction.Move)
+            {
+                if (e.OldItems != null) foreach (NodeFileModel item in e.OldItems) item.PropertyChanged -= FilesPropertyChanged;
+                if (e.NewItems != null) foreach (NodeFileModel item in e.NewItems) item.PropertyChanged += FilesPropertyChanged;
+            }
+            OnPropertyChanged(nameof(Files));
         }
         #endregion
     }

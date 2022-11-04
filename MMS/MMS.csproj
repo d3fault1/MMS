@@ -79,7 +79,7 @@
     </ApplicationDefinition>
     <Compile Include="Backend\Configuration.cs" />
     <Compile Include="Backend\DatabaseIO\Common\IDatabaseIO.cs" />
-    <Compile Include="Backend\DatabaseIO\DatabaseEngines\MsSQLDatabaseIO.cs" />
+    <Compile Include="Backend\DatabaseIO\DatabaseEngines\MSSQLDatabaseIO.cs" />
     <Compile Include="Backend\DatabaseIO\DatabaseEngines\SQLiteDatabaseIO.cs" />
     <Compile Include="Backend\DataHub.cs" />
     <Compile Include="Backend\Globals.cs" />
@@ -191,6 +191,7 @@
     <Compile Include="DataModels\ExhibitModel.cs" />
     <Compile Include="DataModels\FloorModel.cs" />
     <Compile Include="DataModels\NodeCurrentStatusModel.cs" />
+    <Compile Include="DataModels\NodeFileModel.cs" />
     <Compile Include="DataModels\NodeLogModel.cs" />
     <Compile Include="DataModels\NodeModel.cs" />
     <Compile Include="DataModels\ZoneModel.cs" />

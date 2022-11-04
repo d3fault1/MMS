@@ -177,4 +177,33 @@
         </Style.Triggers>
     </Style>
 
+    <Style x:Key="MMSCustomShapeButton" TargetType="{x:Type Button}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Background" Value="{StaticResource BrushSecondaryMain}"/>
+        <Setter Property="Foreground" Value="{StaticResource BrushSecondaryAux4}"/>
+        <Setter Property="FontSize" Value="{StaticResource Small}"/>
+        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <ContentPresenter Margin="{TemplateBinding Padding}" 
+                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
+                                      RecognizesAccessKey="True"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{StaticResource BrushDisabledMain}"/>
+                <Setter Property="Foreground" Value="{StaticResource BrushFontTer}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
 </ResourceDictionary>

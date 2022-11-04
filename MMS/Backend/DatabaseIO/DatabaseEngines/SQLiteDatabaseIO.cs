@@ -30,7 +30,7 @@ namespace MMS.Backend.DatabaseIO
                 using (var conn = new SQLiteConnection(connectionString))
                 {
                     conn.Open();
-                    string sql = "SELECT * FROM \"museum_node\", \"museum_nodelog\", \"museum_exhibit\", \"museum_zone\", \"museum_floor\", \"museum_nodestatus\", \"museum_command\", \"museum_commandlog\" LIMIT 1";
+                    string sql = "SELECT * FROM \"museum_node\", \"museum_nodelog\", \"museum_exhibit\", \"museum_zone\", \"museum_floor\", \"museum_nodestatus\", \"museum_nodefile\", \"museum_command\", \"museum_commandlog\" LIMIT 1";
                     using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
                         SQLiteDataReader reader = command.ExecuteReader();
@@ -193,6 +193,19 @@ namespace MMS.Backend.DatabaseIO
                         command.CommandText = sql;
                         command.ExecuteNonQuery();
 
+                        table = "museum_nodefile";
+                        sql = $"CREATE TABLE \"{table}\" (" +
+                                     "\"id\" INTEGER NOT NULL PRIMARY KEY, " +
+                                     "\"node_id\" INTEGER NOT NULL, " +
+                                     "\"node_file\" TEXT NOT NULL, " +
+                                     "\"position\" INTEGER NOT NULL, " +
+                                     "\"created_at\" INTEGER NOT NULL, " +
+                                     "\"updated_at\" INTEGER NOT NULL, " +
+                                     "FOREIGN KEY(node_id) REFERENCES museum_node(id))";
+                        Logging.Debug($"Attempting SQL Create Table {table}");
+                        command.CommandText = sql;
+                        command.ExecuteNonQuery();
+
                         table = "museum_nodelog";
                         sql = $"CREATE TABLE \"{table}\" (" +
                                      "\"id\" INTEGER NOT NULL PRIMARY KEY, " +
@@ -213,7 +226,9 @@ namespace MMS.Backend.DatabaseIO
                         table = "museum_command";
                         sql = $"CREATE TABLE \"{table}\" (" +
                                     "\"id\" INTEGER NOT NULL PRIMARY KEY, " +
+                                    "\"command_name\" TEXT NOT NULL, " +
                                     "\"command\" TEXT NOT NULL, " +
+                                    "\"command_number\" INTEGER NOT NULL, " +
                                     "\"is_enabled\" INTEGER NOT NULL, " +
                                     "\"created_at\" INTEGER NOT NULL, " +
                                     "\"updated_at\" INTEGER NOT NULL)";
@@ -226,8 +241,10 @@ namespace MMS.Backend.DatabaseIO
                                     "\"id\" INTEGER NOT NULL PRIMARY KEY, " +
                                     "\"command_id\" INTEGER NOT NULL, " +
                                     "\"node_id\" INTEGER NOT NULL, " +
+                                    "\"command_session_id\" TEXT NOT NULL, " +
                                     "\"status\" TEXT, " +
                                     "\"message\" TEXT, " +
+                                    "\"updated_by\" TEXT, " +
                                     "\"created_at\" INTEGER NOT NULL, " +
                                     "\"updated_at\" INTEGER NOT NULL, " +
                                     "FOREIGN KEY(command_id) REFERENCES museum_command(id), " +
@@ -575,6 +592,51 @@ namespace MMS.Backend.DatabaseIO
             }
         }
 
+        public List<NodeFileModel> ReadNodeFileData()
+        {
+            try
+            {
+                Logging.Debug($"SQL Attempting SELECT FROM museum_nodefile");
+                List<NodeFileModel> retval = new List<NodeFileModel>();
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    string sql = $"SELECT * FROM museum_nodefile";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                    {
+                        SQLiteDataReader reader = command.ExecuteReader();
+                        if (reader.HasRows)
+                        {
+                            while (reader.Read())
+                            {
+                                int ord;
+                                var row = new NodeFileModel();
+                                ord = reader.GetOrdinal("id");
+                                row.ID = reader.IsDBNull(ord) ? -1 : reader.GetInt64(ord);
+                                ord = reader.GetOrdinal("node_id");
+                                row.NodeID = reader.IsDBNull(ord) ? -1 : reader.GetInt64(ord);
+                                ord = reader.GetOrdinal("node_file");
+                                row.NodeFile = reader.IsDBNull(ord) ? "" : reader.GetString(ord);
+                                ord = reader.GetOrdinal("created_at");
+                                row.CreatedAt = reader.IsDBNull(ord) ? DateTime.MinValue : DateTimeOffset.FromUnixTimeSeconds(reader.GetInt64(ord)).DateTime.ToLocalTime();
+                                ord = reader.GetOrdinal("updated_at");
+                                row.UpdatedAt = reader.IsDBNull(ord) ? DateTime.MinValue : DateTimeOffset.FromUnixTimeSeconds(reader.GetInt64(ord)).DateTime.ToLocalTime();
+                                retval.Add(row);
+                            }
+                        }
+                        reader.Close();
+                    }
+                }
+                Logging.Debug("SQL SELECT FROM museum_nodefile successful");
+                return retval;
+            }
+            catch (Exception e)
+            {
+                Logging.Debug($"SQL SELECT FROM museum_nodefile failed. {e.Message}");
+                return null;
+            }
+        }
+
         public List<CommandModel> ReadCommandData()
         {
             try
@@ -596,8 +658,12 @@ namespace MMS.Backend.DatabaseIO
                                 var row = new CommandModel();
                                 ord = reader.GetOrdinal("id");
                                 row.ID = reader.IsDBNull(ord) ? -1 : reader.GetInt64(ord);
+                                ord = reader.GetOrdinal("command_name");
+                                row.CommandName = reader.IsDBNull(ord) ? "" : reader.GetString(ord);
                                 ord = reader.GetOrdinal("command");
                                 row.Command = reader.IsDBNull(ord) ? "" : reader.GetString(ord);
+                                ord = reader.GetOrdinal("command_number");
+                                row.CommandNumber = reader.IsDBNull(ord) ? -1 : reader.GetInt32(ord);
                                 ord = reader.GetOrdinal("is_enabled");
                                 row.IsEnabled = reader.IsDBNull(ord) ? false : reader.GetBoolean(ord);
                                 ord = reader.GetOrdinal("created_at");
@@ -645,10 +711,14 @@ namespace MMS.Backend.DatabaseIO
                                 row.CommandID = reader.IsDBNull(ord) ? -1 : reader.GetInt64(ord);
                                 ord = reader.GetOrdinal("node_id");
                                 row.NodeID = reader.IsDBNull(ord) ? -1 : reader.GetInt64(ord);
+                                ord = reader.GetOrdinal("command_session_id");
+                                row.CommandSessionID = reader.IsDBNull(ord) ? "" : reader.GetString(ord);
                                 ord = reader.GetOrdinal("status");
                                 row.Status = reader.IsDBNull(ord) ? "" : reader.GetString(ord);
                                 ord = reader.GetOrdinal("message");
                                 row.Message = reader.IsDBNull(ord) ? "" : reader.GetString(ord);
+                                ord = reader.GetOrdinal("updated_by");
+                                row.UpdatedBy = reader.IsDBNull(ord) ? "" : reader.GetString(ord);
                                 ord = reader.GetOrdinal("created_at");
                                 row.CreatedAt = reader.IsDBNull(ord) ? DateTime.MinValue : DateTimeOffset.FromUnixTimeSeconds(reader.GetInt64(ord)).DateTime.ToLocalTime();
                                 ord = reader.GetOrdinal("updated_at");
@@ -688,7 +758,7 @@ namespace MMS.Backend.DatabaseIO
                     else sql = $"INSERT INTO \"museum_nodelog\" (" +
                         $"\"node_id\", \"temperature\", \"uptime\", \"cpu_usage\", \"disk_space_usage\", " +
                         $"\"ram_usage\", \"version\", \"created_at\", \"updated_at\") VALUES(@node_id, @temperature, " +
-                        $"@uptime, @cpu_usage, @disk_space_usage, @ram_usage, @version, @created_at, @updated_at)";
+                        $"@uptime, @cpu_usage, @disk_space_usage, @ram_usage, @version, @created_at, @updated_at); SELECT LAST_INSERT_ROWID();";
                     using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
                         for (int i = 0; i < data.Count; i++)
@@ -703,12 +773,17 @@ namespace MMS.Backend.DatabaseIO
                             command.Parameters.Add(new SQLiteParameter("@version", data[i].Version));
                             data[i].UpdatedAt = DateTime.Now;
                             command.Parameters.Add(new SQLiteParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
-                            if (!updateExisting)
+                            if (updateExisting)
+                            {
+                                command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
+                                command.ExecuteNonQuery();
+                            }
+                            else
                             {
                                 data[i].CreatedAt = DateTime.Now;
                                 command.Parameters.Add(new SQLiteParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                                data[i].ID = (long)command.ExecuteScalar();
                             }
-                            command.ExecuteNonQuery();
                         }
                     }
                 }
@@ -790,6 +865,59 @@ namespace MMS.Backend.DatabaseIO
             {
                 if (updateExisting) Logging.Debug($"SQL UPDATE museum_nodestatus failed. {e.Message}");
                 else Logging.Debug($"SQL INSERT INTO museum_nodestatus failed. {e.Message}");
+                return false;
+            }
+        }
+
+        public bool WriteNodeFileData(ref List<NodeFileModel> data, bool updateExisting = false)
+        {
+            try
+            {
+                if (updateExisting) Logging.Debug($"SQL Attempting UPDATE museum_nodefile");
+                else Logging.Debug($"SQL Attempting INSERT INTO museum_nodefile");
+                string sql = "";
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    if (updateExisting) sql = $"UPDATE \"museum_nodefile\" SET " +
+                            $"\"node_file\" = @node_file, \"position\" = @position, " +
+                            $"\"updated_at\" = @updated_at WHERE \"id\" = @id";
+                    else sql = $"INSERT INTO \"museum_nodefile\" (" +
+                        $"\"node_id\", \"node_file\", \"position\", \"created_at\", \"updated_at\") " +
+                        $"VALUES(@node_id, @node_file, @position, @created_at, " +
+                        $"@updated_at); SELECT LAST_INSERT_ROWID();";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                    {
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            command.Parameters.Clear();
+                            command.Parameters.Add(new SQLiteParameter("@node_id", data[i].NodeID));
+                            command.Parameters.Add(new SQLiteParameter("@node_file", data[i].NodeFile));
+                            command.Parameters.Add(new SQLiteParameter("@position", data[i].Position));
+                            data[i].UpdatedAt = DateTime.Now;
+                            command.Parameters.Add(new SQLiteParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                            if (updateExisting)
+                            {
+                                command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
+                                command.ExecuteNonQuery();
+                            }
+                            else
+                            {
+                                data[i].CreatedAt = DateTime.Now;
+                                command.Parameters.Add(new SQLiteParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
+                                data[i].ID = (long)command.ExecuteScalar();
+                            }
+                        }
+                    }
+                }
+                if (updateExisting) Logging.Debug("SQL UPDATE museum_nodefile successful");
+                else Logging.Debug("SQL INSERT INTO museum_nodefile successful");
+                return true;
+            }
+            catch (Exception e)
+            {
+                if (updateExisting) Logging.Debug($"SQL UPDATE museum_nodefile failed. {e.Message}");
+                else Logging.Debug($"SQL INSERT INTO museum_nodefile failed. {e.Message}");
                 return false;
             }
         }
@@ -1069,18 +1197,21 @@ namespace MMS.Backend.DatabaseIO
                 {
                     conn.Open();
                     if (updateExisting) sql = $"UPDATE \"museum_command\" SET " +
-                            $"\"command\" = @command, \"is_enabled\" = @is_enabled, " +
+                            $"\"command_name\" = @command_name, \"command\" = @command, " +
+                            $"\"command_number\" = @command_number, \"is_enabled\" = @is_enabled, " +
                             $"\"updated_at\" = @updated_at WHERE \"id\" = @id";
                     else sql = $"INSERT INTO \"museum_command\" (" +
-                            $"\"command\", \"is_enabled\", \"created_at\", \"updated_at\") " +
-                            $"VALUES(@command, @is_enabled, @created_at, @updated_at); " +
+                            $"\"command_name\", \"command\", \"command_number\", \"is_enabled\", \"created_at\", \"updated_at\") " +
+                            $"VALUES(@command_name, @command, @command_number, @is_enabled, @created_at, @updated_at); " +
                             $"SELECT LAST_INSERT_ROWID();";
                     using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
                         for (int i = 0; i < data.Count; i++)
                         {
                             command.Parameters.Clear();
+                            command.Parameters.Add(new SQLiteParameter("@command_name", data[i].CommandName));
                             command.Parameters.Add(new SQLiteParameter("@command", data[i].Command));
+                            command.Parameters.Add(new SQLiteParameter("@command_number", data[i].CommandNumber));
                             command.Parameters.Add(new SQLiteParameter("@is_enabled", data[i].IsEnabled));
                             data[i].UpdatedAt = DateTime.Now;
                             command.Parameters.Add(new SQLiteParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
@@ -1121,11 +1252,11 @@ namespace MMS.Backend.DatabaseIO
                 {
                     conn.Open();
                     if (updateExisting) sql = $"UPDATE \"museum_commandlog\" SET " +
-                            $"\"status\" = @status, \"message\" = @message, " +
+                            $"\"status\" = @status, \"message\" = @message, \"updated_by\" = @updated_by, " +
                             $"\"updated_at\" = @updated_at WHERE \"id\" = @id";
                     else sql = $"INSERT INTO \"museum_commandlog\" (" +
-                            $"\"command_id\", \"node_id\", \"status\", \"message\", \"created_at\", \"updated_at\") " +
-                            $"VALUES(@command_id, @node_id, @status, @message, @created_at, @updated_at); " +
+                            $"\"command_id\", \"node_id\", \"command_session_id\", \"status\", \"message\", \"updated_by\", \"created_at\", \"updated_at\") " +
+                            $"VALUES(@command_id, @node_id, @command_session_id, @status, @message, @updated_by, @created_at, @updated_at); " +
                             $"SELECT LAST_INSERT_ROWID();";
                     using (SQLiteCommand command = new SQLiteCommand(sql, conn))
                     {
@@ -1134,6 +1265,7 @@ namespace MMS.Backend.DatabaseIO
                             command.Parameters.Clear();
                             command.Parameters.Add(new SQLiteParameter("@status", data[i].Status));
                             command.Parameters.Add(new SQLiteParameter("@message", data[i].Message));
+                            command.Parameters.Add(new SQLiteParameter("@updated_by", data[i].UpdatedBy));
                             data[i].UpdatedAt = DateTime.Now;
                             command.Parameters.Add(new SQLiteParameter("@updated_at", new DateTimeOffset(data[i].UpdatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                             if (updateExisting)
@@ -1145,6 +1277,7 @@ namespace MMS.Backend.DatabaseIO
                             {
                                 command.Parameters.Add(new SQLiteParameter("@command_id", data[i].CommandID));
                                 command.Parameters.Add(new SQLiteParameter("@node_id", data[i].NodeID));
+                                command.Parameters.Add(new SQLiteParameter("@command_session_id", data[i].CommandSessionID));
                                 data[i].CreatedAt = DateTime.Now;
                                 command.Parameters.Add(new SQLiteParameter("@created_at", new DateTimeOffset(data[i].CreatedAt.ToUniversalTime()).ToUnixTimeSeconds()));
                                 data[i].ID = (long)command.ExecuteScalar();
@@ -1160,6 +1293,312 @@ namespace MMS.Backend.DatabaseIO
             {
                 if (updateExisting) Logging.Debug($"SQL UPDATE museum_commandlog failed. {e.Message}");
                 else Logging.Debug($"SQL INSERT INTO museum_commandlog failed. {e.Message}");
+                return false;
+            }
+        }
+
+        public bool DeleteNodeLogData(ref List<NodeLogModel> data)
+        {
+            try
+            {
+                Logging.Debug($"SQL Attempting DELETE FROM museum_nodelog");
+                string sql = "";
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    sql = $"DELETE FROM \"museum_nodelog\" WHERE \"id\" = @id";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                    {
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            command.Parameters.Clear();
+                            command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
+                            if (command.ExecuteNonQuery() == 0)
+                            {
+                                Logging.Debug($"SQL DELETE FROM museum_nodelog failed. No Data Found");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                Logging.Debug($"SQL DELETE FROM museum_nodelog successful");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logging.Debug($"SQL DELETE FROM museum_nodelog failed. {e.Message}");
+                return false;
+            }
+        }
+
+        public bool DeleteNodeStatusData(ref List<NodeModel> data)
+        {
+            try
+            {
+                Logging.Debug($"SQL Attempting DELETE FROM museum_nodestatus");
+                string sql = "";
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    sql = $"DELETE FROM \"museum_nodestatus\" WHERE \"node_id\" = @node_id";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                    {
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            command.Parameters.Clear();
+                            command.Parameters.Add(new SQLiteParameter("@node_id", data[i].CurrentStatus.NodeID));
+                            if (command.ExecuteNonQuery() == 0)
+                            {
+                                Logging.Debug($"SQL DELETE FROM museum_nodestatus failed. No Data Found");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                Logging.Debug($"SQL DELETE FROM museum_nodestatus successful");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logging.Debug($"SQL DELETE FROM museum_nodestatus failed. {e.Message}");
+                return false;
+            }
+        }
+
+        public bool DeleteNodeFileData(ref List<NodeFileModel> data)
+        {
+            try
+            {
+                Logging.Debug($"SQL Attempting DELETE FROM museum_nodefile");
+                string sql = "";
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    sql = $"DELETE FROM \"museum_nodefile\" WHERE \"id\" = @id";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                    {
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            command.Parameters.Clear();
+                            command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
+                            if (command.ExecuteNonQuery() == 0)
+                            {
+                                Logging.Debug($"SQL DELETE FROM museum_nodefile failed. No Data Found");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                Logging.Debug($"SQL DELETE FROM museum_nodefile successful");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logging.Debug($"SQL DELETE FROM museum_nodefile failed. {e.Message}");
+                return false;
+            }
+        }
+
+        public bool DeleteNodeData(ref List<NodeModel> data)
+        {
+            try
+            {
+                Logging.Debug($"SQL Attempting DELETE FROM museum_node");
+                string sql = "";
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    sql = $"DELETE FROM \"museum_node\" WHERE \"id\" = @id";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                    {
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            command.Parameters.Clear();
+                            command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
+                            if (command.ExecuteNonQuery() == 0)
+                            {
+                                Logging.Debug($"SQL DELETE FROM museum_node failed. No Data Found");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                Logging.Debug($"SQL DELETE FROM museum_node successful");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logging.Debug($"SQL DELETE FROM museum_node failed. {e.Message}");
+                return false;
+            }
+        }
+
+        public bool DeleteFloorData(ref List<FloorModel> data)
+        {
+            try
+            {
+                Logging.Debug($"SQL Attempting DELETE FROM museum_floor");
+                string sql = "";
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    sql = $"DELETE FROM \"museum_floor\" WHERE \"id\" = @id";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                    {
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            command.Parameters.Clear();
+                            command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
+                            if (command.ExecuteNonQuery() == 0)
+                            {
+                                Logging.Debug($"SQL DELETE FROM museum_floor failed. No Data Found");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                Logging.Debug($"SQL DELETE FROM museum_floor successful");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logging.Debug($"SQL DELETE FROM museum_floor failed. {e.Message}");
+                return false;
+            }
+        }
+
+        public bool DeleteZoneData(ref List<ZoneModel> data)
+        {
+            try
+            {
+                Logging.Debug($"SQL Attempting DELETE FROM museum_zone");
+                string sql = "";
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    sql = $"DELETE FROM \"museum_zone\" WHERE \"id\" = @id";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                    {
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            command.Parameters.Clear();
+                            command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
+                            if (command.ExecuteNonQuery() == 0)
+                            {
+                                Logging.Debug($"SQL DELETE FROM museum_zone failed. No Data Found");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                Logging.Debug($"SQL DELETE FROM museum_zone successful");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logging.Debug($"SQL DELETE FROM museum_zone failed. {e.Message}");
+                return false;
+            }
+        }
+
+        public bool DeleteExhibitData(ref List<ExhibitModel> data)
+        {
+            try
+            {
+                Logging.Debug($"SQL Attempting DELETE FROM museum_exhibit");
+                string sql = "";
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    sql = $"DELETE FROM \"museum_exhibit\" WHERE \"id\" = @id";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                    {
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            command.Parameters.Clear();
+                            command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
+                            if (command.ExecuteNonQuery() == 0)
+                            {
+                                Logging.Debug($"SQL DELETE FROM museum_exhibit failed. No Data Found");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                Logging.Debug($"SQL DELETE FROM museum_exhibit successful");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logging.Debug($"SQL DELETE FROM museum_exhibit failed. {e.Message}");
+                return false;
+            }
+        }
+
+        public bool DeleteCommandData(ref List<CommandModel> data)
+        {
+            try
+            {
+                Logging.Debug($"SQL Attempting DELETE FROM museum_command");
+                string sql = "";
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    sql = $"DELETE FROM \"museum_command\" WHERE \"id\" = @id";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                    {
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            command.Parameters.Clear();
+                            command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
+                            if (command.ExecuteNonQuery() == 0)
+                            {
+                                Logging.Debug($"SQL DELETE FROM museum_command failed. No Data Found");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                Logging.Debug($"SQL DELETE FROM museum_command successful");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logging.Debug($"SQL DELETE FROM museum_command failed. {e.Message}");
+                return false;
+            }
+        }
+
+        public bool DeleteCommandLogData(ref List<CommandLogModel> data)
+        {
+            try
+            {
+                Logging.Debug($"SQL Attempting DELETE FROM museum_commandlog");
+                string sql = "";
+                using (var conn = new SQLiteConnection(connectionString))
+                {
+                    conn.Open();
+                    sql = $"DELETE FROM \"museum_commandlog\" WHERE \"id\" = @id";
+                    using (SQLiteCommand command = new SQLiteCommand(sql, conn))
+                    {
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            command.Parameters.Clear();
+                            command.Parameters.Add(new SQLiteParameter("@id", data[i].ID));
+                            if (command.ExecuteNonQuery() == 0)
+                            {
+                                Logging.Debug($"SQL DELETE FROM museum_commandlog failed. No Data Found");
+                                return false;
+                            }
+                        }
+                    }
+                }
+                Logging.Debug($"SQL DELETE FROM museum_commandlog successful");
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logging.Debug($"SQL DELETE FROM museum_commandlog failed. {e.Message}");
                 return false;
             }
         }
